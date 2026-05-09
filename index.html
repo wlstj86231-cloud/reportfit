@@ -12,7 +12,27 @@
     <meta property="og:title" content="레포트핏 - 과제 제출용 파일 정리 도구" />
     <meta property="og:description" content="PDF, 이미지, 파일명, 글자수, 참고문헌, ZIP을 과제 제출 흐름에 맞게 정리하세요." />
     <meta property="og:url" content="https://reportfit.com/" />
+    <meta name="google-adsense-account" content="ca-pub-7217591196020054" />
     <link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+    <script>
+      window.addEventListener("load", () => {
+        if (location.hostname !== "reportfit.com") return;
+        const loadAdSense = () => {
+          if (document.querySelector("script[data-adsense-loader]")) return;
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7217591196020054";
+          script.crossOrigin = "anonymous";
+          script.dataset.adsenseLoader = "true";
+          document.head.appendChild(script);
+        };
+        if ("requestIdleCallback" in window) {
+          window.requestIdleCallback(loadAdSense, { timeout: 3500 });
+        } else {
+          window.setTimeout(loadAdSense, 1800);
+        }
+      }, { once: true });
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

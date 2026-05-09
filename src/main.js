@@ -33,6 +33,24 @@ const tools = [
     description: "여러 PDF를 합치거나 필요한 페이지만 골라 새 PDF로 만듭니다."
   },
   {
+    id: "pdf-number",
+    label: "페이지 번호",
+    short: "PDF 하단 번호 넣기",
+    icon: "PDF",
+    group: "PDF",
+    path: "/tools/pdf-number/",
+    description: "제출용 PDF에 페이지 번호를 넣어 본문 순서를 확인하기 쉽게 만듭니다."
+  },
+  {
+    id: "pdf-watermark",
+    label: "워터마크",
+    short: "초안, 참고용 표시",
+    icon: "PDF",
+    group: "PDF",
+    path: "/tools/pdf-watermark/",
+    description: "초안, 개인 확인용, 참고자료 같은 문구를 PDF에 은은하게 표시합니다."
+  },
+  {
     id: "image-convert",
     label: "이미지 변환",
     short: "JPG, PNG, WebP, PDF",
@@ -67,6 +85,24 @@ const tools = [
     group: "문서",
     path: "/tools/word-count/",
     description: "레포트 본문의 글자수, 단어수, A4 예상 분량을 빠르게 계산합니다."
+  },
+  {
+    id: "text-clean",
+    label: "텍스트 정리",
+    short: "줄바꿈, 공백 정리",
+    icon: "TXT",
+    group: "문서",
+    path: "/tools/text-clean/",
+    description: "PDF에서 복사한 글이나 메모의 줄바꿈, 공백, 문장 간격을 보기 좋게 정리합니다."
+  },
+  {
+    id: "table-convert",
+    label: "표 변환",
+    short: "CSV, 표, Markdown",
+    icon: "TAB",
+    group: "문서",
+    path: "/tools/table-convert/",
+    description: "엑셀에서 복사한 표를 Markdown 표, CSV, HTML 표로 변환합니다."
   },
   {
     id: "citation-cleaner",
@@ -142,6 +178,24 @@ const infoPages = {
       "기능 오류를 보낼 때는 사용한 도구 이름, 파일 형식, 브라우저, 어떤 단계에서 막혔는지를 적어주면 확인이 빠릅니다.",
       "추가 기능 제안은 과제 제출 상황이 구체적일수록 좋습니다. 예를 들어 'PDF가 20MB 제한에 걸림', '사진 12장을 한 파일로 묶어야 함'처럼 실제 상황 중심으로 보내주세요.",
       "정식 문의 폼을 붙이기 전까지는 사이트 운영자가 안내하는 연락 경로를 통해 의견을 받습니다."
+    ]
+  },
+  "/editorial/": {
+    title: "편집 기준",
+    lead: "레포트핏의 설명 문서는 과제 대행이 아니라 제출 전 실수를 줄이는 방법에 집중합니다.",
+    body: [
+      "각 도구 페이지는 먼저 실제 기능을 제공하고, 아래 설명에서는 언제 필요한지, 제출 전에 어떤 점을 확인해야 하는지, 어떤 경우에 결과를 다시 열어봐야 하는지를 다룹니다.",
+      "레포트핏은 레포트 본문을 대신 작성하거나 표절을 숨기는 방향의 기능을 넣지 않습니다. 파일 형식, 참고문헌 정리, 용량 제한, 개인정보 제거처럼 사용자가 직접 작성한 과제를 제출 가능한 상태로 정리하는 작업만 다룹니다.",
+      "도구 설명은 실제 제출 상황을 기준으로 업데이트합니다. 사용자가 자주 겪는 파일 오류, LMS 업로드 제한, 이미지 스캔 품질, 참고문헌 누락 같은 구체적인 문제를 우선합니다."
+    ]
+  },
+  "/review-readiness/": {
+    title: "승인 준비 체크",
+    lead: "레포트핏은 애드센스 심사 전에 기능, 신뢰 페이지, 내비게이션, 고유 설명 문서를 함께 갖추도록 구성했습니다.",
+    body: [
+      "구글 애드센스 공식 안내는 방문자에게 관련성 있는 고유 콘텐츠와 좋은 사용자 경험을 제공하는 사이트를 요구합니다. 레포트핏은 빈 도구 화면만 두지 않고 각 기능별 사용 맥락과 주의점을 함께 제공합니다.",
+      "광고 코드는 실제 도메인에서만 유휴 시간에 불러오도록 구성했습니다. 변환 버튼, 다운로드 버튼, 내비게이션과 혼동되는 위치에는 광고를 두지 않는 것이 원칙입니다.",
+      "심사 전에는 깨진 링크, 빈 페이지, placeholder 문구, 과도한 광고 영역, 저작권 침해 자료, 과제 대행처럼 보이는 표현을 제거해야 합니다."
     ]
   }
 };
@@ -221,6 +275,8 @@ function render() {
         <a href="/about/">소개</a>
         <a href="/privacy/">개인정보</a>
         <a href="/terms/">이용안내</a>
+        <a href="/editorial/">편집 기준</a>
+        <a href="/review-readiness/">승인 준비</a>
         <a href="/contact/">문의</a>
         <span>레포트핏은 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
       </footer>
@@ -263,6 +319,8 @@ function renderInfoPage() {
         <a href="/about/">소개</a>
         <a href="/privacy/">개인정보</a>
         <a href="/terms/">이용안내</a>
+        <a href="/editorial/">편집 기준</a>
+        <a href="/review-readiness/">승인 준비</a>
         <a href="/contact/">문의</a>
         <span>레포트핏은 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
       </footer>
@@ -350,6 +408,48 @@ function workspaceFor(id) {
       <button class="primary-action" id="runPdfEdit" type="button">새 PDF 만들기</button>
       <div class="result" id="result"></div>
     `,
+    "pdf-number": `
+      <div class="tool-head"><h2>페이지 번호</h2><p>PDF 하단에 페이지 번호를 넣어 제출본 순서를 확인하기 쉽게 만듭니다.</p></div>
+      ${drop("application/pdf")}
+      <div class="option-row">
+        <label>표기 형식
+          <select id="pageNumberFormat">
+            <option value="simple">1 / 10</option>
+            <option value="page">Page 1 of 10</option>
+            <option value="short">p. 1 / 10</option>
+          </select>
+        </label>
+        <label>시작 번호
+          <input id="pageNumberStart" type="number" min="1" value="1">
+        </label>
+        <label>위치
+          <select id="pageNumberPosition">
+            <option value="center">하단 중앙</option>
+            <option value="right">하단 오른쪽</option>
+            <option value="left">하단 왼쪽</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runPdfNumber" type="button">번호 넣은 PDF 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "pdf-watermark": `
+      <div class="tool-head"><h2>워터마크</h2><p>초안, 참고용, 개인 확인용 같은 문구를 PDF에 은은하게 표시합니다.</p></div>
+      ${drop("application/pdf")}
+      <div class="option-row">
+        <label>문구
+          <input id="watermarkText" type="text" value="DRAFT" placeholder="DRAFT">
+        </label>
+        <label>진하기
+          <input id="watermarkOpacity" type="range" min="0.08" max="0.35" step="0.01" value="0.16">
+        </label>
+        <label>크기
+          <input id="watermarkSize" type="number" min="24" max="96" value="52">
+        </label>
+      </div>
+      <button class="primary-action" id="runPdfWatermark" type="button">워터마크 PDF 만들기</button>
+      <div class="result" id="result"></div>
+    `,
     "image-convert": `
       <div class="tool-head"><h2>이미지 변환</h2><p>사진 여러 장을 JPG, PNG, WebP 또는 PDF로 변환합니다.</p></div>
       ${drop("image/*", true)}
@@ -412,9 +512,88 @@ function workspaceFor(id) {
       <button class="primary-action" id="runWordCount" type="button">글자수 계산하기</button>
       <div class="result" id="result"></div>
     `,
+    "text-clean": `
+      <div class="tool-head"><h2>텍스트 정리</h2><p>PDF에서 복사한 글의 이상한 줄바꿈, 중복 공백, 깨진 문단을 정리합니다.</p></div>
+      <textarea id="dirtyText" class="big-textarea" placeholder="정리할 텍스트를 붙여넣으세요."></textarea>
+      <div class="option-row">
+        <label>작업
+          <select id="textCleanMode">
+            <option value="paragraph">문단 흐름 정리</option>
+            <option value="line">줄 단위 유지</option>
+            <option value="list">목록처럼 정리</option>
+          </select>
+        </label>
+        <label>문장 사이
+          <select id="sentenceSpace">
+            <option value="normal">일반 공백</option>
+            <option value="blank">빈 줄 추가</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runTextClean" type="button">텍스트 정리하기</button>
+      <div class="result" id="result"></div>
+    `,
+    "table-convert": `
+      <div class="tool-head"><h2>표 변환</h2><p>엑셀에서 복사한 표를 CSV, Markdown, HTML 표로 바꿉니다.</p></div>
+      <textarea id="tableText" class="big-textarea" placeholder="엑셀이나 한글 표를 복사해서 붙여넣으세요."></textarea>
+      <div class="option-row">
+        <label>출력 형식
+          <select id="tableFormat">
+            <option value="markdown">Markdown 표</option>
+            <option value="csv">CSV</option>
+            <option value="html">HTML table</option>
+          </select>
+        </label>
+        <label>첫 줄
+          <select id="tableHeader">
+            <option value="header">제목 행으로 사용</option>
+            <option value="body">일반 행으로 사용</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runTableConvert" type="button">표 변환하기</button>
+      <div class="result" id="result"></div>
+    `,
     "citation-cleaner": `
-      <div class="tool-head"><h2>참고문헌 정리</h2><p>참고문헌 줄을 정리하고 중복을 제거합니다.</p></div>
-      <textarea id="citationText" class="big-textarea" placeholder="참고문헌을 한 줄에 하나씩 붙여넣으세요."></textarea>
+      <div class="tool-head"><h2>참고문헌 정리</h2><p>스타일 생성, 정렬, 중복 제거, 누락 경고, 본문 인용까지 한 번에 정리합니다.</p></div>
+      <div class="citation-builder">
+        <label>형식
+          <select id="citationStyle">
+            <option value="korean">한국식</option>
+            <option value="apa">APA 7</option>
+            <option value="mla">MLA</option>
+            <option value="chicago">Chicago</option>
+          </select>
+        </label>
+        <label>자료 유형
+          <select id="citationType">
+            <option value="web">웹페이지</option>
+            <option value="book">도서</option>
+            <option value="article">논문/학술지</option>
+            <option value="report">보고서</option>
+          </select>
+        </label>
+        <label>저자
+          <input id="citationAuthor" type="text" placeholder="홍길동 또는 Kim, J.">
+        </label>
+        <label>연도
+          <input id="citationYear" type="text" placeholder="2026">
+        </label>
+        <label>제목
+          <input id="citationTitle" type="text" placeholder="자료 제목">
+        </label>
+        <label>출처/사이트/학술지
+          <input id="citationSource" type="text" placeholder="사이트명, 출판사, 학술지명">
+        </label>
+        <label>URL 또는 DOI
+          <input id="citationUrl" type="text" placeholder="https:// 또는 10.xxxx">
+        </label>
+        <label>접속일
+          <input id="citationAccessed" type="date">
+        </label>
+      </div>
+      <button class="secondary-action" id="addCitationEntry" type="button">입력값으로 참고문헌 줄 만들기</button>
+      <textarea id="citationText" class="big-textarea citation-textarea" placeholder="참고문헌을 한 줄에 하나씩 붙여넣거나, 위 입력값으로 줄을 만드세요."></textarea>
       <div class="option-row">
         <label>정렬 방식
           <select id="citationSort">
@@ -422,8 +601,11 @@ function workspaceFor(id) {
             <option value="original">원래 순서 유지</option>
           </select>
         </label>
-        <label>간단 생성
-          <input id="citationQuick" type="text" placeholder="저자, 연도, 제목, 출처">
+        <label>정리 기준
+          <select id="citationNormalize">
+            <option value="strict">중복 제거 + 구두점 정리</option>
+            <option value="light">공백만 정리</option>
+          </select>
         </label>
       </div>
       <button class="primary-action" id="runCitation" type="button">참고문헌 정리하기</button>
@@ -488,10 +670,14 @@ function bindToolEvents(id) {
   const map = {
     "pdf-compress": ["#runPdfCompress", runPdfCompress],
     "pdf-edit": ["#runPdfEdit", runPdfEdit],
+    "pdf-number": ["#runPdfNumber", runPdfNumber],
+    "pdf-watermark": ["#runPdfWatermark", runPdfWatermark],
     "image-convert": ["#runImageConvert", runImageConvert],
     "image-compress": ["#runImageCompress", runImageCompress],
     "file-name": ["#runFileName", runFileName],
     "word-count": ["#runWordCount", runWordCount],
+    "text-clean": ["#runTextClean", runTextClean],
+    "table-convert": ["#runTableConvert", runTableConvert],
     "citation-cleaner": ["#runCitation", runCitationCleaner],
     "file-check": ["#runFileCheck", runFileCheck],
     "zip-pack": ["#runZipPack", runZipPack],
@@ -499,6 +685,7 @@ function bindToolEvents(id) {
   };
   const entry = map[id];
   if (entry) app.querySelector(entry[0])?.addEventListener("click", entry[1]);
+  if (id === "citation-cleaner") app.querySelector("#addCitationEntry")?.addEventListener("click", addCitationEntry);
 }
 
 window.addEventListener("popstate", () => {
@@ -554,6 +741,73 @@ async function runPdfEdit() {
     setResult(`
       <div class="metric-grid"><div><span>페이지</span><strong>${output.getPageCount()}쪽</strong></div><div><span>파일</span><strong>${formatBytes(blob.size)}</strong></div></div>
       ${downloadButton(blob, "reportfit_pdf.pdf", "새 PDF 다운로드")}
+    `);
+  });
+}
+
+async function runPdfNumber() {
+  await withProgress(async () => {
+    const { PDFDocument, StandardFonts, rgb } = await getPdfLib();
+    const file = singleFile();
+    requireFile(file, "PDF 파일을 선택하세요.");
+    const pdf = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    const pages = pdf.getPages();
+    const total = pages.length;
+    const start = Math.max(1, Number(value("#pageNumberStart") || 1));
+    const format = value("#pageNumberFormat");
+    const position = value("#pageNumberPosition");
+
+    pages.forEach((page, index) => {
+      const { width } = page.getSize();
+      const number = start + index;
+      const text = format === "page" ? `Page ${number} of ${total}` : format === "short" ? `p. ${number} / ${total}` : `${number} / ${total}`;
+      const size = 10;
+      const textWidth = font.widthOfTextAtSize(text, size);
+      const x = position === "left" ? 36 : position === "right" ? width - textWidth - 36 : (width - textWidth) / 2;
+      page.drawText(text, { x, y: 24, size, font, color: rgb(0.25, 0.31, 0.3) });
+    });
+
+    scrubPdfInfo(pdf);
+    const blob = new Blob([await pdf.save({ useObjectStreams: true })], { type: "application/pdf" });
+    setResult(`
+      <div class="metric-grid"><div><span>페이지</span><strong>${total}쪽</strong></div><div><span>결과</span><strong>${formatBytes(blob.size)}</strong></div></div>
+      ${downloadButton(blob, replaceExt(file.name, "numbered.pdf"), "번호 넣은 PDF 다운로드")}
+    `);
+  });
+}
+
+async function runPdfWatermark() {
+  await withProgress(async () => {
+    const { PDFDocument, StandardFonts, degrees, rgb } = await getPdfLib();
+    const file = singleFile();
+    requireFile(file, "PDF 파일을 선택하세요.");
+    const pdf = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+    const font = await pdf.embedFont(StandardFonts.HelveticaBold);
+    const text = safePdfText(value("#watermarkText") || "DRAFT");
+    const opacity = Number(value("#watermarkOpacity") || 0.16);
+    const size = Number(value("#watermarkSize") || 52);
+
+    pdf.getPages().forEach((page) => {
+      const { width, height } = page.getSize();
+      const textWidth = font.widthOfTextAtSize(text, size);
+      page.drawText(text, {
+        x: Math.max(24, (width - textWidth) / 2),
+        y: height / 2,
+        size,
+        font,
+        rotate: degrees(-28),
+        color: rgb(0.1, 0.16, 0.15),
+        opacity
+      });
+    });
+
+    scrubPdfInfo(pdf);
+    const blob = new Blob([await pdf.save({ useObjectStreams: true })], { type: "application/pdf" });
+    setResult(`
+      <div class="metric-grid"><div><span>워터마크</span><strong>${escapeHtml(text)}</strong></div><div><span>결과</span><strong>${formatBytes(blob.size)}</strong></div></div>
+      ${downloadButton(blob, replaceExt(file.name, "watermark.pdf"), "워터마크 PDF 다운로드")}
+      <p class="soft-note">PDF 기본 폰트 호환을 위해 워터마크 문구는 영문/숫자 중심으로 저장됩니다.</p>
     `);
   });
 }
@@ -644,23 +898,96 @@ function runWordCount() {
   `);
 }
 
+function runTextClean() {
+  const raw = value("#dirtyText");
+  const mode = value("#textCleanMode");
+  const gap = value("#sentenceSpace");
+  const cleaned = cleanText(raw, mode, gap);
+  setResult(`
+    <textarea class="result-text" id="cleanTextResult" readonly>${escapeHtml(cleaned)}</textarea>
+    <div class="metric-grid">
+      <div><span>원본</span><strong>${raw.length.toLocaleString()}자</strong></div>
+      <div><span>결과</span><strong>${cleaned.length.toLocaleString()}자</strong></div>
+      <div><span>줄 수</span><strong>${cleaned.split(/\n/).filter(Boolean).length.toLocaleString()}줄</strong></div>
+    </div>
+    <button class="secondary-action" type="button" data-copy="#cleanTextResult">정리한 텍스트 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function runTableConvert() {
+  const raw = value("#tableText");
+  const rows = parseTableRows(raw);
+  if (!rows.length) {
+    setResult(`<p class="error">변환할 표 내용을 붙여넣으세요.</p>`);
+    return;
+  }
+  const format = value("#tableFormat");
+  const hasHeader = value("#tableHeader") === "header";
+  const output = formatTableRows(rows, format, hasHeader);
+  setResult(`
+    <textarea class="result-text" id="tableResult" readonly>${escapeHtml(output)}</textarea>
+    <div class="metric-grid">
+      <div><span>행</span><strong>${rows.length}개</strong></div>
+      <div><span>열</span><strong>${Math.max(...rows.map((row) => row.length))}개</strong></div>
+      <div><span>형식</span><strong>${format.toUpperCase()}</strong></div>
+    </div>
+    <button class="secondary-action" type="button" data-copy="#tableResult">변환한 표 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function addCitationEntry() {
+  const entry = citationFromFields();
+  if (!entry.line) {
+    setResult(`<p class="error">저자와 제목은 최소한 입력해야 참고문헌 줄을 만들 수 있습니다.</p>`);
+    return;
+  }
+  const textarea = app.querySelector("#citationText");
+  const prefix = textarea.value.trim() ? "\n" : "";
+  textarea.value += `${prefix}${entry.line}`;
+  setResult(`
+    <p class="soft-note">참고문헌 줄을 추가했습니다. 아래에서 정렬과 중복 제거를 이어서 실행하세요.</p>
+    ${entry.inText ? `<div class="copy-box"><input id="citationInText" value="${escapeHtml(entry.inText)}" readonly><button type="button" data-copy="#citationInText">본문 인용 복사</button></div>` : ""}
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
 function runCitationCleaner() {
-  const rawLines = value("#citationText")
-    .split(/\r?\n/)
-    .map((line) => line.replace(/\s+/g, " ").trim())
+  const generated = citationFromFields();
+  const rawLines = [
+    ...value("#citationText").split(/\r?\n/),
+    generated.line
+  ]
+    .filter(Boolean)
+    .map((line) => value("#citationNormalize") === "strict" ? normalizeCitationLine(line) : line.replace(/\s+/g, " ").trim())
     .filter(Boolean);
-  const quick = value("#citationQuick").trim();
-  if (quick) rawLines.push(makeSimpleCitation(quick));
-  const deduped = [...new Map(rawLines.map((line) => [line.toLowerCase(), line])).values()];
+
+  const seen = new Map();
+  const duplicates = [];
+  for (const line of rawLines) {
+    const key = citationKey(line);
+    if (seen.has(key)) duplicates.push(line);
+    else seen.set(key, line);
+  }
+  const deduped = [...seen.values()];
   const lines = value("#citationSort") === "locale"
-    ? deduped.sort((a, b) => a.localeCompare(b, "ko"))
+    ? sortCitationLines(deduped)
     : deduped;
+  const warnings = citationWarnings(lines, generated.fields);
   const output = lines.join("\n");
   setResult(`
     <textarea class="result-text" id="cleanCitation" readonly>${escapeHtml(output)}</textarea>
+    <div class="metric-grid">
+      <div><span>정리된 줄</span><strong>${lines.length}개</strong></div>
+      <div><span>중복 제거</span><strong>${duplicates.length}개</strong></div>
+      <div><span>경고</span><strong>${warnings.length}개</strong></div>
+    </div>
+    ${generated.inText ? `<div class="copy-box"><input id="citationInText" value="${escapeHtml(generated.inText)}" readonly><button type="button" data-copy="#citationInText">본문 인용 복사</button></div>` : ""}
+    ${warnings.length ? `<ul class="warning-list">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>` : `<p class="soft-note">중복과 기본 누락 항목을 확인했습니다. 과목별 세부 양식은 교수자 안내를 우선하세요.</p>`}
     <button class="secondary-action" type="button" data-copy="#cleanCitation">정리한 참고문헌 복사</button>
   `);
-  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+  app.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", copyGenerated));
 }
 
 async function runFileCheck() {
@@ -928,13 +1255,17 @@ function toolById(id) {
 
 function relatedTools(id) {
   const map = {
-    "pdf-compress": ["file-check", "file-name", "zip-pack"],
-    "pdf-edit": ["pdf-compress", "file-check", "file-name"],
+    "pdf-compress": ["file-check", "pdf-number", "file-name"],
+    "pdf-edit": ["pdf-compress", "pdf-number", "pdf-watermark"],
+    "pdf-number": ["pdf-compress", "file-check", "pdf-watermark"],
+    "pdf-watermark": ["pdf-number", "privacy-clean", "file-check"],
     "image-convert": ["image-compress", "pdf-compress", "privacy-clean"],
     "image-compress": ["image-convert", "file-check", "zip-pack"],
     "file-name": ["file-check", "zip-pack", "pdf-compress"],
-    "word-count": ["citation-cleaner", "file-name", "file-check"],
-    "citation-cleaner": ["word-count", "file-name", "file-check"],
+    "word-count": ["text-clean", "citation-cleaner", "file-name"],
+    "text-clean": ["word-count", "table-convert", "citation-cleaner"],
+    "table-convert": ["text-clean", "citation-cleaner", "file-check"],
+    "citation-cleaner": ["word-count", "text-clean", "file-check"],
     "file-check": ["pdf-compress", "file-name", "zip-pack"],
     "zip-pack": ["file-check", "file-name", "privacy-clean"],
     "privacy-clean": ["file-check", "image-compress", "pdf-compress"]
@@ -958,15 +1289,204 @@ function copyFor(id) {
     },
     "citation-cleaner": {
       why: "참고문헌은 내용보다 정렬, 중복, 띄어쓰기에서 어수선해 보이는 경우가 많습니다. 제출 전에 줄 단위로 정리하면 문서의 마감감이 좋아집니다.",
-      tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요."
+      tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요. 레포트핏은 누락 가능성을 알려주지만 최종 양식 판단은 강의 안내를 우선합니다."
+    },
+    "pdf-number": {
+      why: "PDF를 합치거나 스캔하면 페이지 순서가 헷갈릴 수 있습니다. 하단 번호를 넣어두면 제출 전 검토와 조별 확인이 쉬워집니다.",
+      tip: "표지나 목차를 번호에서 제외해야 하는 과목이라면 PDF 편집에서 본문만 분리한 뒤 번호를 넣는 방식이 깔끔합니다."
+    },
+    "pdf-watermark": {
+      why: "초안, 개인 확인용, 참고자료처럼 제출본과 구분해야 하는 PDF에는 워터마크가 도움이 됩니다.",
+      tip: "최종 제출본에는 불필요한 워터마크가 남지 않았는지 반드시 다시 열어 확인하세요."
+    },
+    "text-clean": {
+      why: "PDF나 웹페이지에서 복사한 문장은 줄바꿈과 공백이 깨져 레포트에 붙였을 때 문단이 지저분해질 수 있습니다.",
+      tip: "정리한 뒤에는 문장이 서로 붙어 의미가 달라진 곳이 없는지 한 번 읽어보는 것이 좋습니다."
+    },
+    "table-convert": {
+      why: "엑셀, 한글, 노션에서 복사한 표는 제출 문서나 README, 보고서 부록에 옮길 때 형식이 자주 깨집니다.",
+      tip: "Markdown 표는 보고서 초안 공유에 좋고, CSV는 엑셀 재가공에 좋으며, HTML 표는 웹 제출이나 LMS 게시글에 붙이기 좋습니다."
     }
   };
   return extra[id] || base;
 }
 
-function makeSimpleCitation(input) {
-  const [author = "", year = "", title = "", source = ""] = input.split(",").map((part) => part.trim());
-  return [author, year ? `(${year})` : "", title, source].filter(Boolean).join(". ");
+function cleanText(raw, mode, gap) {
+  const normalized = raw
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/ *([,.;:!?]) */g, "$1 ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  if (mode === "line") return normalized.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).join("\n");
+  if (mode === "list") {
+    return normalized.split(/\r?\n/).map((line) => line.replace(/^[-•*]\s*/, "").trim()).filter(Boolean).map((line) => `- ${line}`).join("\n");
+  }
+  const joined = normalized
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .replace(/([.!?다요죠음임함됨됨니다])\s+/g, gap === "blank" ? "$1\n\n" : "$1 ");
+  return joined.trim();
+}
+
+function parseTableRows(raw) {
+  return raw.split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const delimiter = line.includes("\t") ? "\t" : line.includes("|") ? "|" : ",";
+      return line.split(delimiter).map((cell) => cell.trim()).filter((cell, index, arr) => delimiter !== "|" || cell || index !== 0 && index !== arr.length - 1);
+    })
+    .filter((row) => row.length);
+}
+
+function formatTableRows(rows, format, hasHeader) {
+  const width = Math.max(...rows.map((row) => row.length));
+  const padded = rows.map((row) => Array.from({ length: width }, (_, index) => row[index] || ""));
+  if (format === "csv") return padded.map((row) => row.map(csvCell).join(",")).join("\n");
+  if (format === "html") {
+    const bodyRows = padded.map((row, rowIndex) => {
+      const tag = hasHeader && rowIndex === 0 ? "th" : "td";
+      return `  <tr>${row.map((cell) => `<${tag}>${escapeHtml(cell)}</${tag}>`).join("")}</tr>`;
+    });
+    return `<table>\n${bodyRows.join("\n")}\n</table>`;
+  }
+  const header = hasHeader ? padded[0] : padded[0].map((_, index) => `열 ${index + 1}`);
+  const body = hasHeader ? padded.slice(1) : padded;
+  return [
+    `| ${header.map(markdownCell).join(" | ")} |`,
+    `| ${header.map(() => "---").join(" | ")} |`,
+    ...body.map((row) => `| ${row.map(markdownCell).join(" | ")} |`)
+  ].join("\n");
+}
+
+function csvCell(cell) {
+  return /[",\n]/.test(cell) ? `"${cell.replace(/"/g, '""')}"` : cell;
+}
+
+function markdownCell(cell) {
+  return cell.replace(/\|/g, "\\|").replace(/\n/g, " ");
+}
+
+function citationFromFields() {
+  const fields = {
+    style: value("#citationStyle"),
+    type: value("#citationType"),
+    author: cleanCitationPart(value("#citationAuthor")),
+    year: cleanCitationPart(value("#citationYear")),
+    title: cleanCitationPart(value("#citationTitle")),
+    source: cleanCitationPart(value("#citationSource")),
+    url: normalizeCitationUrl(value("#citationUrl")),
+    accessed: value("#citationAccessed")
+  };
+  if (!fields.author && !fields.title) return { line: "", inText: "", fields };
+  const line = normalizeCitationLine(formatCitation(fields));
+  return {
+    line,
+    inText: makeInTextCitation(fields),
+    fields
+  };
+}
+
+function formatCitation(fields) {
+  const year = fields.year || "n.d.";
+  const accessed = fields.accessed ? `Accessed ${fields.accessed}.` : "";
+  const url = fields.url ? `${fields.url}.` : "";
+  if (fields.style === "apa") {
+    if (fields.type === "book") return `${fields.author}. (${year}). ${sentenceTitle(fields.title)}. ${fields.source}.`;
+    return `${fields.author}. (${year}). ${sentenceTitle(fields.title)}. ${fields.source}. ${url}`;
+  }
+  if (fields.style === "mla") {
+    return `${fields.author}. "${fields.title}." ${fields.source}, ${fields.year || "n.d."}, ${fields.url}.`;
+  }
+  if (fields.style === "chicago") {
+    return `${fields.author}. "${fields.title}." ${fields.source}. ${accessed} ${url}`;
+  }
+  const koreanYear = fields.year ? `(${fields.year})` : "(연도 미상)";
+  const title = fields.type === "book" ? `『${fields.title}』` : `「${fields.title}」`;
+  return `${fields.author}. ${koreanYear}. ${title}. ${fields.source}. ${fields.url}`;
+}
+
+function makeInTextCitation(fields) {
+  if (!fields.author) return "";
+  const author = shortAuthor(fields.author);
+  const year = fields.year || "n.d.";
+  if (fields.style === "mla") return `(${author})`;
+  if (fields.style === "chicago") return `${author}, ${year}`;
+  return `(${author}, ${year})`;
+}
+
+function shortAuthor(author) {
+  const first = author.split(/[;&]/)[0].trim();
+  if (first.includes(",")) return first.split(",")[0].trim();
+  const tokens = first.split(/\s+/).filter(Boolean);
+  if (/[가-힣]/.test(first)) return tokens[0] || first;
+  return tokens.length > 1 ? tokens[tokens.length - 1] : first;
+}
+
+function normalizeCitationLine(line) {
+  return line
+    .replace(/\s+/g, " ")
+    .replace(/\s+([.,;:])/g, "$1")
+    .replace(/([.!?]){2,}/g, "$1")
+    .replace(/\s+\./g, ".")
+    .replace(/(\. ){2,}/g, ". ")
+    .replace(/\s+$/g, "")
+    .replace(/^\s+/g, "")
+    .replace(/\s+\.$/, ".")
+    .replace(/\.?$/, ".");
+}
+
+function cleanCitationPart(text) {
+  return text.replace(/\s+/g, " ").trim().replace(/[.。]+$/g, "");
+}
+
+function normalizeCitationUrl(text) {
+  const raw = text.trim();
+  if (!raw) return "";
+  if (/^10\.\d{4,9}\//.test(raw)) return `https://doi.org/${raw}`;
+  return raw;
+}
+
+function sentenceTitle(title) {
+  if (!title) return "";
+  return title.charAt(0).toUpperCase() + title.slice(1);
+}
+
+function citationKey(line) {
+  return line.toLowerCase().replace(/https?:\/\/(www\.)?/g, "").replace(/[^a-z0-9가-힣]/g, "");
+}
+
+function sortCitationLines(lines) {
+  return [...lines].sort((a, b) => {
+    const aKo = /^[가-힣]/.test(a);
+    const bKo = /^[가-힣]/.test(b);
+    if (aKo !== bKo) return aKo ? -1 : 1;
+    return a.localeCompare(b, "ko", { numeric: true });
+  });
+}
+
+function citationWarnings(lines, fields) {
+  const warnings = [];
+  if (fields.author || fields.title || fields.url) {
+    if (!fields.author) warnings.push("입력값에 저자가 없습니다.");
+    if (!fields.year) warnings.push("입력값에 연도가 없습니다. 연도 미상 표기를 확인하세요.");
+    if (!fields.title) warnings.push("입력값에 제목이 없습니다.");
+    if (fields.type === "web" && !fields.url) warnings.push("웹페이지 자료는 URL을 함께 남기는 편이 안전합니다.");
+  }
+  const missingYear = lines.filter((line) => !/\((\d{4}|n\.d\.|연도 미상)\)|\b\d{4}\b/.test(line)).length;
+  if (missingYear) warnings.push(`연도 표현이 보이지 않는 줄이 ${missingYear}개 있습니다.`);
+  const missingUrlWeb = lines.filter((line) => /https?:\/\/|doi\.org/.test(line) === false && /웹|사이트|online|retrieved/i.test(line)).length;
+  if (missingUrlWeb) warnings.push("웹 자료로 보이는 줄 중 URL이 없는 항목이 있습니다.");
+  return warnings;
+}
+
+function safePdfText(text) {
+  const safe = text.replace(/[^\x20-\x7E]/g, "").trim();
+  return safe || "DRAFT";
 }
 
 function copyGenerated(event) {

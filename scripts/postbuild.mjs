@@ -6,16 +6,20 @@ const index = await readFile(path.join(dist, "index.html"), "utf8");
 const tools = [
   "pdf-compress",
   "pdf-edit",
+  "pdf-number",
+  "pdf-watermark",
   "image-convert",
   "image-compress",
   "file-name",
   "word-count",
+  "text-clean",
+  "table-convert",
   "citation-cleaner",
   "file-check",
   "zip-pack",
   "privacy-clean"
 ];
-const pages = ["about", "privacy", "terms", "contact"];
+const pages = ["about", "privacy", "terms", "contact", "editorial", "review-readiness"];
 
 await writeFile(path.join(dist, "robots.txt"), "User-agent: *\nAllow: /\n\nSitemap: https://reportfit.com/sitemap.xml\n", "utf8");
 await writeFile(

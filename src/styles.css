@@ -328,6 +328,23 @@ p {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.citation-builder {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.citation-builder label:nth-child(5),
+.citation-builder label:nth-child(6),
+.citation-builder label:nth-child(7) {
+  grid-column: span 2;
+}
+
+.citation-textarea {
+  margin-top: 12px;
+}
+
 label {
   display: grid;
   gap: 7px;
@@ -439,6 +456,18 @@ input[type="range"] {
 .soft-note {
   margin: 12px 0 0;
   font-size: 13px;
+}
+
+.warning-list {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 12px 14px 12px 30px;
+  border-radius: 14px;
+  background: #fff8e6;
+  color: #70510b;
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .error {
@@ -636,9 +665,16 @@ th {
 
   .option-row,
   .form-grid,
+  .citation-builder,
   .metric-grid,
   .related-list {
     grid-template-columns: 1fr;
+  }
+
+  .citation-builder label:nth-child(5),
+  .citation-builder label:nth-child(6),
+  .citation-builder label:nth-child(7) {
+    grid-column: auto;
   }
 }
 
