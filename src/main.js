@@ -249,9 +249,16 @@ function render() {
 
         <section class="tool-layout">
           <aside class="tool-menu" aria-label="도구 카테고리">
-            ${tools.map((tool) => toolCard(tool)).join("")}
+            <div class="tool-search">
+              <input id="toolSearch" type="search" placeholder="필요한 도구 검색" autocomplete="off">
+              <span id="toolSearchCount">${tools.length}개 도구</span>
+            </div>
+            <div class="tool-list" id="toolList">
+              ${tools.map((tool) => toolCard(tool)).join("")}
+            </div>
           </aside>
           <section class="workspace" aria-live="polite">
+            ${stepStrip(currentTool.id)}
             ${workspaceFor(currentTool.id)}
           </section>
         </section>
@@ -335,7 +342,7 @@ function navButton(tool) {
 
 function toolCard(tool) {
   return `
-    <button type="button" class="tool-card ${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}">
+    <button type="button" class="tool-card ${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}" data-search="${escapeHtml(`${tool.id} ${tool.label} ${tool.short} ${tool.group} ${tool.description}`.toLowerCase())}">
       <span class="tool-icon">${escapeHtml(tool.icon)}</span>
       <span>
         <strong>${escapeHtml(tool.label)}</strong>
@@ -354,12 +361,36 @@ function relatedCard(tool) {
   `;
 }
 
+function stepStrip(id) {
+  const map = {
+    "pdf-compress": ["PDF 선택", "기준 확인", "압축본 받기"],
+    "pdf-edit": ["PDF 선택", "작업 선택", "새 PDF 받기"],
+    "pdf-number": ["PDF 선택", "번호 위치", "번호본 받기"],
+    "pdf-watermark": ["PDF 선택", "문구 조절", "표시본 받기"],
+    "image-convert": ["이미지 선택", "형식 선택", "결과 받기"],
+    "image-compress": ["이미지 선택", "품질 조절", "ZIP 받기"],
+    "file-name": ["정보 입력", "파일명 생성", "복사"],
+    "word-count": ["본문 붙여넣기", "분량 확인", "다음 정리"],
+    "text-clean": ["텍스트 붙여넣기", "정리 방식", "복사"],
+    "table-convert": ["표 붙여넣기", "형식 선택", "복사"],
+    "citation-cleaner": ["자료 입력", "스타일 선택", "정리/복사"],
+    "file-check": ["파일 선택", "기준 확인", "주의점 보기"],
+    "zip-pack": ["파일 선택", "이름 지정", "ZIP 받기"],
+    "privacy-clean": ["파일 선택", "정보 정리", "새 파일 받기"]
+  };
+  return `
+    <div class="step-strip" aria-label="작업 순서">
+      ${(map[id] || ["입력", "처리", "결과"]).map((step, index) => `<span><b>${index + 1}</b>${escapeHtml(step)}</span>`).join("")}
+    </div>
+  `;
+}
+
 function workspaceFor(id) {
   const drop = (accept, multiple = false) => `
     <label class="dropzone">
       <input class="file-input" type="file" ${multiple ? "multiple" : ""} accept="${accept}">
       <span>파일 선택</span>
-      <strong>여기에 놓거나 눌러서 선택</strong>
+      <strong>눌러서 선택하거나 파일을 놓기</strong>
       <small class="file-summary">선택된 파일 없음</small>
     </label>
   `;
@@ -494,6 +525,7 @@ function workspaceFor(id) {
     `,
     "file-name": `
       <div class="tool-head"><h2>파일명 만들기</h2><p>과목명, 학번, 이름, 과제명을 제출용 파일명으로 정리합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="file-name">예시 채우기</button><button type="button" data-clear="form">입력 비우기</button></div>
       <div class="form-grid">
         <label>과목명<input id="courseName" type="text" placeholder="마케팅원론"></label>
         <label>학번<input id="studentId" type="text" placeholder="20261234"></label>
@@ -508,12 +540,14 @@ function workspaceFor(id) {
     `,
     "word-count": `
       <div class="tool-head"><h2>글자수 계산</h2><p>공백 포함, 공백 제외, 단어 수, A4 예상 장수를 계산합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="word-count">예시 본문</button><button type="button" data-clear="textarea">비우기</button></div>
       <textarea id="wordText" class="big-textarea" placeholder="레포트 본문을 붙여넣으세요."></textarea>
       <button class="primary-action" id="runWordCount" type="button">글자수 계산하기</button>
       <div class="result" id="result"></div>
     `,
     "text-clean": `
       <div class="tool-head"><h2>텍스트 정리</h2><p>PDF에서 복사한 글의 이상한 줄바꿈, 중복 공백, 깨진 문단을 정리합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="text-clean">깨진 텍스트 예시</button><button type="button" data-clear="textarea">비우기</button></div>
       <textarea id="dirtyText" class="big-textarea" placeholder="정리할 텍스트를 붙여넣으세요."></textarea>
       <div class="option-row">
         <label>작업
@@ -535,6 +569,7 @@ function workspaceFor(id) {
     `,
     "table-convert": `
       <div class="tool-head"><h2>표 변환</h2><p>엑셀에서 복사한 표를 CSV, Markdown, HTML 표로 바꿉니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="table-convert">표 예시</button><button type="button" data-clear="textarea">비우기</button></div>
       <textarea id="tableText" class="big-textarea" placeholder="엑셀이나 한글 표를 복사해서 붙여넣으세요."></textarea>
       <div class="option-row">
         <label>출력 형식
@@ -556,6 +591,7 @@ function workspaceFor(id) {
     `,
     "citation-cleaner": `
       <div class="tool-head"><h2>참고문헌 정리</h2><p>스타일 생성, 정렬, 중복 제거, 누락 경고, 본문 인용까지 한 번에 정리합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="citation-web">웹 자료 예시</button><button type="button" data-sample="citation-article">논문 예시</button><button type="button" data-clear="form">입력 비우기</button></div>
       <div class="citation-builder">
         <label>형식
           <select id="citationStyle">
@@ -658,12 +694,16 @@ function bindGlobalEvents() {
       currentPage = null;
       history.pushState({ tool: tool.id }, "", tool.path);
       render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 
   app.querySelectorAll(".file-input").forEach((input) => {
     input.addEventListener("change", () => updateFileSummary(input));
   });
+  bindDropzones();
+  bindToolSearch();
+  bindUtilityButtons();
 }
 
 function bindToolEvents(id) {
@@ -686,6 +726,57 @@ function bindToolEvents(id) {
   const entry = map[id];
   if (entry) app.querySelector(entry[0])?.addEventListener("click", entry[1]);
   if (id === "citation-cleaner") app.querySelector("#addCitationEntry")?.addEventListener("click", addCitationEntry);
+}
+
+function bindDropzones() {
+  app.querySelectorAll(".dropzone").forEach((zone) => {
+    const input = zone.querySelector(".file-input");
+    if (!input) return;
+    ["dragenter", "dragover"].forEach((eventName) => {
+      zone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        zone.classList.add("is-dragging");
+      });
+    });
+    ["dragleave", "drop"].forEach((eventName) => {
+      zone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        zone.classList.remove("is-dragging");
+      });
+    });
+    zone.addEventListener("drop", (event) => {
+      const files = event.dataTransfer?.files;
+      if (!files?.length) return;
+      input.files = files;
+      updateFileSummary(input);
+    });
+  });
+}
+
+function bindToolSearch() {
+  const search = app.querySelector("#toolSearch");
+  const count = app.querySelector("#toolSearchCount");
+  if (!search) return;
+  search.addEventListener("input", () => {
+    const keyword = search.value.trim().toLowerCase();
+    let visible = 0;
+    app.querySelectorAll(".tool-card").forEach((card) => {
+      const haystack = card.dataset.search || "";
+      const match = !keyword || haystack.includes(keyword);
+      card.hidden = !match;
+      if (match) visible += 1;
+    });
+    if (count) count.textContent = `${visible}개 도구`;
+  });
+}
+
+function bindUtilityButtons() {
+  app.querySelectorAll("[data-sample]").forEach((button) => {
+    button.addEventListener("click", () => applySample(button.dataset.sample));
+  });
+  app.querySelectorAll("[data-clear]").forEach((button) => {
+    button.addEventListener("click", () => clearCurrentInputs(button.dataset.clear));
+  });
 }
 
 window.addEventListener("popstate", () => {
@@ -1153,7 +1244,8 @@ function scrubPdfInfo(pdf) {
 function setResult(html) {
   const result = app.querySelector("#result");
   if (!result) return;
-  result.innerHTML = html;
+  const finalHtml = shouldAttachNextActions(html) ? `${html}${nextActionsHtml(currentTool.id)}` : html;
+  result.innerHTML = finalHtml;
   result.classList.add("is-filled");
   result.querySelectorAll("[data-download-id]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1161,6 +1253,35 @@ function setResult(html) {
       if (item) saveBlob(item.blob, item.name);
     });
   });
+  result.querySelectorAll("[data-tool-link]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      const tool = toolById(button.dataset.toolLink);
+      if (!tool) return;
+      currentTool = tool;
+      currentPage = null;
+      history.pushState({ tool: tool.id }, "", tool.path);
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
+function shouldAttachNextActions(html) {
+  return !html.includes('class="error"') && !html.includes('class="progress"') && !html.includes("처리 중입니다");
+}
+
+function nextActionsHtml(id) {
+  const related = relatedTools(id).slice(0, 3);
+  if (!related.length) return "";
+  return `
+    <div class="result-next">
+      <strong>다음에 바로 할 작업</strong>
+      <div>
+        ${related.map((tool) => `<button type="button" data-tool-link="${tool.id}">${escapeHtml(tool.label)}</button>`).join("")}
+      </div>
+    </div>
+  `;
 }
 
 const downloadStore = new Map();
@@ -1247,6 +1368,58 @@ function formatBytes(bytes) {
 
 function value(selector) {
   return app.querySelector(selector)?.value || "";
+}
+
+function setValue(selector, text) {
+  const element = app.querySelector(selector);
+  if (element) element.value = text;
+}
+
+function applySample(type) {
+  const samples = {
+    "file-name": () => {
+      setValue("#courseName", "마케팅원론");
+      setValue("#studentId", "20261234");
+      setValue("#studentName", "홍길동");
+      setValue("#assignmentName", "1주차 개인과제");
+      setValue("#fileExt", "pdf");
+    },
+    "word-count": () => setValue("#wordText", "서론에서는 과제의 배경과 문제의식을 정리합니다.\n\n본론에서는 핵심 근거를 나누어 설명하고, 결론에서는 내가 확인한 시사점과 한계를 짧게 정리합니다."),
+    "text-clean": () => setValue("#dirtyText", "PDF에서 복사한 문장입니다.\n줄바꿈이\n이상하게 들어가고      공백도     많습니다.\n\n문단을 다시 정리해야 합니다."),
+    "table-convert": () => setValue("#tableText", "항목\t기준\t확인\nPDF 용량\t20MB 이하\t필요\n파일명\t학번_이름_과제명\t필요\n참고문헌\t가나다순\t선택"),
+    "citation-web": () => {
+      setValue("#citationStyle", "apa");
+      setValue("#citationType", "web");
+      setValue("#citationAuthor", "Kim, J.");
+      setValue("#citationYear", "2026");
+      setValue("#citationTitle", "mobile assignment submission habits");
+      setValue("#citationSource", "ReportFit Guide");
+      setValue("#citationUrl", "10.1234/reportfit.2026");
+    },
+    "citation-article": () => {
+      setValue("#citationStyle", "korean");
+      setValue("#citationType", "article");
+      setValue("#citationAuthor", "홍길동");
+      setValue("#citationYear", "2025");
+      setValue("#citationTitle", "대학생 과제 제출 과정에서의 파일 형식 문제");
+      setValue("#citationSource", "디지털학습연구 12(3)");
+      setValue("#citationUrl", "");
+    }
+  };
+  samples[type]?.();
+}
+
+function clearCurrentInputs(scope) {
+  const selector = scope === "textarea" ? "textarea" : "input:not([type='file']), textarea";
+  app.querySelectorAll(selector).forEach((element) => {
+    if (element.type === "date") element.value = "";
+    else if (element.tagName === "TEXTAREA" || element.tagName === "INPUT") element.value = "";
+  });
+  const result = app.querySelector("#result");
+  if (result) {
+    result.innerHTML = "";
+    result.classList.remove("is-filled");
+  }
 }
 
 function toolById(id) {
