@@ -2,4 +2,9 @@ node_modules/
 dist/
 .tmp-test/
 *.png
+!public/apple-touch-icon.png
+!public/assets/icon-32.png
+!public/assets/icon-48.png
+!public/assets/icon-192.png
+!public/assets/icon-512.png
 *.log

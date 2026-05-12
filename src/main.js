@@ -42,6 +42,7 @@ const uiText = {
     toolBundles: "도구 묶음",
     toolMenu: "도구 카테고리",
     toolSearch: "필요한 도구 검색",
+    toolSearchInGroup: (label) => `${label} 도구 검색`,
     toolCount: (count) => `${count}개 도구`,
     contentWhy: (label) => `${label}를 과제 제출 전에 쓰는 이유`,
     relatedTools: "같이 쓰면 좋은 도구",
@@ -62,6 +63,8 @@ const uiText = {
     guideIndexLead: "도구 화면은 빠르게 쓰고, 자세한 설명은 별도 가이드에서 읽을 수 있게 분리했습니다.",
     guideIndexPath: "가이드 목록 경로",
     guideCurrentPath: "현재 가이드 경로",
+    supportSummary: "설명과 가이드 보기",
+    supportHint: "긴 설명은 접어두었습니다",
     guideRead: "가이드 읽기",
     guideHome: "가이드 목록",
     privacyAdTitle: "광고와 쿠키 안내",
@@ -79,6 +82,7 @@ const uiText = {
     toolBundles: "Tool groups",
     toolMenu: "Tool categories",
     toolSearch: "Search tools",
+    toolSearchInGroup: (label) => `Search ${label} tools`,
     toolCount: (count) => `${count} tools`,
     contentWhy: (label) => `Why use ${label} before submitting`,
     relatedTools: "Related tools",
@@ -99,6 +103,8 @@ const uiText = {
     guideIndexLead: "Tools stay fast and focused. Detailed explanations live in separate long-form guides.",
     guideIndexPath: "Guide index path",
     guideCurrentPath: "Current guide path",
+    supportSummary: "Show notes and guides",
+    supportHint: "Long guidance stays collapsed",
     guideRead: "Read guide",
     guideHome: "Guide list",
     privacyAdTitle: "Advertising and Cookie Notice",
@@ -651,7 +657,7 @@ function render() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
-          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=3" alt=""></span>
           <span>
             <strong>${escapeHtml(brandName())}</strong>
             <small>${escapeHtml(t("brandSub"))}</small>
@@ -680,7 +686,7 @@ function render() {
           <aside class="tool-menu" aria-label="${escapeHtml(t("toolMenu"))}">
             <div class="tool-search">
               <input id="toolSearch" type="search" placeholder="${escapeHtml(t("toolSearch"))}" autocomplete="off">
-              <span id="toolSearchCount">${escapeHtml(t("toolCount", tools.length))}</span>
+              <span id="toolSearchCount">${escapeHtml(t("toolCount", activeGroupTools().length))}</span>
             </div>
             <div class="tool-list" id="toolList">
               ${tools.map((tool) => toolCard(tool)).join("")}
@@ -692,21 +698,29 @@ function render() {
           </section>
         </section>
 
-        <section class="content-grid">
-          <article>
-            <h2>${escapeHtml(t("contentWhy", displayTool.label))}</h2>
-            <p>${copyFor(currentTool.id).why}</p>
-            <p>${copyFor(currentTool.id).tip}</p>
-          </article>
-          <article>
-            <h2>${escapeHtml(t("relatedTools"))}</h2>
-            <div class="related-list">
-              ${relatedTools(currentTool.id).map((tool) => relatedCard(tool)).join("")}
-            </div>
-          </article>
-        </section>
+        <details class="support-drawer">
+          <summary>
+            <span>${escapeHtml(t("supportSummary"))}</span>
+            <small>${escapeHtml(t("supportHint"))}</small>
+          </summary>
+          <div class="support-drawer-body">
+            <section class="content-grid">
+              <article>
+                <h2>${escapeHtml(t("contentWhy", displayTool.label))}</h2>
+                <p>${copyFor(currentTool.id).why}</p>
+                <p>${copyFor(currentTool.id).tip}</p>
+              </article>
+              <article>
+                <h2>${escapeHtml(t("relatedTools"))}</h2>
+                <div class="related-list">
+                  ${relatedTools(currentTool.id).map((tool) => relatedCard(tool)).join("")}
+                </div>
+              </article>
+            </section>
 
-        ${toolGuideSection(currentTool.id)}
+            ${toolGuideSection(currentTool.id)}
+          </div>
+        </details>
       </main>
 
       <footer class="footer">
@@ -727,7 +741,7 @@ function renderInfoPage() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
-          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=3" alt=""></span>
           <span>
             <strong>${escapeHtml(brandName())}</strong>
             <small>${escapeHtml(t("brandSub"))}</small>
@@ -766,7 +780,7 @@ function renderGuidePage() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
-          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=3" alt=""></span>
           <span>
             <strong>${escapeHtml(brandName())}</strong>
             <small>${escapeHtml(t("brandSub"))}</small>
@@ -970,9 +984,22 @@ function toolGroupEntries() {
   return [...groups.values()];
 }
 
+function activeGroupKey() {
+  return activeToolGroupKey || currentTool.group;
+}
+
+function activeGroupEntry() {
+  const key = activeGroupKey();
+  return toolGroupEntries().find((group) => group.key === key);
+}
+
+function activeGroupTools() {
+  return activeGroupEntry()?.tools || tools;
+}
+
 function toolCategoryOverview() {
   const groups = toolGroupEntries();
-  const activeKey = activeToolGroupKey || currentTool.group;
+  const activeKey = activeGroupKey();
   return `
     <section class="category-overview" aria-label="${escapeHtml(t("toolBundles"))}">
       ${groups.map((group) => {
@@ -981,7 +1008,6 @@ function toolCategoryOverview() {
           <button class="category-card${active}" type="button" data-tool-group-key="${escapeHtml(group.key)}" data-tool-group-label="${escapeHtml(group.label)}">
             <span>${escapeHtml(group.label)}</span>
             <strong>${escapeHtml(t("toolCount", group.tools.length))}</strong>
-            <small>${escapeHtml(group.tools.slice(0, 3).map((tool) => localizedTool(tool).label).join(" · "))}</small>
           </button>
         `;
       }).join("")}
@@ -2085,7 +2111,7 @@ function bindGlobalEvents() {
       currentTool = tool;
       currentPage = null;
       currentGuide = null;
-      activeToolGroupKey = "";
+      activeToolGroupKey = tool.group;
       history.pushState({ tool: tool.id }, "", tool.path);
       render();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2172,17 +2198,25 @@ function bindDropzones() {
 function bindToolSearch() {
   const search = app.querySelector("#toolSearch");
   if (!search) return;
+  const group = activeGroupEntry();
+  const groupKey = group?.key || "";
+  search.placeholder = group ? t("toolSearchInGroup", group.label) : t("toolSearch");
+  updateToolListFilter({ groupKey });
   search.addEventListener("input", () => {
-    activeToolGroupKey = "";
-    search.placeholder = t("toolSearch");
-    setActiveCategory(currentTool.group);
-    updateToolListFilter({ keyword: search.value });
+    const keyword = search.value.trim();
+    if (keyword) {
+      activeToolGroupKey = "";
+      search.placeholder = t("toolSearch");
+      setActiveCategory("");
+      updateToolListFilter({ keyword });
+      return;
+    }
+    activeToolGroupKey = currentTool.group;
+    const resetGroup = activeGroupEntry();
+    search.placeholder = resetGroup ? t("toolSearchInGroup", resetGroup.label) : t("toolSearch");
+    setActiveCategory(activeGroupKey());
+    updateToolListFilter({ groupKey: activeGroupKey() });
   });
-  if (activeToolGroupKey) {
-    const activeGroup = toolGroupEntries().find((group) => group.key === activeToolGroupKey);
-    search.placeholder = activeGroup ? `${activeGroup.label} 도구 검색` : t("toolSearch");
-    updateToolListFilter({ groupKey: activeToolGroupKey });
-  }
 }
 
 function bindCategoryOverview() {
@@ -2203,7 +2237,7 @@ function bindCategoryOverview() {
       }
       if (search) {
         search.value = "";
-        search.placeholder = label ? `${label} 도구 검색` : t("toolSearch");
+        search.placeholder = label ? t("toolSearchInGroup", label) : t("toolSearch");
       }
       setActiveCategory(groupKey);
       updateToolListFilter({ groupKey });
@@ -2244,7 +2278,7 @@ window.addEventListener("popstate", () => {
   currentPage = findPageFromLocation();
   currentGuide = findGuideFromLocation();
   currentTool = findToolFromLocation() || tools[0];
-  activeToolGroupKey = "";
+  activeToolGroupKey = currentGuide || currentPage ? "" : currentTool.group;
   render();
 });
 
