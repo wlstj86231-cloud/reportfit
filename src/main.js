@@ -51,6 +51,33 @@ const tools = [
     description: "초안, 개인 확인용, 참고자료 같은 문구를 PDF에 은은하게 표시합니다."
   },
   {
+    id: "pdf-split",
+    label: "PDF 분할",
+    short: "페이지별, 범위별 ZIP",
+    icon: "PDF",
+    group: "PDF",
+    path: "/tools/pdf-split/",
+    description: "PDF를 페이지별 또는 지정한 범위별로 나누고 ZIP 파일로 묶어 받습니다."
+  },
+  {
+    id: "pdf-organize",
+    label: "PDF 페이지 정리",
+    short: "삭제, 재정렬, 역순",
+    icon: "PDF",
+    group: "PDF",
+    path: "/tools/pdf-organize/",
+    description: "필요한 페이지만 남기거나 순서를 바꿔 제출용 PDF를 다시 만듭니다."
+  },
+  {
+    id: "pdf-rotate",
+    label: "PDF 선택 회전",
+    short: "일부 페이지만 회전",
+    icon: "PDF",
+    group: "PDF",
+    path: "/tools/pdf-rotate/",
+    description: "스캔 방향이 틀어진 페이지를 범위로 지정해 90도, 180도, 270도로 회전합니다."
+  },
+  {
     id: "image-convert",
     label: "이미지 변환",
     short: "JPG, PNG, WebP, PDF",
@@ -160,7 +187,7 @@ const tools = [
   }
 ];
 
-const popular = ["submit-package", "pdf-compress", "image-convert", "submit-checklist", "file-name", "file-check"];
+const popular = ["pdf-compress", "pdf-split", "pdf-organize", "submit-package", "image-convert", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -435,6 +462,9 @@ function stepStrip(id) {
     "pdf-edit": ["PDF 선택", "작업 선택", "새 PDF 받기"],
     "pdf-number": ["PDF 선택", "번호 위치", "번호본 받기"],
     "pdf-watermark": ["PDF 선택", "문구 조절", "표시본 받기"],
+    "pdf-split": ["PDF 선택", "분할 방식", "ZIP 받기"],
+    "pdf-organize": ["PDF 선택", "페이지 순서", "정리본 받기"],
+    "pdf-rotate": ["PDF 선택", "회전 범위", "회전본 받기"],
     "image-convert": ["이미지 선택", "형식 선택", "결과 받기"],
     "image-compress": ["이미지 선택", "품질 조절", "ZIP 받기"],
     "file-name": ["정보 입력", "파일명 생성", "복사"],
@@ -549,6 +579,69 @@ function workspaceFor(id) {
         </label>
       </div>
       <button class="primary-action" id="runPdfWatermark" type="button">워터마크 PDF 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "pdf-split": `
+      <div class="tool-head"><h2>PDF 분할</h2><p>한 PDF를 페이지별 또는 범위별 PDF로 나눈 뒤 ZIP으로 묶습니다.</p></div>
+      ${drop("application/pdf")}
+      <div class="option-row">
+        <label>분할 방식
+          <select id="pdfSplitMode">
+            <option value="pages">페이지별로 나누기</option>
+            <option value="ranges">범위별로 나누기</option>
+          </select>
+        </label>
+        <label>범위 묶음
+          <input id="pdfSplitRanges" type="text" placeholder="예: 1-3; 4-6; 7">
+        </label>
+        <label>ZIP 파일명
+          <input id="pdfSplitName" type="text" placeholder="과제_PDF_분할.zip">
+        </label>
+      </div>
+      <button class="primary-action" id="runPdfSplit" type="button">분할 ZIP 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "pdf-organize": `
+      <div class="tool-head"><h2>PDF 페이지 정리</h2><p>남길 페이지와 순서를 지정해 새 PDF를 만듭니다. 삭제와 재정렬을 한 번에 처리합니다.</p></div>
+      ${drop("application/pdf")}
+      <div class="option-row">
+        <label>페이지 순서
+          <input id="pdfOrganizeOrder" type="text" placeholder="예: 1-3, 6, 5, 8-10">
+        </label>
+        <label>빠른 정리
+          <select id="pdfOrganizePreset">
+            <option value="custom">입력한 순서 사용</option>
+            <option value="reverse">전체 역순</option>
+            <option value="odd">홀수 페이지만</option>
+            <option value="even">짝수 페이지만</option>
+          </select>
+        </label>
+        <label>파일명
+          <input id="pdfOrganizeName" type="text" placeholder="과제_정리본.pdf">
+        </label>
+      </div>
+      <button class="primary-action" id="runPdfOrganize" type="button">정리한 PDF 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "pdf-rotate": `
+      <div class="tool-head"><h2>PDF 선택 회전</h2><p>스캔 방향이 틀어진 페이지만 골라 회전합니다. 범위를 비우면 전체 페이지가 회전됩니다.</p></div>
+      ${drop("application/pdf")}
+      <div class="option-row">
+        <label>회전할 페이지
+          <input id="pdfRotateRange" type="text" placeholder="예: 1, 3-5">
+        </label>
+        <label>회전 각도
+          <select id="pdfRotateAngle">
+            <option value="90">오른쪽 90도</option>
+            <option value="180">180도</option>
+            <option value="270">왼쪽 90도</option>
+          </select>
+        </label>
+        <label>파일명
+          <input id="pdfRotateName" type="text" placeholder="과제_회전본.pdf">
+        </label>
+      </div>
+      <button class="primary-action" id="runPdfRotate" type="button">회전 PDF 만들기</button>
       <div class="result" id="result"></div>
     `,
     "image-convert": `
@@ -839,6 +932,9 @@ function bindToolEvents(id) {
     "pdf-edit": ["#runPdfEdit", runPdfEdit],
     "pdf-number": ["#runPdfNumber", runPdfNumber],
     "pdf-watermark": ["#runPdfWatermark", runPdfWatermark],
+    "pdf-split": ["#runPdfSplit", runPdfSplit],
+    "pdf-organize": ["#runPdfOrganize", runPdfOrganize],
+    "pdf-rotate": ["#runPdfRotate", runPdfRotate],
     "image-convert": ["#runImageConvert", runImageConvert],
     "image-compress": ["#runImageCompress", runImageCompress],
     "file-name": ["#runFileName", runFileName],
@@ -1040,6 +1136,113 @@ async function runPdfWatermark() {
       <div class="metric-grid"><div><span>워터마크</span><strong>${escapeHtml(text)}</strong></div><div><span>결과</span><strong>${formatBytes(blob.size)}</strong></div></div>
       ${downloadButton(blob, replaceExt(file.name, "watermark.pdf"), "워터마크 PDF 다운로드")}
       <p class="soft-note">PDF 기본 폰트 호환을 위해 워터마크 문구는 영문/숫자 중심으로 저장됩니다.</p>
+    `);
+  });
+}
+
+async function runPdfSplit() {
+  await withProgress(async () => {
+    const { PDFDocument } = await getPdfLib();
+    const JSZip = await getJSZip();
+    const file = singleFile();
+    requireFile(file, "PDF 파일을 선택하세요.");
+    const source = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+    const total = source.getPageCount();
+    const mode = value("#pdfSplitMode");
+    const groups = mode === "ranges"
+      ? parsePageGroups(value("#pdfSplitRanges"), total)
+      : Array.from({ length: total }, (_, index) => ({ label: `${index + 1}`, indices: [index] }));
+    const zip = new JSZip();
+    const base = pdfBaseName(file);
+    const rows = [];
+
+    for (const group of groups) {
+      const output = await PDFDocument.create();
+      const pages = await output.copyPages(source, group.indices);
+      pages.forEach((page) => output.addPage(page));
+      scrubPdfInfo(output);
+      const bytes = await output.save({ useObjectStreams: true });
+      const pdfName = cleanOutputName(`${base}_p${group.label}.pdf`, "pdf");
+      zip.file(pdfName, bytes);
+      rows.push({ name: pdfName, pages: group.indices.length, range: group.label, size: bytes.length });
+    }
+
+    const blob = await zip.generateAsync({
+      type: "blob",
+      compression: "DEFLATE",
+      compressionOptions: { level: 6 }
+    });
+    const outName = cleanOutputName(value("#pdfSplitName") || replaceExt(file.name, "split.zip"), "zip");
+
+    setResult(`
+      <div class="metric-grid"><div><span>분할 파일</span><strong>${rows.length}개</strong></div><div><span>원본 페이지</span><strong>${total}쪽</strong></div><div><span>ZIP</span><strong>${formatBytes(blob.size)}</strong></div></div>
+      <div class="table-wrap">
+        <table><thead><tr><th>파일명</th><th>페이지</th><th>범위</th><th>용량</th></tr></thead><tbody>
+          ${rows.map((row) => `<tr><td>${escapeHtml(row.name)}</td><td>${row.pages}쪽</td><td>${escapeHtml(row.range)}</td><td>${formatBytes(row.size)}</td></tr>`).join("")}
+        </tbody></table>
+      </div>
+      ${downloadButton(blob, outName, "분할 PDF ZIP 다운로드")}
+    `);
+  });
+}
+
+async function runPdfOrganize() {
+  await withProgress(async () => {
+    const { PDFDocument } = await getPdfLib();
+    const file = singleFile();
+    requireFile(file, "PDF 파일을 선택하세요.");
+    const source = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+    const total = source.getPageCount();
+    const preset = value("#pdfOrganizePreset");
+    const indices = preset === "reverse"
+      ? Array.from({ length: total }, (_, index) => total - index - 1)
+      : preset === "odd"
+        ? Array.from({ length: total }, (_, index) => index).filter((index) => index % 2 === 0)
+        : preset === "even"
+          ? Array.from({ length: total }, (_, index) => index).filter((index) => index % 2 === 1)
+          : parsePageSequence(value("#pdfOrganizeOrder"), total);
+
+    if (!indices.length) throw new Error("남길 페이지가 없습니다. 페이지 순서를 다시 확인하세요.");
+
+    const output = await PDFDocument.create();
+    const pages = await output.copyPages(source, indices);
+    pages.forEach((page) => output.addPage(page));
+    scrubPdfInfo(output);
+    const blob = new Blob([await output.save({ useObjectStreams: true })], { type: "application/pdf" });
+    const outName = cleanOutputName(value("#pdfOrganizeName") || replaceExt(file.name, "organized.pdf"), "pdf");
+
+    setResult(`
+      <div class="metric-grid"><div><span>원본</span><strong>${total}쪽</strong></div><div><span>정리본</span><strong>${indices.length}쪽</strong></div><div><span>결과</span><strong>${formatBytes(blob.size)}</strong></div></div>
+      <p class="soft-note">적용된 순서: ${escapeHtml(pageSelectionLabel(indices))}</p>
+      ${downloadButton(blob, outName, "정리한 PDF 다운로드")}
+    `);
+  });
+}
+
+async function runPdfRotate() {
+  await withProgress(async () => {
+    const { PDFDocument, degrees } = await getPdfLib();
+    const file = singleFile();
+    requireFile(file, "PDF 파일을 선택하세요.");
+    const pdf = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
+    const total = pdf.getPageCount();
+    const indices = parsePageRange(value("#pdfRotateRange"), total);
+    const targets = new Set(indices);
+    const angle = Number(value("#pdfRotateAngle") || 90);
+
+    pdf.getPages().forEach((page, index) => {
+      if (!targets.has(index)) return;
+      page.setRotation(degrees((page.getRotation().angle + angle) % 360));
+    });
+
+    scrubPdfInfo(pdf);
+    const blob = new Blob([await pdf.save({ useObjectStreams: true })], { type: "application/pdf" });
+    const outName = cleanOutputName(value("#pdfRotateName") || replaceExt(file.name, "rotated.pdf"), "pdf");
+
+    setResult(`
+      <div class="metric-grid"><div><span>회전 페이지</span><strong>${indices.length}쪽</strong></div><div><span>각도</span><strong>${angle}도</strong></div><div><span>결과</span><strong>${formatBytes(blob.size)}</strong></div></div>
+      <p class="soft-note">회전된 페이지: ${escapeHtml(pageSelectionLabel(indices))}</p>
+      ${downloadButton(blob, outName, "회전 PDF 다운로드")}
     `);
   });
 }
@@ -1470,6 +1673,70 @@ function parsePageRange(text, total) {
   return [...selected].sort((a, b) => a - b);
 }
 
+function parsePageSequence(text, total, defaultAll = true) {
+  if (!text.trim()) {
+    if (!defaultAll) throw new Error("페이지 범위를 입력하세요.");
+    return Array.from({ length: total }, (_, index) => index);
+  }
+  const selected = [];
+  text.split(",").forEach((chunk) => {
+    const part = chunk.trim();
+    if (!part) return;
+    selected.push(...expandPagePart(part, total));
+  });
+  if (!selected.length) throw new Error("페이지 순서를 확인하세요.");
+  return selected;
+}
+
+function parsePageGroups(text, total) {
+  const raw = text.trim();
+  if (!raw) return Array.from({ length: total }, (_, index) => ({ label: `${index + 1}`, indices: [index] }));
+  const groups = raw.split(/[;\n]+/)
+    .map((group) => group.trim())
+    .filter(Boolean)
+    .map((group) => {
+      const indices = parsePageSequence(group, total, false);
+      return { label: pageSelectionLabel(indices).replace(/\s+/g, ""), indices };
+    });
+  if (!groups.length) throw new Error("분할할 페이지 범위를 입력하세요.");
+  return groups;
+}
+
+function expandPagePart(part, total) {
+  const pieces = part.split("-").map((value) => value.trim());
+  if (pieces.length > 2) throw new Error(`페이지 범위를 확인하세요: ${part}`);
+  if (pieces.length === 1) return [parsePageToken(pieces[0], total) - 1];
+  const start = pieces[0] ? parsePageToken(pieces[0], total) : 1;
+  const end = pieces[1] ? parsePageToken(pieces[1], total) : total;
+  const step = start <= end ? 1 : -1;
+  const indices = [];
+  for (let page = start; step > 0 ? page <= end : page >= end; page += step) {
+    indices.push(page - 1);
+  }
+  return indices;
+}
+
+function parsePageToken(token, total) {
+  const normalized = token.trim().toLowerCase();
+  if (["end", "last", "끝"].includes(normalized)) return total;
+  const page = Number(normalized);
+  if (!Number.isInteger(page) || page < 1 || page > total) {
+    throw new Error(`페이지 번호를 확인하세요: ${token}`);
+  }
+  return page;
+}
+
+function pageSelectionLabel(indices) {
+  const pages = indices.map((index) => index + 1);
+  const ascending = pages.every((page, index) => index === 0 || page === pages[index - 1] + 1);
+  if (ascending && pages.length > 2) return `${pages[0]}-${pages[pages.length - 1]}`;
+  return pages.join(", ");
+}
+
+function pdfBaseName(file) {
+  return slugPart(file.name.replace(/\.[^.]+$/, "")) || "reportfit";
+}
+
 function addPageWithRotation(pdf, page, rotate, degreesFn) {
   if (rotate) page.setRotation(degreesFn((page.getRotation().angle + rotate) % 360));
   pdf.addPage(page);
@@ -1753,11 +2020,14 @@ function toolById(id) {
 
 function relatedTools(id) {
   const map = {
-    "pdf-compress": ["file-check", "pdf-number", "file-name"],
-    "pdf-edit": ["pdf-compress", "pdf-number", "pdf-watermark"],
-    "pdf-number": ["pdf-compress", "file-check", "pdf-watermark"],
-    "pdf-watermark": ["pdf-number", "privacy-clean", "file-check"],
-    "image-convert": ["image-compress", "pdf-compress", "privacy-clean"],
+    "pdf-compress": ["pdf-split", "file-check", "pdf-number"],
+    "pdf-edit": ["pdf-organize", "pdf-split", "pdf-rotate"],
+    "pdf-number": ["pdf-organize", "pdf-compress", "pdf-watermark"],
+    "pdf-watermark": ["pdf-number", "pdf-rotate", "privacy-clean"],
+    "pdf-split": ["pdf-organize", "pdf-compress", "zip-pack"],
+    "pdf-organize": ["pdf-split", "pdf-rotate", "pdf-number"],
+    "pdf-rotate": ["pdf-organize", "pdf-watermark", "file-check"],
+    "image-convert": ["image-compress", "pdf-compress", "pdf-split"],
     "image-compress": ["image-convert", "file-check", "zip-pack"],
     "file-name": ["file-check", "zip-pack", "pdf-compress"],
     "submit-checklist": ["submit-package", "file-name", "file-check"],
@@ -1766,7 +2036,7 @@ function relatedTools(id) {
     "text-clean": ["word-count", "table-convert", "citation-cleaner"],
     "table-convert": ["text-clean", "citation-cleaner", "file-check"],
     "citation-cleaner": ["word-count", "text-clean", "file-check"],
-    "file-check": ["submit-package", "pdf-compress", "file-name"],
+    "file-check": ["submit-package", "pdf-compress", "pdf-rotate"],
     "zip-pack": ["submit-package", "file-check", "file-name"],
     "privacy-clean": ["file-check", "image-compress", "pdf-compress"]
   };
@@ -1806,6 +2076,18 @@ function copyFor(id) {
     "pdf-watermark": {
       why: "초안, 개인 확인용, 참고자료처럼 제출본과 구분해야 하는 PDF에는 워터마크가 도움이 됩니다.",
       tip: "최종 제출본에는 불필요한 워터마크가 남지 않았는지 반드시 다시 열어 확인하세요."
+    },
+    "pdf-split": {
+      why: "교수자나 LMS가 본문, 부록, 참고자료를 따로 요구할 때 한 PDF를 손으로 다시 저장하면 페이지 누락이 생기기 쉽습니다. PDF 분할은 지정한 범위대로 파일을 나누고 ZIP으로 묶어 제출 전 정리를 빠르게 끝냅니다.",
+      tip: "범위별 분할은 세미콜론으로 묶음을 나눕니다. 예를 들어 1-3; 4-6; 7처럼 입력하면 세 개의 PDF가 ZIP 안에 만들어집니다."
+    },
+    "pdf-organize": {
+      why: "스캔본이나 합친 PDF는 표지, 빈 페이지, 부록 순서가 뒤섞이는 경우가 많습니다. PDF 페이지 정리는 필요한 페이지만 남기고 원하는 순서로 다시 묶어 제출본을 정돈합니다.",
+      tip: "페이지를 삭제하고 싶으면 남길 페이지만 입력하세요. 순서를 바꾸고 싶으면 1-3, 6, 5처럼 원하는 순서대로 적으면 됩니다."
+    },
+    "pdf-rotate": {
+      why: "휴대폰 스캔이나 복합기 스캔에서는 일부 페이지만 옆으로 돌아가는 일이 잦습니다. PDF 선택 회전은 틀어진 페이지만 범위로 지정해 전체 파일을 다시 만들지 않고 방향을 맞춥니다.",
+      tip: "범위를 비우면 전체 페이지가 회전됩니다. 일부만 고칠 때는 1, 3-5처럼 지정한 뒤 결과 파일을 열어 방향을 확인하세요."
     },
     "text-clean": {
       why: "PDF나 웹페이지에서 복사한 문장은 줄바꿈과 공백이 깨져 레포트에 붙였을 때 문단이 지저분해질 수 있습니다.",
@@ -1854,6 +2136,60 @@ function guideFor(id) {
         {
           q: "압축하면 내용이 바뀌나요?",
           a: "본문을 새로 작성하거나 수정하는 기능이 아니라 PDF 저장 구조와 문서 정보를 정리하는 기능입니다. 다만 제출 전에는 결과 파일을 직접 열어 페이지와 글자를 확인해야 합니다."
+        }
+      ]
+    },
+    "pdf-split": {
+      title: "PDF를 나눌 때 확인할 것",
+      tips: [
+        "페이지별 분할은 모든 페이지가 각각 PDF로 만들어지므로 페이지 수가 많으면 ZIP 안 파일도 많아집니다.",
+        "범위별 분할은 1-3; 4-6처럼 세미콜론으로 묶음을 나누면 제출 항목별 PDF를 만들기 좋습니다.",
+        "분할한 뒤에는 ZIP을 열어 파일 수와 각 PDF의 첫 페이지가 의도와 맞는지 확인하세요."
+      ],
+      faq: [
+        {
+          q: "범위를 어떻게 입력하나요?",
+          a: "한 파일 안에 들어갈 페이지는 쉼표로 묶고, 다른 PDF로 나눌 묶음은 세미콜론으로 구분합니다. 예를 들어 1-2, 5; 6-8은 두 개의 PDF를 만듭니다."
+        },
+        {
+          q: "원본 PDF가 바뀌나요?",
+          a: "아닙니다. 원본은 그대로 두고 브라우저 안에서 새 PDF와 ZIP을 만들어 내려받는 방식입니다."
+        }
+      ]
+    },
+    "pdf-organize": {
+      title: "PDF 페이지 정리 전에 확인할 것",
+      tips: [
+        "삭제할 페이지를 적는 방식이 아니라 남길 페이지를 적는 방식입니다.",
+        "순서를 바꾸려면 1-3, 6, 5처럼 결과에 들어갈 순서 그대로 입력하세요.",
+        "홀수/짝수/역순 같은 빠른 정리를 쓸 때도 결과 PDF의 페이지 순서를 직접 열어 확인하세요."
+      ],
+      faq: [
+        {
+          q: "같은 페이지를 두 번 넣을 수 있나요?",
+          a: "가능합니다. 같은 번호를 반복해서 입력하면 결과 PDF에도 그 페이지가 반복해서 들어갑니다."
+        },
+        {
+          q: "빈 페이지 삭제도 되나요?",
+          a: "자동으로 빈 페이지를 감지하지는 않습니다. 미리 원본을 보고 남길 페이지만 입력하면 빈 페이지를 제외한 정리본을 만들 수 있습니다."
+        }
+      ]
+    },
+    "pdf-rotate": {
+      title: "PDF 페이지를 회전할 때 확인할 것",
+      tips: [
+        "범위를 비우면 전체 페이지가 회전되므로 일부 페이지만 고칠 때는 반드시 페이지 번호를 입력하세요.",
+        "왼쪽 90도는 270도로 저장됩니다. 결과 파일을 열어 실제 방향을 확인하는 것이 안전합니다.",
+        "스캔본은 화면 보기 방향과 실제 페이지 회전값이 다를 수 있으니 회전 후 한 번 더 미리보기하세요."
+      ],
+      faq: [
+        {
+          q: "일부 페이지만 회전할 수 있나요?",
+          a: "가능합니다. 1, 3-5처럼 회전할 페이지만 입력하면 그 페이지만 지정한 각도로 돌아갑니다."
+        },
+        {
+          q: "글자나 이미지를 다시 압축하나요?",
+          a: "아닙니다. 페이지 회전값을 조정하고 새 PDF로 저장하는 기능입니다. 용량을 줄이고 싶으면 PDF 압축을 이어서 사용하세요."
         }
       ]
     },

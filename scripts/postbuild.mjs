@@ -26,6 +26,21 @@ const tools = [
     description: "초안, 참고자료, 개인 확인용 문구를 PDF에 은은하게 표시해 최종본과 구분합니다."
   },
   {
+    slug: "pdf-split",
+    title: "PDF 분할 - 레포트핏",
+    description: "PDF를 페이지별 또는 지정한 범위별 PDF로 나누고 ZIP 파일로 묶어 받습니다."
+  },
+  {
+    slug: "pdf-organize",
+    title: "PDF 페이지 정리 - 레포트핏",
+    description: "필요한 페이지만 남기거나 순서를 바꿔 제출용 PDF를 브라우저에서 다시 만듭니다."
+  },
+  {
+    slug: "pdf-rotate",
+    title: "PDF 선택 회전 - 레포트핏",
+    description: "스캔 방향이 틀어진 PDF 일부 페이지만 선택해 90도, 180도, 270도로 회전합니다."
+  },
+  {
     slug: "image-convert",
     title: "이미지 변환 - 레포트핏",
     description: "JPG, PNG, WebP 이미지를 과제 제출에 맞게 변환하거나 여러 이미지를 PDF로 묶습니다."
