@@ -116,6 +116,17 @@ button {
   font-weight: 800;
 }
 
+.language-toggle {
+  min-width: 48px;
+  min-height: 42px;
+  border: 1px solid #cfdcd7;
+  border-radius: 999px;
+  background: #102420;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
 .quick-nav .is-active,
 .tool-card.is-active {
   border-color: #18a47a;
@@ -867,6 +878,119 @@ th {
   color: #14201f;
   font-size: 18px;
   font-weight: 800;
+}
+
+.policy-note,
+.guide-card {
+  border: 1px solid #dce5e1;
+  background: #fbfdfb;
+}
+
+.policy-note {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.policy-note h2 {
+  margin-top: 0;
+}
+
+.policy-note a {
+  color: #0b815e;
+  font-weight: 900;
+}
+
+.guide-card-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.guide-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 16px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.guide-card:hover {
+  border-color: #18a47a;
+  box-shadow: 0 12px 28px rgba(16, 35, 32, 0.08);
+}
+
+.guide-card span {
+  color: #0b815e;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.guide-card strong {
+  font-size: 18px;
+}
+
+.guide-card small {
+  color: #63706d;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.experience-note,
+.operator-memo {
+  border: 1px solid #cfe3da;
+  background: #f4fbf7;
+}
+
+.experience-note {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.operator-memo {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 14px;
+}
+
+.experience-note strong,
+.operator-memo strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #0b815e;
+  font-weight: 900;
+}
+
+.operator-memo p {
+  margin: 0;
+  color: #52625f;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.guide-article {
+  width: min(920px, 100%);
+}
+
+.guide-article .eyebrow a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.guide-article section {
+  margin-top: 30px;
+}
+
+.guide-article h2 {
+  font-size: 24px;
+}
+
+.guide-article p {
+  color: #263633;
+  font-size: 16px;
+  line-height: 1.78;
 }
 
 .info-tools {

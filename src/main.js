@@ -1,3 +1,4 @@
+import { guideArticles } from "./guideArticles.js";
 import "./styles.css";
 
 let pdfLibPromise;
@@ -26,6 +27,123 @@ async function getJSZip() {
   zipPromise ||= import("jszip").then((module) => module.default);
   return zipPromise;
 }
+
+const BRAND = {
+  ko: "과제 제출 도우미",
+  en: "Assignment Submit Helper"
+};
+const LANG_KEY = "assignmentSubmitHelperLang";
+let currentLang = localStorage.getItem(LANG_KEY) === "en" ? "en" : "ko";
+const uiText = {
+  ko: {
+    brandSub: "과제 제출 도구함",
+    quickTools: "빠른 도구",
+    heroEyebrow: "파일은 브라우저에서 처리됩니다",
+    toolBundles: "도구 묶음",
+    toolMenu: "도구 카테고리",
+    toolSearch: "필요한 도구 검색",
+    toolCount: (count) => `${count}개 도구`,
+    contentWhy: (label) => `${label}를 과제 제출 전에 쓰는 이유`,
+    relatedTools: "같이 쓰면 좋은 도구",
+    guideEyebrow: "제출 전 사용 팁",
+    faqEyebrow: "자주 묻는 질문",
+    faqTitle: "헷갈리기 쉬운 부분",
+    footerNote: "과제 제출 도우미는 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.",
+    about: "소개",
+    privacy: "개인정보",
+    terms: "이용안내",
+    editorial: "편집 기준",
+    review: "승인 준비",
+    guides: "제출 가이드",
+    contact: "문의",
+    langButton: "EN",
+    langLabel: "영어로 보기",
+    guideIndexTitle: "과제 제출 가이드",
+    guideIndexLead: "도구 화면은 빠르게 쓰고, 자세한 설명은 별도 가이드에서 읽을 수 있게 분리했습니다.",
+    guideRead: "가이드 읽기",
+    guideHome: "가이드 목록",
+    privacyAdTitle: "광고와 쿠키 안내",
+    privacyAdItems: [
+      "Google을 포함한 제3자 광고 사업자는 이전 방문 기록을 바탕으로 광고를 게재하기 위해 쿠키를 사용할 수 있습니다.",
+      "Google의 광고 쿠키 사용으로 사용자의 이 사이트 및 다른 사이트 방문 기록에 기반한 광고가 표시될 수 있습니다.",
+      "사용자는 Google 광고 설정에서 개인 맞춤 광고를 선택 해제할 수 있습니다."
+    ],
+    privacyAdLink: "Google 광고 설정 열기"
+  },
+  en: {
+    brandSub: "Assignment file toolkit",
+    quickTools: "Quick tools",
+    heroEyebrow: "Files are processed in your browser",
+    toolBundles: "Tool groups",
+    toolMenu: "Tool categories",
+    toolSearch: "Search tools",
+    toolCount: (count) => `${count} tools`,
+    contentWhy: (label) => `Why use ${label} before submitting`,
+    relatedTools: "Related tools",
+    guideEyebrow: "Before-submit tips",
+    faqEyebrow: "FAQ",
+    faqTitle: "Common points of confusion",
+    footerNote: "Assignment Submit Helper does not write assignments for you. It helps organize files and formats before submission.",
+    about: "About",
+    privacy: "Privacy",
+    terms: "Terms",
+    editorial: "Editorial",
+    review: "Review prep",
+    guides: "Guides",
+    contact: "Contact",
+    langButton: "KO",
+    langLabel: "View in Korean",
+    guideIndexTitle: "Assignment Submission Guides",
+    guideIndexLead: "Tools stay fast and focused. Detailed explanations live in separate long-form guides.",
+    guideRead: "Read guide",
+    guideHome: "Guide list",
+    privacyAdTitle: "Advertising and Cookie Notice",
+    privacyAdItems: [
+      "Third-party vendors, including Google, may use cookies to serve ads based on a user's prior visits to this website or other websites.",
+      "Google's use of advertising cookies enables it and its partners to serve ads based on visits to this site and other sites on the Internet.",
+      "Users may opt out of personalized advertising by visiting Google Ads Settings."
+    ],
+    privacyAdLink: "Open Google Ads Settings"
+  }
+};
+
+const toolTranslations = {
+  "pdf-compress": { label: "PDF Compress", short: "Reduce size", group: "PDF", description: "Save a smaller PDF for LMS upload limits and remove unnecessary document metadata." },
+  "pdf-slim": { label: "Scan PDF Slim", short: "Lighten scans", group: "PDF", description: "Re-render scan-heavy PDFs as optimized page images for lighter submission files." },
+  "pdf-edit": { label: "PDF Edit", short: "Merge, split, rotate", group: "PDF", description: "Merge PDFs, extract ranges, or rotate pages before submitting." },
+  "pdf-number": { label: "Page Numbers", short: "Add PDF numbering", group: "PDF", description: "Add page numbers to a submission PDF so missing or misplaced pages are easier to catch." },
+  "pdf-watermark": { label: "PDF Watermark", short: "Draft, reference marks", group: "PDF", description: "Add a light draft, reference, or review watermark to a PDF." },
+  "pdf-split": { label: "PDF Split", short: "Pages, ranges, ZIP", group: "PDF", description: "Split a PDF by page or range and download the results as a ZIP file." },
+  "pdf-organize": { label: "PDF Organize", short: "Delete, reorder, extract", group: "PDF", description: "Keep only needed pages, reorder them, and rebuild a submission PDF." },
+  "pdf-rotate": { label: "PDF Rotate", short: "Rotate selected pages", group: "PDF", description: "Rotate only the PDF pages that were scanned in the wrong direction." },
+  "image-convert": { label: "Image Convert", short: "JPG, PNG, WebP, PDF", group: "Image", description: "Convert images for assignment submission or combine multiple images into one PDF." },
+  "image-compress": { label: "Image Compress", short: "Reduce photo size", group: "Image", description: "Compress multiple photos or screenshots and download the results as a ZIP file." },
+  "image-resize": { label: "Image Resize", short: "Set max width/height", group: "Image", description: "Resize screenshots or photos for documents and LMS attachment limits." },
+  "image-rotate": { label: "Image Rotate", short: "90 degrees, flip", group: "Image", description: "Rotate or flip sideways photos and screenshots before attaching them." },
+  "image-watermark": { label: "Image Watermark", short: "Name, draft marks", group: "Image", description: "Add a light text watermark such as a name, draft label, or reference note." },
+  "file-name": { label: "File Name Maker", short: "Student ID, name, course", group: "Submit", description: "Generate clean assignment file names from course, student ID, name, and assignment title." },
+  "submit-checklist": { label: "Submission Checklist", short: "Deadline, files, citations", group: "Submit", description: "Create a copyable checklist for deadline, file name, file size, citations, and attachments." },
+  "submit-package": { label: "Submission Package", short: "Names, ZIP, checklist", group: "Submit", description: "Rename multiple files consistently and package them with a checklist in one ZIP." },
+  "deadline-planner": { label: "Deadline Planner", short: "Time left, task order", group: "Submit", description: "Calculate time left before the deadline and get a practical final task order." },
+  "submission-note": { label: "Submission Note", short: "LMS, email text", group: "Submit", description: "Generate a short LMS comment or email body with assignment and attachment details." },
+  "rubric-check": { label: "Rubric Check", short: "Points, completion", group: "Submit", description: "Review rubric items and point values before submission." },
+  "attachment-list": { label: "Attachment List", short: "Names, sizes", group: "Submit", description: "Create a copyable record of attached file names and sizes." },
+  "word-count": { label: "Word Count", short: "No-space, A4 estimate", group: "Document", description: "Calculate characters, words, and estimated A4 length for reports." },
+  "text-clean": { label: "Text Cleaner", short: "Line breaks, spacing", group: "Document", description: "Clean copied text, line breaks, repeated spaces, and paragraph spacing." },
+  "table-convert": { label: "Table Convert", short: "CSV, HTML, Markdown", group: "Document", description: "Convert copied tables into Markdown, CSV, or HTML." },
+  "citation-cleaner": { label: "Citation Cleaner", short: "Sort, dedupe", group: "Document", description: "Format, sort, deduplicate, and check reference lines and in-text citations." },
+  "document-outline": { label: "Document Outline", short: "Title, sections, order", group: "Document", description: "Turn an assignment topic and core claim into a report outline." },
+  "document-check": { label: "Document Structure Check", short: "Headings, paragraphs", group: "Document", description: "Check headings, paragraph length, conclusion, and citation structure before submission." },
+  "text-compare": { label: "Document Compare", short: "Draft vs revision", group: "Document", description: "Compare a draft and revised version line by line." },
+  "reading-time": { label: "Reading Time", short: "Script, presentation", group: "Document", description: "Estimate how long a report or presentation script takes to read." },
+  "file-check": { label: "File Check", short: "Size, extension, pages", group: "Submit", description: "Check file size, extension, file name, and PDF page count before uploading." },
+  "zip-pack": { label: "ZIP Pack", short: "Bundle files", group: "Submit", description: "Bundle reports, references, images, or data files into one ZIP." },
+  "privacy-clean": { label: "Privacy Clean", short: "EXIF, PDF info", group: "Security", description: "Reduce exposed image EXIF data and PDF author metadata before sharing." },
+  "privacy-scan": { label: "Sensitive Info Scan", short: "Phone, email, ID", group: "Security", description: "Scan assignment text for email, phone number, resident number, or student ID candidates." },
+  "privacy-mask": { label: "Privacy Mask", short: "Hide before sharing", group: "Security", description: "Mask contact details, emails, and ID-like numbers in text before sharing." },
+  "file-hash": { label: "File Hash", short: "SHA-256 check", group: "Security", description: "Calculate a SHA-256 hash to verify that a submitted file did not change." },
+  "password-maker": { label: "Password Maker", short: "Shared secret", group: "Security", description: "Create a temporary password for ZIP files or shared links." }
+};
 
 const tools = [
   {
@@ -347,18 +465,43 @@ const tools = [
 
 const popular = ["pdf-slim", "image-resize", "document-check", "deadline-planner", "submit-package", "file-check"];
 const app = document.querySelector("#app");
+
+function t(key, ...args) {
+  const value = uiText[currentLang]?.[key] ?? uiText.ko[key] ?? key;
+  return typeof value === "function" ? value(...args) : value;
+}
+
+function brandName() {
+  return BRAND[currentLang] || BRAND.ko;
+}
+
+function localizedTool(tool) {
+  if (currentLang !== "en") return tool;
+  return { ...tool, ...(toolTranslations[tool.id] || {}) };
+}
+
+function setLanguage(lang) {
+  currentLang = lang === "en" ? "en" : "ko";
+  localStorage.setItem(LANG_KEY, currentLang);
+  render();
+}
+
+function languageToggle() {
+  return `<button class="language-toggle" type="button" data-language-toggle aria-label="${escapeHtml(t("langLabel"))}">${escapeHtml(t("langButton"))}</button>`;
+}
+
 const infoPages = {
   "/about/": {
     title: "소개",
-    lead: "대학생 도우미는 과제를 대신 작성하지 않고, 제출 전에 필요한 파일 변환과 문서 정리를 빠르게 처리하는 도구입니다.",
+    lead: "과제 제출 도우미는 과제를 대신 작성하지 않고, 제출 전에 필요한 파일 변환과 문서 정리를 빠르게 처리하는 도구입니다.",
     body: [
       "대학생이 과제를 제출할 때 겪는 문제는 대개 거창하지 않습니다. PDF 용량이 제한을 넘거나, 사진 여러 장을 하나로 묶어야 하거나, 파일명이 어수선하거나, 참고문헌 줄이 뒤섞여 있는 식입니다.",
-      "대학생 도우미는 이런 작은 제출 문제를 브라우저 안에서 해결하도록 설계했습니다. 가능한 작업은 서버 업로드 없이 사용자의 기기에서 처리되며, 도구 화면을 먼저 보여주고 설명은 아래로 내려 실제 사용 흐름을 방해하지 않습니다."
+      "과제 제출 도우미는 이런 작은 제출 문제를 브라우저 안에서 해결하도록 설계했습니다. 가능한 작업은 서버 업로드 없이 사용자의 기기에서 처리되며, 도구 화면을 먼저 보여주고 설명은 아래로 내려 실제 사용 흐름을 방해하지 않습니다."
     ]
   },
   "/privacy/": {
     title: "개인정보 처리방침",
-    lead: "대학생 도우미의 파일 처리 기능은 기본적으로 브라우저 안에서 실행됩니다.",
+    lead: "과제 제출 도우미의 파일 처리 기능은 기본적으로 브라우저 안에서 실행됩니다.",
     body: [
       "선택한 PDF, 이미지, ZIP 대상 파일은 변환 작업을 위해 사용자의 브라우저 메모리에서 읽힙니다. 별도 서버로 파일을 저장하거나 전송하는 구조를 사용하지 않습니다.",
       "사이트 개선을 위해 일반적인 접속 로그나 브라우저가 제공하는 기술 정보가 호스팅 서비스 또는 분석 도구에 남을 수 있습니다. 이름, 학번, 과제 파일 원본을 수집하는 입력 양식은 두지 않습니다.",
@@ -367,10 +510,10 @@ const infoPages = {
   },
   "/terms/": {
     title: "이용안내",
-    lead: "대학생 도우미는 제출 전 파일과 형식 정리를 돕는 보조 도구입니다.",
+    lead: "과제 제출 도우미는 제출 전 파일과 형식 정리를 돕는 보조 도구입니다.",
     body: [
       "도구 결과는 제출 전 확인을 편하게 하기 위한 참고용입니다. 과목별 제출 규정, 교수자의 안내, 학교 LMS의 실제 제한을 우선해야 합니다.",
-      "대학생 도우미는 과제를 대신 작성하거나 표절을 우회하는 서비스를 제공하지 않습니다. 사용자는 본인이 작성하고 제출할 권리가 있는 파일만 처리해야 합니다.",
+      "과제 제출 도우미는 과제를 대신 작성하거나 표절을 우회하는 서비스를 제공하지 않습니다. 사용자는 본인이 작성하고 제출할 권리가 있는 파일만 처리해야 합니다.",
       "브라우저와 파일 형식에 따라 일부 변환 결과가 다를 수 있으므로, 다운로드한 결과 파일은 제출 전에 직접 열어 확인해야 합니다."
     ]
   },
@@ -385,24 +528,86 @@ const infoPages = {
   },
   "/editorial/": {
     title: "편집 기준",
-    lead: "대학생 도우미의 설명 문서는 과제 대행이 아니라 제출 전 실수를 줄이는 방법에 집중합니다.",
+    lead: "과제 제출 도우미의 설명 문서는 과제 대행이 아니라 제출 전 실수를 줄이는 방법에 집중합니다.",
     body: [
       "각 도구 페이지는 먼저 실제 기능을 제공하고, 아래 설명에서는 언제 필요한지, 제출 전에 어떤 점을 확인해야 하는지, 어떤 경우에 결과를 다시 열어봐야 하는지를 다룹니다.",
-      "대학생 도우미는 레포트 본문을 대신 작성하거나 표절을 숨기는 방향의 기능을 넣지 않습니다. 파일 형식, 참고문헌 정리, 용량 제한, 개인정보 제거처럼 사용자가 직접 작성한 과제를 제출 가능한 상태로 정리하는 작업만 다룹니다.",
+      "과제 제출 도우미는 레포트 본문을 대신 작성하거나 표절을 숨기는 방향의 기능을 넣지 않습니다. 파일 형식, 참고문헌 정리, 용량 제한, 개인정보 제거처럼 사용자가 직접 작성한 과제를 제출 가능한 상태로 정리하는 작업만 다룹니다.",
       "도구 설명은 실제 제출 상황을 기준으로 업데이트합니다. 사용자가 자주 겪는 파일 오류, LMS 업로드 제한, 이미지 스캔 품질, 참고문헌 누락 같은 구체적인 문제를 우선합니다."
     ]
   },
   "/review-readiness/": {
     title: "승인 준비 체크",
-    lead: "대학생 도우미는 애드센스 심사 전에 기능, 신뢰 페이지, 내비게이션, 고유 설명 문서를 함께 갖추도록 구성했습니다.",
+    lead: "과제 제출 도우미는 애드센스 심사 전에 기능, 신뢰 페이지, 내비게이션, 고유 설명 문서를 함께 갖추도록 구성했습니다.",
     body: [
-      "구글 애드센스 공식 안내는 방문자에게 관련성 있는 고유 콘텐츠와 좋은 사용자 경험을 제공하는 사이트를 요구합니다. 대학생 도우미는 빈 도구 화면만 두지 않고 각 기능별 사용 맥락과 주의점을 함께 제공합니다.",
+      "구글 애드센스 공식 안내는 방문자에게 관련성 있는 고유 콘텐츠와 좋은 사용자 경험을 제공하는 사이트를 요구합니다. 과제 제출 도우미는 빈 도구 화면만 두지 않고 각 기능별 사용 맥락과 주의점을 함께 제공합니다.",
       "광고 코드는 실제 도메인에서만 유휴 시간에 불러오도록 구성했습니다. 변환 버튼, 다운로드 버튼, 내비게이션과 혼동되는 위치에는 광고를 두지 않는 것이 원칙입니다.",
       "심사 전에는 깨진 링크, 빈 페이지, placeholder 문구, 과도한 광고 영역, 저작권 침해 자료, 과제 대행처럼 보이는 표현을 제거해야 합니다."
     ]
   }
 };
+
+const infoPagesEn = {
+  "/about/": {
+    title: "About",
+    lead: "Assignment Submit Helper helps students organize files and formats before submission without writing assignments for them.",
+    body: [
+      "Most assignment submission problems are not dramatic. A PDF is too large, screenshots need to be combined, file names are inconsistent, or references are scattered across drafts.",
+      "This site keeps those small but risky tasks inside the browser when possible. The tool appears first, and detailed explanations stay lower on the page so the workflow remains fast."
+    ]
+  },
+  "/privacy/": {
+    title: "Privacy Policy",
+    lead: "Most file-processing features run in the user's browser.",
+    body: [
+      "Selected PDFs, images, and ZIP targets are read in browser memory for conversion or review. The site is designed not to store assignment originals on a separate server.",
+      "Basic hosting logs and browser-provided technical information may be processed for site operation and improvement. The site does not ask for names, student IDs, or original assignment files through a collection form.",
+      "Contact details sent voluntarily for support are used only to understand and answer the request."
+    ]
+  },
+  "/terms/": {
+    title: "Terms",
+    lead: "This site is a support tool for preparing files and formats before submission.",
+    body: [
+      "Tool results are reference material for final checks. Course rules, instructor instructions, and the actual LMS limits always come first.",
+      "The site does not provide assignment ghostwriting or plagiarism bypass services. Users should process only files they have the right to submit.",
+      "Browsers and file formats can behave differently, so downloaded results should be opened and checked before final submission."
+    ]
+  },
+  "/contact/": {
+    title: "Contact",
+    lead: "Send clear reports for bugs, suggestions, or missing submission workflows.",
+    body: [
+      "For a bug report, include the tool name, file type, browser, and the step where the issue occurred.",
+      "Feature suggestions are most useful when they describe a real submission situation, such as a PDF size limit, multiple images that must become one file, or a required file-name rule.",
+      "Until a formal contact form is added, use the site owner's available support channel."
+    ]
+  },
+  "/editorial/": {
+    title: "Editorial Standards",
+    lead: "Explanations focus on reducing submission mistakes, not replacing student work.",
+    body: [
+      "Each tool page puts the working tool first and explains when to use it, what to check before submitting, and when to reopen the result.",
+      "The site avoids features that write the report body or hide plagiarism. It focuses on file formats, references, size limits, and privacy cleanup for work the user already created.",
+      "Guides are updated around real submission problems such as LMS limits, scan quality, missing references, and attachment mistakes."
+    ]
+  },
+  "/review-readiness/": {
+    title: "Review Readiness",
+    lead: "The site is structured with tools, trust pages, navigation, and original explanations before monetization review.",
+    body: [
+      "Google AdSense review looks at the whole site, so tools alone are not enough. Users should be able to understand what the site does and why each page exists.",
+      "Ads should not be confused with conversion buttons, download buttons, or navigation. This site loads the AdSense script only on the production domain and keeps the working tool area clear.",
+      "Before review, broken links, empty pages, placeholder text, excessive ad space, copyright issues, and assignment-writing claims should be removed."
+    ]
+  }
+};
+
+function infoPageText(pathname) {
+  return currentLang === "en" ? infoPagesEn[pathname] || infoPages[pathname] : infoPages[pathname];
+}
+
 let currentPage = findPageFromLocation();
+let currentGuide = findGuideFromLocation();
 let currentTool = findToolFromLocation() || tools[0];
 
 render();
@@ -415,48 +620,64 @@ function findPageFromLocation() {
   return infoPages[location.pathname] ? location.pathname : null;
 }
 
+function findGuideFromLocation() {
+  if (location.pathname === "/guides/") return { type: "index" };
+  const match = location.pathname.match(/^\/guides\/([^/]+)\/?$/);
+  if (!match) return null;
+  const article = guideArticles.find((item) => item.slug === match[1]);
+  return article ? { type: "article", article } : null;
+}
+
 function render() {
+  document.documentElement.lang = currentLang === "en" ? "en" : "ko-KR";
   currentPage = findPageFromLocation();
+  currentGuide = findGuideFromLocation();
+  if (currentGuide) {
+    renderGuidePage();
+    return;
+  }
   if (currentPage) {
     renderInfoPage();
     return;
   }
-  document.title = `${currentTool.label} - 대학생 도우미`;
+  const displayTool = localizedTool(currentTool);
+  document.title = `${displayTool.label} - ${brandName()}`;
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
-        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="대학생 도우미 홈">
+        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
           <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
           <span>
-            <strong>대학생 도우미</strong>
-            <small>과제 제출 도구함</small>
+            <strong>${escapeHtml(brandName())}</strong>
+            <small>${escapeHtml(t("brandSub"))}</small>
           </span>
         </a>
-        <nav class="quick-nav" aria-label="빠른 도구">
+        <nav class="quick-nav" aria-label="${escapeHtml(t("quickTools"))}">
           ${popular.map((id) => navButton(toolById(id))).join("")}
         </nav>
+        ${languageToggle()}
       </header>
 
       <main>
         <section class="work-hero">
           <div class="hero-copy">
-            <p class="eyebrow">파일은 브라우저에서 처리됩니다</p>
-            <h1>${escapeHtml(currentTool.label)}</h1>
-            <p>${escapeHtml(currentTool.description)}</p>
+            <p class="eyebrow">${escapeHtml(t("heroEyebrow"))}</p>
+            <h1>${escapeHtml(displayTool.label)}</h1>
+            <p>${escapeHtml(displayTool.description)}</p>
           </div>
           <div class="hero-stat">
-            <span>${escapeHtml(currentTool.group)}</span>
-            <strong>${escapeHtml(currentTool.short)}</strong>
+            <span>${escapeHtml(displayTool.group)}</span>
+            <strong>${escapeHtml(displayTool.short)}</strong>
           </div>
         </section>
 
         ${toolCategoryOverview()}
 
         <section class="tool-layout">
-          <aside class="tool-menu" aria-label="도구 카테고리">
+          <aside class="tool-menu" aria-label="${escapeHtml(t("toolMenu"))}">
             <div class="tool-search">
-              <input id="toolSearch" type="search" placeholder="필요한 도구 검색" autocomplete="off">
-              <span id="toolSearchCount">${tools.length}개 도구</span>
+              <input id="toolSearch" type="search" placeholder="${escapeHtml(t("toolSearch"))}" autocomplete="off">
+              <span id="toolSearchCount">${escapeHtml(t("toolCount", tools.length))}</span>
             </div>
             <div class="tool-list" id="toolList">
               ${tools.map((tool) => toolCard(tool)).join("")}
@@ -464,18 +685,18 @@ function render() {
           </aside>
           <section class="workspace" aria-live="polite">
             ${stepStrip(currentTool.id)}
-            ${workspaceFor(currentTool.id)}
+            ${localizedWorkspaceFor(currentTool.id)}
           </section>
         </section>
 
         <section class="content-grid">
           <article>
-            <h2>${escapeHtml(currentTool.label)}를 과제 제출 전에 쓰는 이유</h2>
+            <h2>${escapeHtml(t("contentWhy", displayTool.label))}</h2>
             <p>${copyFor(currentTool.id).why}</p>
             <p>${copyFor(currentTool.id).tip}</p>
           </article>
           <article>
-            <h2>같이 쓰면 좋은 도구</h2>
+            <h2>${escapeHtml(t("relatedTools"))}</h2>
             <div class="related-list">
               ${relatedTools(currentTool.id).map((tool) => relatedCard(tool)).join("")}
             </div>
@@ -486,13 +707,7 @@ function render() {
       </main>
 
       <footer class="footer">
-        <a href="/about/">소개</a>
-        <a href="/privacy/">개인정보</a>
-        <a href="/terms/">이용안내</a>
-        <a href="/editorial/">편집 기준</a>
-        <a href="/review-readiness/">승인 준비</a>
-        <a href="/contact/">문의</a>
-        <span>대학생 도우미는 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
+        ${footerLinks()}
       </footer>
     </div>
   `;
@@ -502,75 +717,240 @@ function render() {
 }
 
 function renderInfoPage() {
-  const page = infoPages[currentPage];
-  document.title = `${page.title} - 대학생 도우미`;
+  document.documentElement.lang = currentLang === "en" ? "en" : "ko-KR";
+  const page = infoPageText(currentPage);
+  document.title = `${page.title} - ${brandName()}`;
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
-        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="대학생 도우미 홈">
+        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
           <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
           <span>
-            <strong>대학생 도우미</strong>
-            <small>과제 제출 도구함</small>
+            <strong>${escapeHtml(brandName())}</strong>
+            <small>${escapeHtml(t("brandSub"))}</small>
           </span>
         </a>
-        <nav class="quick-nav" aria-label="빠른 도구">
+        <nav class="quick-nav" aria-label="${escapeHtml(t("quickTools"))}">
           ${popular.map((id) => navButton(toolById(id))).join("")}
         </nav>
+        ${languageToggle()}
       </header>
       <main class="info-page">
         <section class="info-card">
-          <p class="eyebrow">대학생 도우미</p>
+          <p class="eyebrow">${escapeHtml(brandName())}</p>
           <h1>${escapeHtml(page.title)}</h1>
           <p class="info-lead">${escapeHtml(page.lead)}</p>
           ${page.body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+          ${currentPage === "/privacy/" ? privacyAdDisclosure() : ""}
           <div class="related-list info-tools">
             ${popular.map((id) => relatedCard(toolById(id))).join("")}
           </div>
         </section>
       </main>
       <footer class="footer">
-        <a href="/about/">소개</a>
-        <a href="/privacy/">개인정보</a>
-        <a href="/terms/">이용안내</a>
-        <a href="/editorial/">편집 기준</a>
-        <a href="/review-readiness/">승인 준비</a>
-        <a href="/contact/">문의</a>
-        <span>대학생 도우미는 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
+        ${footerLinks()}
       </footer>
     </div>
   `;
   bindGlobalEvents();
 }
 
+function renderGuidePage() {
+  document.documentElement.lang = currentLang === "en" ? "en" : "ko-KR";
+  const isIndex = currentGuide.type === "index";
+  const article = currentGuide.article;
+  const title = isIndex ? t("guideIndexTitle") : articleTitle(article);
+  document.title = `${title} - ${brandName()}`;
+  app.innerHTML = `
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
+          <span>
+            <strong>${escapeHtml(brandName())}</strong>
+            <small>${escapeHtml(t("brandSub"))}</small>
+          </span>
+        </a>
+        <nav class="quick-nav" aria-label="${escapeHtml(t("quickTools"))}">
+          ${popular.map((id) => navButton(toolById(id))).join("")}
+        </nav>
+        ${languageToggle()}
+      </header>
+      <main class="info-page">
+        ${isIndex ? guideIndexMarkup() : guideArticleMarkup(article)}
+      </main>
+      <footer class="footer">
+        ${footerLinks()}
+      </footer>
+    </div>
+  `;
+  bindGlobalEvents();
+}
+
+function footerLinks() {
+  return `
+    <a href="/about/">${escapeHtml(t("about"))}</a>
+    <a href="/privacy/">${escapeHtml(t("privacy"))}</a>
+    <a href="/terms/">${escapeHtml(t("terms"))}</a>
+    <a href="/editorial/">${escapeHtml(t("editorial"))}</a>
+    <a href="/review-readiness/">${escapeHtml(t("review"))}</a>
+    <a href="/guides/">${escapeHtml(t("guides"))}</a>
+    <a href="/contact/">${escapeHtml(t("contact"))}</a>
+    <span>${escapeHtml(t("footerNote"))}</span>
+  `;
+}
+
+function privacyAdDisclosure() {
+  return `
+    <div class="policy-note">
+      <h2>${escapeHtml(t("privacyAdTitle"))}</h2>
+      <ul class="guide-list">
+        ${t("privacyAdItems").map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+      </ul>
+      <p><a href="https://adssettings.google.com/" target="_blank" rel="noopener">${escapeHtml(t("privacyAdLink"))}</a></p>
+    </div>
+  `;
+}
+
+function guideIndexMarkup() {
+  return `
+    <section class="info-card guide-index">
+      <p class="eyebrow">${escapeHtml(brandName())}</p>
+      <h1>${escapeHtml(t("guideIndexTitle"))}</h1>
+      <p class="info-lead">${escapeHtml(t("guideIndexLead"))}</p>
+      <div class="guide-card-list">
+        ${guideArticles.map((article) => `
+          <a class="guide-card" href="/guides/${article.slug}/">
+            <span>${escapeHtml(t("guides"))}</span>
+            <strong>${escapeHtml(articleTitle(article))}</strong>
+            <small>${escapeHtml(articleSummary(article))}</small>
+          </a>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function guideArticleMarkup(article) {
+  const sections = currentLang === "en" ? englishGuideSections(article) : article.sections;
+  const faq = currentLang === "en" ? englishGuideFaq(article) : article.faq;
+  return `
+    <article class="info-card guide-article">
+      <p class="eyebrow"><a href="/guides/">${escapeHtml(t("guideHome"))}</a></p>
+      <h1>${escapeHtml(articleTitle(article))}</h1>
+      <p class="info-lead">${escapeHtml(articleSummary(article))}</p>
+      ${articleExperienceNote(article)}
+      ${sections.map((section) => `
+        <section>
+          <h2>${escapeHtml(section.heading)}</h2>
+          ${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+        </section>
+      `).join("")}
+      <section>
+        <h2>${escapeHtml(t("faqEyebrow"))}</h2>
+        <div class="faq-list">
+          ${faq.map((item) => `
+            <details>
+              <summary>${escapeHtml(item.q)}</summary>
+              <p>${escapeHtml(item.a)}</p>
+            </details>
+          `).join("")}
+        </div>
+      </section>
+    </article>
+  `;
+}
+
+function articleTitle(article) {
+  return currentLang === "en" ? article.titleEn || article.title : article.title;
+}
+
+function articleSummary(article) {
+  return currentLang === "en" ? article.summaryEn || article.summary : article.summary;
+}
+
+function articleExperienceNote(article) {
+  if (currentLang === "en") {
+    return `
+      <aside class="experience-note">
+        <strong>Operator note</strong>
+        <p>This site separates fast tools from long-form guidance. The goal is to keep the working screen quick while documenting practical submission risks in dedicated guides.</p>
+      </aside>
+    `;
+  }
+  if (!article.experienceNote) return "";
+  return `
+    <aside class="experience-note">
+      <strong>${escapeHtml(article.experienceNote.title)}</strong>
+      ${article.experienceNote.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+    </aside>
+  `;
+}
+
+function englishGuideSections(article) {
+  return [
+    {
+      heading: "What this guide covers",
+      paragraphs: [
+        article.summaryEn || article.summary,
+        "The Korean version contains the full long-form guide used for search and review readiness. English mode keeps the same structure but summarizes the practical checklist for non-Korean readers."
+      ]
+    },
+    {
+      heading: "Practical submission principle",
+      paragraphs: [
+        "Before submitting, separate content review from file review. Content review checks logic, citations, and writing. File review checks upload limits, names, formats, attachments, and confirmation evidence.",
+        "The safest workflow is to prepare a final folder, open every final file once, check the LMS requirement, upload early, and capture the completed submission screen."
+      ]
+    }
+  ];
+}
+
+function englishGuideFaq(article) {
+  return [
+    {
+      q: "Is the full guide available in English?",
+      a: "English mode summarizes the guide for quick navigation. The Korean page keeps the complete long-form article used for the main local audience and search review."
+    },
+    {
+      q: "Should I rely on the tool result without checking it?",
+      a: article.summaryEn || "No. Always open the final file, compare it with the course instructions, and confirm the upload screen before submitting."
+    }
+  ];
+}
+
 function navButton(tool) {
-  return `<button type="button" class="${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}">${escapeHtml(tool.label)}</button>`;
+  const displayTool = localizedTool(tool);
+  return `<button type="button" class="${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}">${escapeHtml(displayTool.label)}</button>`;
 }
 
 function toolCard(tool) {
+  const displayTool = localizedTool(tool);
+  const searchText = `${tool.id} ${tool.label} ${tool.short} ${tool.group} ${tool.description} ${displayTool.label} ${displayTool.short} ${displayTool.group} ${displayTool.description}`.toLowerCase();
   return `
-    <button type="button" class="tool-card ${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}" data-search="${escapeHtml(`${tool.id} ${tool.label} ${tool.short} ${tool.group} ${tool.description}`.toLowerCase())}">
+    <button type="button" class="tool-card ${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}" data-search="${escapeHtml(searchText)}">
       <span class="tool-icon">${escapeHtml(tool.icon)}</span>
       <span>
-        <strong>${escapeHtml(tool.label)}</strong>
-        <small>${escapeHtml(tool.short)}</small>
+        <strong>${escapeHtml(displayTool.label)}</strong>
+        <small>${escapeHtml(displayTool.short)}</small>
       </span>
     </button>
   `;
 }
 
 function toolCategoryOverview() {
-  const groups = [...new Set(tools.map((tool) => tool.group))];
+  const groups = [...new Set(tools.map((tool) => localizedTool(tool).group))];
+  const currentGroup = localizedTool(currentTool).group;
   return `
-    <section class="category-overview" aria-label="도구 묶음">
+    <section class="category-overview" aria-label="${escapeHtml(t("toolBundles"))}">
       ${groups.map((group) => {
-        const groupTools = tools.filter((tool) => tool.group === group);
-        const active = group === currentTool.group ? " is-active" : "";
+        const groupTools = tools.filter((tool) => localizedTool(tool).group === group);
+        const active = group === currentGroup ? " is-active" : "";
         return `
           <button class="category-card${active}" type="button" data-tool-group="${escapeHtml(group)}">
             <span>${escapeHtml(group)}</span>
-            <strong>${groupTools.length}개 도구</strong>
-            <small>${groupTools.slice(0, 3).map((tool) => tool.label).join(" · ")}</small>
+            <strong>${escapeHtml(t("toolCount", groupTools.length))}</strong>
+            <small>${escapeHtml(groupTools.slice(0, 3).map((tool) => localizedTool(tool).label).join(" · "))}</small>
           </button>
         `;
       }).join("")}
@@ -579,28 +959,34 @@ function toolCategoryOverview() {
 }
 
 function relatedCard(tool) {
+  const displayTool = localizedTool(tool);
   return `
     <button type="button" class="related-card" data-tool-link="${tool.id}">
-      <strong>${escapeHtml(tool.label)}</strong>
-      <span>${escapeHtml(tool.short)}</span>
+      <strong>${escapeHtml(displayTool.label)}</strong>
+      <span>${escapeHtml(displayTool.short)}</span>
     </button>
   `;
 }
 
 function toolGuideSection(id) {
   const guide = guideFor(id);
+  const memo = operatorMemoFor(id);
   return `
     <section class="tool-guide" aria-label="${escapeHtml(guide.title)} 도움말">
       <article>
-        <p class="eyebrow">제출 전 사용 팁</p>
+        <p class="eyebrow">${escapeHtml(t("guideEyebrow"))}</p>
         <h2>${escapeHtml(guide.title)}</h2>
         <ul class="guide-list">
           ${guide.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}
         </ul>
+        <div class="operator-memo">
+          <strong>${escapeHtml(memo.title)}</strong>
+          <p>${escapeHtml(memo.body)}</p>
+        </div>
       </article>
       <article>
-        <p class="eyebrow">자주 묻는 질문</p>
-        <h2>헷갈리기 쉬운 부분</h2>
+        <p class="eyebrow">${escapeHtml(t("faqEyebrow"))}</p>
+        <h2>${escapeHtml(t("faqTitle"))}</h2>
         <div class="faq-list">
           ${guide.faq.map((item) => `
             <details>
@@ -612,6 +998,64 @@ function toolGuideSection(id) {
       </article>
     </section>
   `;
+}
+
+function operatorMemoFor(id) {
+  if (currentLang === "en") {
+    const displayTool = localizedTool(toolById(id) || currentTool);
+    return {
+      title: "Operator note",
+      body: `${displayTool.label} stays focused on the actual submission workflow. Longer guidance is separated into the guide area so SEO content documents the reasoning without slowing down the tool screen.`
+    };
+  }
+
+  const base = {
+    title: "운영자 메모",
+    body: "이 도구는 설명을 길게 읽게 만들기보다 제출 직전 바로 처리하는 흐름을 우선합니다. SEO와 승인용 본문은 아래 설명과 별도 가이드로 분리해, 실제 사용 속도를 해치지 않는 쪽으로 구성했습니다."
+  };
+  const map = {
+    "pdf-compress": {
+      title: "운영자 메모",
+      body: "PDF 압축은 숫자상 용량만 줄이는 일이 아닙니다. 제출 화면에서 업로드가 통과되고, 다시 열었을 때 표와 캡처가 읽히는지가 더 중요해서 압축 후 확인 절차를 함께 안내합니다."
+    },
+    "pdf-slim": {
+      title: "운영자 메모",
+      body: "스캔 PDF는 일반 압축보다 사용자가 체감하는 실패가 많습니다. 그래서 이 기능은 빠른 처리보다 결과 파일을 다시 열어 품질을 확인하는 습관까지 상세 설명에 포함했습니다."
+    },
+    "submit-package": {
+      title: "운영자 메모",
+      body: "조별과제는 ZIP을 만드는 것보다 어떤 파일이 들어갔는지 증명하는 과정이 더 중요합니다. 패키지 기능과 첨부 목록을 함께 둔 이유도 이 경험 때문입니다."
+    },
+    "file-check": {
+      title: "운영자 메모",
+      body: "파일 점검은 화려한 기능은 아니지만 제출 사고를 가장 직접적으로 줄입니다. 용량, 확장자, 페이지 수처럼 작아 보이는 기준이 실제로는 마감 직전의 핵심 리스크입니다."
+    },
+    "citation-cleaner": {
+      title: "운영자 메모",
+      body: "참고문헌 도구는 출처를 꾸며내는 방향이 아니라 정리와 누락 확인에 집중해야 합니다. 이 경계를 지키는 것이 과제 도구 사이트의 신뢰를 만드는 기준입니다."
+    },
+    "privacy-clean": {
+      title: "운영자 메모",
+      body: "개인정보 관련 도구는 과장된 보안 표현보다 한계를 명확히 말하는 편이 더 전문적입니다. 메타데이터를 줄여도 본문에 직접 적힌 정보는 별도로 확인해야 합니다."
+    },
+    "privacy-scan": {
+      title: "운영자 메모",
+      body: "민감정보 점검은 자동 탐지 결과를 최종 판단으로 두지 않습니다. 후보를 빠르게 보여주고 사용자가 문맥을 보고 결정하게 하는 것이 안전한 설계입니다."
+    }
+  };
+  const tool = toolById(id);
+  const groupMemo = {
+    PDF: `PDF 계열 도구는 결과 파일의 용량보다 열람 가능성과 페이지 보존을 더 중요하게 봅니다. ${tool?.label || "이 도구"}도 처리 후 파일을 다시 열어 페이지 순서, 표, 이미지 품질을 확인하게 안내하는 이유가 여기에 있습니다.`,
+    이미지: `이미지 계열 도구는 원본을 무조건 작게 만드는 데 목적이 있지 않습니다. ${tool?.label || "이 도구"}는 글자와 세부 정보가 읽히는 선에서 제출 가능한 크기와 형식으로 정리하는 흐름을 우선합니다.`,
+    제출: `제출 계열 도구는 사용자가 마지막 5분에 놓치기 쉬운 절차를 줄이는 데 초점을 둡니다. ${tool?.label || "이 도구"}는 파일 자체보다 파일명, 첨부, 마감, 제출 완료 확인처럼 실제 사고가 나는 지점을 기준으로 설계했습니다.`,
+    문서: `문서 계열 도구는 과제 본문을 대신 쓰는 방향이 아니라 사용자가 쓴 결과물을 점검하는 방향으로 제한합니다. ${tool?.label || "이 도구"}도 구조, 분량, 정리 상태를 빠르게 확인하게 만드는 보조 기능입니다.`,
+    보안: `보안 계열 도구는 자동 처리 결과를 최종 판단으로 보지 않습니다. ${tool?.label || "이 도구"}는 위험 후보를 줄이고 확인 시간을 단축하지만, 제출 전 목적에 맞는 정보인지 사용자가 다시 판단해야 합니다.`
+  };
+  if (map[id]) return map[id];
+  if (tool?.group && groupMemo[tool.group]) {
+    return { title: "운영자 메모", body: groupMemo[tool.group] };
+  }
+  return base;
 }
 
 function stepStrip(id) {
@@ -652,11 +1096,184 @@ function stepStrip(id) {
     "file-hash": ["파일 선택", "해시 계산", "값 복사"],
     "password-maker": ["조건 선택", "암호 생성", "복사하기"]
   };
+  const englishMap = {
+    "pdf-compress": ["Choose PDF", "Check limit", "Download compressed file"],
+    "pdf-slim": ["Choose PDF", "Set quality", "Download slim file"],
+    "pdf-edit": ["Choose PDFs", "Pick task", "Download new PDF"],
+    "pdf-number": ["Choose PDF", "Set position", "Download numbered PDF"],
+    "pdf-watermark": ["Choose PDF", "Set text", "Download marked PDF"],
+    "pdf-split": ["Choose PDF", "Set split rule", "Download ZIP"],
+    "pdf-organize": ["Choose PDF", "Set page order", "Download organized PDF"],
+    "pdf-rotate": ["Choose PDF", "Set range", "Download rotated PDF"],
+    "image-convert": ["Choose images", "Pick format", "Download result"],
+    "image-compress": ["Choose images", "Set quality", "Download ZIP"],
+    "image-resize": ["Choose images", "Set size", "Download ZIP"],
+    "image-rotate": ["Choose images", "Set direction", "Download ZIP"],
+    "image-watermark": ["Choose images", "Set mark", "Download ZIP"],
+    "file-name": ["Enter info", "Generate name", "Copy"],
+    "submit-checklist": ["Enter rules", "Select checks", "Copy checklist"],
+    "submit-package": ["Enter info", "Bundle files", "Download package"],
+    "deadline-planner": ["Enter deadline", "Check time left", "Plan order"],
+    "submission-note": ["Enter info", "Generate note", "Copy"],
+    "rubric-check": ["Enter rubric", "Check completion", "Fix priorities"],
+    "attachment-list": ["Choose files", "Build list", "Copy"],
+    "word-count": ["Paste text", "Check volume", "Adjust"],
+    "text-clean": ["Paste text", "Choose cleanup", "Copy"],
+    "table-convert": ["Paste table", "Pick format", "Copy"],
+    "citation-cleaner": ["Enter sources", "Choose style", "Copy"],
+    "document-outline": ["Enter claim", "Build outline", "Copy"],
+    "document-check": ["Paste draft", "Check structure", "Fix"],
+    "text-compare": ["Paste draft", "Paste revision", "Review diff"],
+    "reading-time": ["Paste script", "Pick speed", "Check time"],
+    "file-check": ["Choose file", "Check rules", "Review warnings"],
+    "zip-pack": ["Choose files", "Name bundle", "Download ZIP"],
+    "privacy-clean": ["Choose file", "Clean metadata", "Download copy"],
+    "privacy-scan": ["Paste text", "Find risks", "Review"],
+    "privacy-mask": ["Paste text", "Mask data", "Copy"],
+    "file-hash": ["Choose file", "Calculate hash", "Copy"],
+    "password-maker": ["Set rules", "Generate password", "Copy"]
+  };
+  const steps = currentLang === "en"
+    ? englishMap[id] || ["Input", "Process", "Result"]
+    : map[id] || ["입력", "처리", "결과"];
   return `
-    <div class="step-strip" aria-label="작업 순서">
-      ${(map[id] || ["입력", "처리", "결과"]).map((step, index) => `<span><b>${index + 1}</b>${escapeHtml(step)}</span>`).join("")}
+    <div class="step-strip" aria-label="${currentLang === "en" ? "Workflow" : "작업 순서"}">
+      ${steps.map((step, index) => `<span><b>${index + 1}</b>${escapeHtml(step)}</span>`).join("")}
     </div>
   `;
+}
+
+function localizedWorkspaceFor(id) {
+  const html = workspaceFor(id);
+  if (currentLang !== "en") return html;
+
+  const replacements = {
+    "파일 선택": "Choose file",
+    "눌러서 선택하거나 파일을 놓기": "Click to choose or drop files",
+    "선택된 파일 없음": "No file selected",
+    "파일명": "File name",
+    "목표 용량": "Target size",
+    "PDF 압축": "PDF Compress",
+    "PDF를 다시 저장해 용량과 문서 정보를 정리합니다.": "Resave the PDF to clean document structure and metadata.",
+    "압축 PDF 만들기": "Create compressed PDF",
+    "스캔 PDF 경량화": "Scan PDF Slim",
+    "출력 품질": "Output quality",
+    "페이지 최대 폭": "Max page width",
+    "색상": "Color",
+    "컬러 유지": "Keep color",
+    "흑백/그레이로 줄이기": "Grayscale",
+    "경량 PDF 만들기": "Create slim PDF",
+    "PDF 편집": "PDF Edit",
+    "합치기, 필요한 페이지만 빼기, 전체 회전을 처리합니다.": "Merge, extract needed pages, or rotate the full PDF.",
+    "작업": "Task",
+    "PDF 합치기": "Merge PDFs",
+    "페이지 범위 추출": "Extract page range",
+    "페이지 범위": "Page range",
+    "회전": "Rotation",
+    "회전 없음": "No rotation",
+    "오른쪽 90도": "Right 90 degrees",
+    "왼쪽 90도": "Left 90 degrees",
+    "새 PDF 만들기": "Create PDF",
+    "PDF 페이지 번호": "PDF Page Numbers",
+    "위치": "Position",
+    "하단 중앙": "Bottom center",
+    "하단 오른쪽": "Bottom right",
+    "상단 중앙": "Top center",
+    "번호 PDF 만들기": "Create numbered PDF",
+    "PDF 워터마크": "PDF Watermark",
+    "문구": "Text",
+    "투명도": "Opacity",
+    "워터마크 PDF 만들기": "Create watermarked PDF",
+    "PDF 분할": "PDF Split",
+    "분할 방식": "Split mode",
+    "페이지별 분할": "Split by page",
+    "범위별 분할": "Split by range",
+    "분할 ZIP 만들기": "Create split ZIP",
+    "PDF 페이지 정리": "PDF Organize",
+    "남길 페이지": "Pages to keep",
+    "정리 PDF 만들기": "Create organized PDF",
+    "PDF 선택 회전": "PDF Rotate",
+    "회전 범위": "Page range",
+    "회전 PDF 만들기": "Create rotated PDF",
+    "이미지 변환": "Image Convert",
+    "형식": "Format",
+    "이미지 변환하기": "Convert images",
+    "이미지 압축": "Image Compress",
+    "품질": "Quality",
+    "최대 폭": "Max width",
+    "압축 ZIP 만들기": "Create compressed ZIP",
+    "이미지 리사이즈": "Image Resize",
+    "가로": "Width",
+    "세로": "Height",
+    "리사이즈 ZIP 만들기": "Create resized ZIP",
+    "이미지 회전": "Image Rotate",
+    "방향": "Direction",
+    "이미지 회전하기": "Rotate images",
+    "이미지 워터마크": "Image Watermark",
+    "워터마크 이미지 만들기": "Create watermarked images",
+    "과제 파일명 만들기": "File Name Maker",
+    "과목명": "Course",
+    "학번": "Student ID",
+    "이름": "Name",
+    "과제명": "Assignment title",
+    "파일명 만들기": "Create file name",
+    "제출 전 점검표": "Submission Checklist",
+    "마감": "Deadline",
+    "제출처": "Submit to",
+    "점검표 만들기": "Create checklist",
+    "제출 패키지": "Submission Package",
+    "패키지 만들기": "Create package",
+    "마감 계산기": "Deadline Planner",
+    "마감 시간": "Deadline time",
+    "계산하기": "Calculate",
+    "제출 메모 만들기": "Submission Note",
+    "메모 만들기": "Create note",
+    "루브릭 점검": "Rubric Check",
+    "점검하기": "Check",
+    "첨부파일 목록": "Attachment List",
+    "목록 만들기": "Create list",
+    "글자수 계산": "Word Count",
+    "본문": "Text",
+    "글자수 계산하기": "Count words",
+    "텍스트 정리": "Text Cleaner",
+    "정리하기": "Clean text",
+    "표 변환": "Table Convert",
+    "변환하기": "Convert",
+    "참고문헌 정리": "Citation Cleaner",
+    "참고문헌 추가": "Add citation",
+    "참고문헌 정리하기": "Clean citations",
+    "문서 개요 만들기": "Document Outline",
+    "핵심 주장": "Main claim",
+    "개요 만들기": "Create outline",
+    "문서 구조 점검": "Document Structure Check",
+    "구조 점검하기": "Check structure",
+    "문서 비교": "Document Compare",
+    "초안": "Draft",
+    "수정본": "Revision",
+    "비교하기": "Compare",
+    "읽기 시간 계산": "Reading Time",
+    "속도": "Speed",
+    "읽기 시간 계산하기": "Calculate reading time",
+    "파일 점검": "File Check",
+    "파일 점검하기": "Check file",
+    "ZIP 압축": "ZIP Pack",
+    "ZIP 만들기": "Create ZIP",
+    "개인정보 제거": "Privacy Clean",
+    "개인정보 제거하기": "Clean metadata",
+    "민감정보 점검": "Sensitive Info Scan",
+    "민감정보 점검하기": "Scan text",
+    "개인정보 마스킹": "Privacy Mask",
+    "마스킹하기": "Mask text",
+    "파일 해시 확인": "File Hash",
+    "해시 계산하기": "Calculate hash",
+    "비밀번호 만들기": "Password Maker",
+    "비밀번호 생성하기": "Generate password"
+  };
+
+  return Object.entries(replacements).reduce(
+    (output, [source, target]) => output.replaceAll(source, target),
+    html
+  );
 }
 
 function workspaceFor(id) {
@@ -1415,6 +2032,10 @@ function workspaceFor(id) {
 }
 
 function bindGlobalEvents() {
+  app.querySelector("[data-language-toggle]")?.addEventListener("click", () => {
+    setLanguage(currentLang === "en" ? "ko" : "en");
+  });
+
   app.querySelectorAll("[data-tool-link]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
@@ -1422,6 +2043,7 @@ function bindGlobalEvents() {
       if (!tool) return;
       currentTool = tool;
       currentPage = null;
+      currentGuide = null;
       history.pushState({ tool: tool.id }, "", tool.path);
       render();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1518,7 +2140,7 @@ function bindToolSearch() {
       card.hidden = !match;
       if (match) visible += 1;
     });
-    if (count) count.textContent = `${visible}개 도구`;
+    if (count) count.textContent = t("toolCount", visible);
   });
 }
 
@@ -1545,6 +2167,7 @@ function bindUtilityButtons() {
 
 window.addEventListener("popstate", () => {
   currentPage = findPageFromLocation();
+  currentGuide = findGuideFromLocation();
   currentTool = findToolFromLocation() || tools[0];
   render();
 });
@@ -3110,8 +3733,8 @@ function scrubPdfInfo(pdf) {
   pdf.setAuthor("");
   pdf.setSubject("");
   pdf.setKeywords([]);
-  pdf.setProducer("대학생 도우미");
-  pdf.setCreator("대학생 도우미");
+  pdf.setProducer("과제 제출 도우미");
+  pdf.setCreator("과제 제출 도우미");
   pdf.setCreationDate(now);
   pdf.setModificationDate(now);
 }
@@ -3273,7 +3896,7 @@ function packageFileName(file, index, meta) {
 
 function buildPackageChecklist(meta, rows, totalSize) {
   return [
-    "[대학생 도우미 제출 패키지]",
+    "[과제 제출 도우미 제출 패키지]",
     `과목: ${meta.course}`,
     `과제: ${meta.assignment}`,
     `학번/이름: ${meta.studentId} ${meta.studentName}`,
@@ -3464,7 +4087,7 @@ function applySample(type) {
       setValue("#citationAuthor", "Kim, J.");
       setValue("#citationYear", "2026");
       setValue("#citationTitle", "mobile assignment submission habits");
-      setValue("#citationSource", "대학생 도우미 가이드");
+      setValue("#citationSource", "과제 제출 도우미 가이드");
       setValue("#citationUrl", "10.1234/student-helper.2026");
     },
     "citation-article": () => {
@@ -3551,8 +4174,16 @@ function relatedTools(id) {
 }
 
 function copyFor(id) {
+  if (currentLang === "en") {
+    const displayTool = localizedTool(toolById(id) || currentTool);
+    return {
+      why: `${displayTool.label} helps reduce small submission failures such as oversized files, wrong file names, missing attachments, unreadable pages, or unconfirmed upload status.`,
+      tip: "Use the result as a final-prep aid, then reopen the downloaded file and compare it with the course instructions before uploading."
+    };
+  }
+
   const base = {
-    why: "제출 직전에는 파일 용량, 확장자, 파일명, 페이지 순서처럼 작은 부분에서 문제가 자주 생깁니다. 대학생 도우미는 그 작업을 기능별로 쪼개 바로 처리할 수 있게 만든 도구입니다.",
+    why: "제출 직전에는 파일 용량, 확장자, 파일명, 페이지 순서처럼 작은 부분에서 문제가 자주 생깁니다. 과제 제출 도우미는 그 작업을 기능별로 쪼개 바로 처리할 수 있게 만든 도구입니다.",
     tip: "파일은 가능한 한 마지막 저장본으로 작업하고, 결과 파일을 받은 뒤 실제 제출 화면에서 한 번 더 열어보는 것이 좋습니다."
   };
   const extra = {
@@ -3606,7 +4237,7 @@ function copyFor(id) {
     },
     "citation-cleaner": {
       why: "참고문헌은 내용보다 정렬, 중복, 띄어쓰기에서 어수선해 보이는 경우가 많습니다. 제출 전에 줄 단위로 정리하면 문서의 마감감이 좋아집니다.",
-      tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요. 대학생 도우미는 누락 가능성을 알려주지만 최종 양식 판단은 강의 안내를 우선합니다."
+      tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요. 과제 제출 도우미는 누락 가능성을 알려주지만 최종 양식 판단은 강의 안내를 우선합니다."
     },
     "document-outline": {
       why: "보고서를 쓰기 전 목차가 흐릿하면 본문이 길어질수록 주장이 흔들립니다. 먼저 섹션과 작성 포인트를 잡아두면 자료 조사와 본문 작성 순서를 빠르게 정리할 수 있습니다.",
@@ -3681,17 +4312,39 @@ function copyFor(id) {
 }
 
 function guideFor(id) {
+  if (currentLang === "en") {
+    const displayTool = localizedTool(toolById(id) || currentTool);
+    return {
+      title: `What to check when using ${displayTool.label}`,
+      tips: [
+        "Open the result after downloading and confirm it is not corrupted.",
+        "Course instructions and LMS limits always override the tool suggestion.",
+        "Before the deadline, check file name, file size, attachment status, and the final submission confirmation screen."
+      ],
+      faq: [
+        {
+          q: "Are files uploaded to a server?",
+          a: "The main file-processing tools are designed to run in the browser where possible. Still, always check the final result before submitting."
+        },
+        {
+          q: "Can I submit the result immediately?",
+          a: "Treat the output as a preparation aid. Reopen it, compare it with the assignment rules, and confirm the upload screen."
+        }
+      ]
+    };
+  }
+
   const base = {
     title: "이 도구를 쓸 때 확인할 것",
     tips: [
       "결과를 받은 뒤에는 실제 제출 화면에서 다시 열어 파일이 깨지지 않았는지 확인하세요.",
-      "과목별 제출 형식이 다르면 대학생 도우미 결과보다 교수자 안내와 LMS 제한을 우선해야 합니다.",
+      "과목별 제출 형식이 다르면 과제 제출 도우미 결과보다 교수자 안내와 LMS 제한을 우선해야 합니다.",
       "마감 직전에는 파일명, 용량, 첨부 여부처럼 작은 항목을 마지막으로 확인하는 편이 안전합니다."
     ],
     faq: [
       {
         q: "파일이 서버로 업로드되나요?",
-        a: "대학생 도우미의 주요 파일 처리 기능은 브라우저 안에서 실행되도록 구성되어 있습니다. 그래도 최종 제출 전에는 결과 파일을 직접 열어 확인하는 것이 좋습니다."
+        a: "과제 제출 도우미의 주요 파일 처리 기능은 브라우저 안에서 실행되도록 구성되어 있습니다. 그래도 최종 제출 전에는 결과 파일을 직접 열어 확인하는 것이 좋습니다."
       },
       {
         q: "결과를 바로 제출해도 되나요?",
@@ -4070,7 +4723,7 @@ function guideFor(id) {
       faq: [
         {
           q: "워터마크를 지울 수 있나요?",
-          a: "대학생 도우미는 결과 이미지를 새로 만드는 방식이라, 원본을 보관해 두고 필요할 때 다시 작업하는 것이 안전합니다."
+          a: "과제 제출 도우미는 결과 이미지를 새로 만드는 방식이라, 원본을 보관해 두고 필요할 때 다시 작업하는 것이 안전합니다."
         },
         {
           q: "한글 문구도 넣을 수 있나요?",
@@ -4513,13 +5166,14 @@ function copyGenerated(event) {
   if (!target) return;
   target.select?.();
   navigator.clipboard?.writeText(target.value || target.textContent || "");
-  event.currentTarget.textContent = "복사 완료";
+  event.currentTarget.textContent = currentLang === "en" ? "Copied" : "복사 완료";
 }
 
 function copyToolLink(event) {
+  const displayTool = localizedTool(currentTool);
   const url = new URL(currentTool.path, location.origin).href;
-  navigator.clipboard?.writeText(`${currentTool.label} - 대학생 도우미\n${url}`);
-  event.currentTarget.textContent = "링크 복사 완료";
+  navigator.clipboard?.writeText(`${displayTool.label} - ${brandName()}\n${url}`);
+  event.currentTarget.textContent = currentLang === "en" ? "Link copied" : "링크 복사 완료";
 }
 
 function slugPart(text) {
