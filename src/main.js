@@ -32,6 +32,8 @@ const BRAND = {
   ko: "과제 제출 도우미",
   en: "Assignment Submit Helper"
 };
+const SITE_ORIGIN = "https://reportools.com";
+const DEFAULT_META_DESCRIPTION = "과제 제출 도우미는 PDF 압축, 이미지 변환, 파일명 만들기, 글자수 계산, 참고문헌 정리, ZIP 압축을 브라우저에서 빠르게 처리하는 과제 제출 도구입니다.";
 const LANG_KEY = "assignmentSubmitHelperLang";
 let currentLang = localStorage.getItem(LANG_KEY) === "en" ? "en" : "ko";
 const uiText = {
@@ -490,6 +492,43 @@ function localizedTool(tool) {
   return { ...tool, ...(toolTranslations[tool.id] || {}) };
 }
 
+function normalizedRoutePath(pathname = location.pathname) {
+  let path = pathname || "/";
+  if (!path.startsWith("/")) path = `/${path}`;
+  if (path !== "/" && !path.endsWith("/")) path = `${path}/`;
+  return path;
+}
+
+function canonicalUrl(pathname = location.pathname) {
+  return `${SITE_ORIGIN}${normalizedRoutePath(pathname)}`;
+}
+
+function setMeta(selector, attribute, value, content) {
+  let element = document.head.querySelector(selector);
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(attribute, value);
+    document.head.appendChild(element);
+  }
+  element.setAttribute("content", content);
+}
+
+function updateDocumentMeta({ title, description = DEFAULT_META_DESCRIPTION, path = location.pathname }) {
+  const url = canonicalUrl(path);
+  let canonical = document.head.querySelector("link[rel='canonical']");
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.setAttribute("rel", "canonical");
+    document.head.appendChild(canonical);
+  }
+  document.title = title;
+  canonical.setAttribute("href", url);
+  setMeta("meta[name='description']", "name", "description", description);
+  setMeta("meta[property='og:title']", "property", "og:title", title);
+  setMeta("meta[property='og:description']", "property", "og:description", description);
+  setMeta("meta[property='og:url']", "property", "og:url", url);
+}
+
 function setLanguage(lang) {
   currentLang = lang === "en" ? "en" : "ko";
   localStorage.setItem(LANG_KEY, currentLang);
@@ -623,26 +662,54 @@ let activeToolGroupKey = "";
 
 render();
 
-function findToolFromLocation() {
-  return tools.find((tool) => location.pathname === tool.path || location.pathname.startsWith(tool.path));
+function findToolFromLocation(pathname = location.pathname) {
+  const path = normalizedRoutePath(pathname);
+  return tools.find((tool) => path === tool.path);
 }
 
-function findPageFromLocation() {
-  return infoPages[location.pathname] ? location.pathname : null;
+function findPageFromLocation(pathname = location.pathname) {
+  const path = normalizedRoutePath(pathname);
+  return infoPages[path] ? path : null;
 }
 
-function findGuideFromLocation() {
-  if (location.pathname === "/guides/") return { type: "index" };
-  const match = location.pathname.match(/^\/guides\/([^/]+)\/?$/);
+function findGuideFromLocation(pathname = location.pathname) {
+  const path = normalizedRoutePath(pathname);
+  if (path === "/guides/") return { type: "index" };
+  const match = path.match(/^\/guides\/([^/]+)\/?$/);
   if (!match) return null;
   const article = guideArticles.find((item) => item.slug === match[1]);
   return article ? { type: "article", article } : null;
+}
+
+function routeExists(pathname) {
+  const path = normalizedRoutePath(pathname);
+  return path === "/" || Boolean(findToolFromLocation(path) || findPageFromLocation(path) || findGuideFromLocation(path));
+}
+
+function syncStateFromLocation() {
+  currentPage = findPageFromLocation();
+  currentGuide = findGuideFromLocation();
+  const routeTool = findToolFromLocation();
+  if (!currentPage && !currentGuide) currentTool = routeTool || currentTool || tools[0];
+  activeToolGroupKey = currentPage || currentGuide ? "" : currentTool.group;
+}
+
+function navigateTo(pathname, state = {}, { scroll = true, replace = false } = {}) {
+  const path = normalizedRoutePath(pathname);
+  if (!routeExists(path)) return false;
+  if (replace) history.replaceState(state, "", path);
+  else if (path !== normalizedRoutePath(location.pathname)) history.pushState(state, "", path);
+  syncStateFromLocation();
+  render();
+  if (scroll) window.scrollTo({ top: 0, behavior: "smooth" });
+  return true;
 }
 
 function render() {
   document.documentElement.lang = currentLang === "en" ? "en" : "ko-KR";
   currentPage = findPageFromLocation();
   currentGuide = findGuideFromLocation();
+  const routeTool = findToolFromLocation();
   if (currentGuide) {
     renderGuidePage();
     return;
@@ -651,8 +718,13 @@ function render() {
     renderInfoPage();
     return;
   }
+  if (routeTool) currentTool = routeTool;
   const displayTool = localizedTool(currentTool);
-  document.title = `${displayTool.label} - ${brandName()}`;
+  updateDocumentMeta({
+    title: `${displayTool.label} - ${brandName()}`,
+    description: displayTool.description,
+    path: routeTool ? routeTool.path : "/"
+  });
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
@@ -736,7 +808,11 @@ function render() {
 function renderInfoPage() {
   document.documentElement.lang = currentLang === "en" ? "en" : "ko-KR";
   const page = infoPageText(currentPage);
-  document.title = `${page.title} - ${brandName()}`;
+  updateDocumentMeta({
+    title: `${page.title} - ${brandName()}`,
+    description: page.lead,
+    path: currentPage
+  });
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
@@ -775,7 +851,11 @@ function renderGuidePage() {
   const isIndex = currentGuide.type === "index";
   const article = currentGuide.article;
   const title = isIndex ? t("guideIndexTitle") : articleTitle(article);
-  document.title = `${title} - ${brandName()}`;
+  updateDocumentMeta({
+    title: `${title} - ${brandName()}`,
+    description: isIndex ? t("guideIndexLead") : articleSummary(article),
+    path: isIndex ? "/guides/" : `/guides/${article.slug}/`
+  });
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
@@ -854,7 +934,7 @@ function guideArticleMarkup(article) {
   const faq = currentLang === "en" ? englishGuideFaq(article) : article.faq;
   return `
     <article class="info-card guide-article">
-      <p class="eyebrow"><a href="/guides/">${escapeHtml(t("guideHome"))}</a></p>
+      <p class="eyebrow"><a href="/guides/" data-guide-link>${escapeHtml(t("guideHome"))}</a></p>
       <h1>${escapeHtml(articleTitle(article))}</h1>
       <p class="info-lead">${escapeHtml(articleSummary(article))}</p>
       <div class="guide-route-panel">
@@ -2088,33 +2168,42 @@ function workspaceFor(id) {
   return panel[id] || panel["pdf-compress"];
 }
 
+function isModifiedClick(event) {
+  return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+}
+
 function bindGlobalEvents() {
   app.querySelector("[data-language-toggle]")?.addEventListener("click", () => {
     setLanguage(currentLang === "en" ? "ko" : "en");
   });
 
-  app.querySelector("[data-guide-link]")?.addEventListener("click", (event) => {
-    event.preventDefault();
-    currentPage = null;
-    currentGuide = { type: "index" };
-    activeToolGroupKey = "";
-    history.pushState({ guide: "index" }, "", "/guides/");
-    render();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  app.querySelectorAll("[data-guide-link]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (isModifiedClick(event)) return;
+      event.preventDefault();
+      navigateTo("/guides/", { guide: "index" });
+    });
   });
 
   app.querySelectorAll("[data-tool-link]").forEach((button) => {
     button.addEventListener("click", (event) => {
+      if (isModifiedClick(event)) return;
       event.preventDefault();
       const tool = toolById(button.dataset.toolLink);
       if (!tool) return;
-      currentTool = tool;
-      currentPage = null;
-      currentGuide = null;
       activeToolGroupKey = tool.group;
-      history.pushState({ tool: tool.id }, "", tool.path);
-      render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      navigateTo(tool.path, { tool: tool.id });
+    });
+  });
+
+  app.querySelectorAll("a[href^='/']").forEach((link) => {
+    if (link.dataset.toolLink || link.hasAttribute("data-guide-link")) return;
+    link.addEventListener("click", (event) => {
+      if (isModifiedClick(event)) return;
+      const url = new URL(link.getAttribute("href"), location.origin);
+      if (url.origin !== location.origin || !routeExists(url.pathname)) return;
+      event.preventDefault();
+      navigateTo(url.pathname, {});
     });
   });
 
@@ -2228,11 +2317,7 @@ function bindCategoryOverview() {
       activeToolGroupKey = groupKey;
       const nextTool = tools.find((tool) => tool.group === groupKey);
       if (nextTool) {
-        currentTool = nextTool;
-        currentPage = null;
-        currentGuide = null;
-        history.pushState({ tool: nextTool.id, group: groupKey }, "", nextTool.path);
-        render();
+        navigateTo(nextTool.path, { tool: nextTool.id, group: groupKey });
         return;
       }
       if (search) {
@@ -3863,14 +3948,12 @@ function setResult(html) {
   });
   result.querySelectorAll("[data-tool-link]").forEach((button) => {
     button.addEventListener("click", (event) => {
+      if (isModifiedClick(event)) return;
       event.preventDefault();
       const tool = toolById(button.dataset.toolLink);
       if (!tool) return;
-      currentTool = tool;
-      currentPage = null;
-      history.pushState({ tool: tool.id }, "", tool.path);
-      render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      activeToolGroupKey = tool.group;
+      navigateTo(tool.path, { tool: tool.id });
     });
   });
   result.querySelector("[data-share-tool]")?.addEventListener("click", copyToolLink);
