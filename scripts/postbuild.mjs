@@ -56,6 +56,21 @@ const tools = [
     description: "사진과 캡처 이미지 용량을 줄이고 여러 결과 파일을 ZIP으로 받아 과제 첨부를 가볍게 만듭니다."
   },
   {
+    slug: "image-resize",
+    title: "이미지 리사이즈 - 레포트핏",
+    description: "사진과 캡처 이미지의 최대 가로와 세로를 맞춰 문서 삽입과 LMS 첨부에 맞는 크기로 줄입니다."
+  },
+  {
+    slug: "image-rotate",
+    title: "이미지 회전 - 레포트핏",
+    description: "옆으로 돌아간 사진과 캡처 이미지를 90도 단위로 회전하거나 좌우, 상하로 뒤집어 새 파일로 받습니다."
+  },
+  {
+    slug: "image-watermark",
+    title: "이미지 워터마크 - 레포트핏",
+    description: "제출 전 확인용 이미지에 이름, 초안, 참고용 같은 워터마크 문구를 브라우저에서 바로 넣습니다."
+  },
+  {
     slug: "file-name",
     title: "과제 파일명 만들기 - 레포트핏",
     description: "과목명, 학번, 이름, 과제명을 조합해 제출용 파일명을 깔끔하게 생성합니다."

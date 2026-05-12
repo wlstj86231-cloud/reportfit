@@ -119,6 +119,33 @@ const tools = [
     description: "여러 이미지를 한 번에 줄이고 폭과 품질을 조정합니다."
   },
   {
+    id: "image-resize",
+    label: "이미지 리사이즈",
+    short: "가로/세로 맞추기",
+    icon: "IMG",
+    group: "이미지",
+    path: "/tools/image-resize/",
+    description: "과제 첨부나 LMS 미리보기에 맞게 이미지의 최대 가로와 세로 크기를 줄입니다."
+  },
+  {
+    id: "image-rotate",
+    label: "이미지 회전",
+    short: "90도, 뒤집기",
+    icon: "IMG",
+    group: "이미지",
+    path: "/tools/image-rotate/",
+    description: "휴대폰 사진이나 캡처 이미지의 방향을 회전하고 좌우 또는 상하로 뒤집습니다."
+  },
+  {
+    id: "image-watermark",
+    label: "이미지 워터마크",
+    short: "이름, 초안 표시",
+    icon: "IMG",
+    group: "이미지",
+    path: "/tools/image-watermark/",
+    description: "제출 전 확인용 이미지에 이름, 초안, 참고용 같은 문구를 작게 표시합니다."
+  },
+  {
     id: "file-name",
     label: "파일명 만들기",
     short: "학번, 이름, 과목명",
@@ -210,7 +237,7 @@ const tools = [
   }
 ];
 
-const popular = ["pdf-slim", "pdf-compress", "pdf-split", "pdf-organize", "submit-package", "file-check"];
+const popular = ["pdf-slim", "image-resize", "image-compress", "image-rotate", "submit-package", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -491,6 +518,9 @@ function stepStrip(id) {
     "pdf-rotate": ["PDF 선택", "회전 범위", "회전본 받기"],
     "image-convert": ["이미지 선택", "형식 선택", "결과 받기"],
     "image-compress": ["이미지 선택", "품질 조절", "ZIP 받기"],
+    "image-resize": ["이미지 선택", "크기 조절", "ZIP 받기"],
+    "image-rotate": ["이미지 선택", "방향 조절", "ZIP 받기"],
+    "image-watermark": ["이미지 선택", "문구 위치", "ZIP 받기"],
     "file-name": ["정보 입력", "파일명 생성", "복사"],
     "submit-checklist": ["조건 입력", "확인 항목 선택", "점검표 복사"],
     "submit-package": ["정보 입력", "파일 묶기", "제출팩 받기"],
@@ -732,6 +762,106 @@ function workspaceFor(id) {
         </label>
       </div>
       <button class="primary-action" id="runImageCompress" type="button">압축 이미지 받기</button>
+      <div class="result" id="result"></div>
+    `,
+    "image-resize": `
+      <div class="tool-head"><h2>이미지 리사이즈</h2><p>LMS 첨부나 미리보기에 맞게 사진의 최대 가로와 세로를 줄입니다.</p></div>
+      ${drop("image/*", true)}
+      <div class="option-row">
+        <label>출력 형식
+          <select id="imageResizeFormat">
+            <option value="original">원본 형식 유지</option>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </label>
+        <label>최대 가로
+          <input id="imageResizeMaxWidth" type="number" min="320" max="8000" step="100" value="1600">
+        </label>
+        <label>최대 세로
+          <input id="imageResizeMaxHeight" type="number" min="320" max="8000" step="100" value="1600">
+        </label>
+        <label>품질
+          <input id="imageResizeQuality" type="range" min="0.45" max="0.95" step="0.05" value="0.82">
+        </label>
+      </div>
+      <button class="primary-action" id="runImageResize" type="button">리사이즈 이미지 받기</button>
+      <div class="result" id="result"></div>
+    `,
+    "image-rotate": `
+      <div class="tool-head"><h2>이미지 회전</h2><p>옆으로 돌아간 사진과 캡처 이미지를 90도 단위로 돌리거나 뒤집습니다.</p></div>
+      ${drop("image/*", true)}
+      <div class="option-row">
+        <label>회전
+          <select id="imageRotateAngle">
+            <option value="90">90도</option>
+            <option value="180">180도</option>
+            <option value="270">270도</option>
+          </select>
+        </label>
+        <label>뒤집기
+          <select id="imageFlip">
+            <option value="none">없음</option>
+            <option value="horizontal">좌우 반전</option>
+            <option value="vertical">상하 반전</option>
+            <option value="both">좌우+상하 반전</option>
+          </select>
+        </label>
+        <label>출력 형식
+          <select id="imageRotateFormat">
+            <option value="original">원본 형식 유지</option>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </label>
+        <label>품질
+          <input id="imageRotateQuality" type="range" min="0.45" max="0.95" step="0.05" value="0.82">
+        </label>
+      </div>
+      <button class="primary-action" id="runImageRotate" type="button">회전 이미지 받기</button>
+      <div class="result" id="result"></div>
+    `,
+    "image-watermark": `
+      <div class="tool-head"><h2>이미지 워터마크</h2><p>제출 전 확인용 사진에 이름, 초안, 참고용 같은 표시를 작게 얹습니다.</p></div>
+      ${drop("image/*", true)}
+      <div class="option-row">
+        <label>워터마크 문구
+          <input id="imageWatermarkText" type="text" value="DRAFT" placeholder="홍길동, 초안, 참고용">
+        </label>
+        <label>위치
+          <select id="imageWatermarkPosition">
+            <option value="bottom-right">오른쪽 아래</option>
+            <option value="bottom-left">왼쪽 아래</option>
+            <option value="top-right">오른쪽 위</option>
+            <option value="top-left">왼쪽 위</option>
+            <option value="center">가운데</option>
+          </select>
+        </label>
+        <label>글자 크기
+          <input id="imageWatermarkSize" type="number" min="16" max="96" step="2" value="32">
+        </label>
+        <label>투명도
+          <input id="imageWatermarkOpacity" type="range" min="0.15" max="0.75" step="0.05" value="0.45">
+        </label>
+        <label>색상
+          <select id="imageWatermarkColor">
+            <option value="white">흰색</option>
+            <option value="black">검정</option>
+            <option value="green">초록</option>
+          </select>
+        </label>
+        <label>출력 형식
+          <select id="imageWatermarkFormat">
+            <option value="original">원본 형식 유지</option>
+            <option value="image/jpeg">JPG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runImageWatermark" type="button">워터마크 이미지 받기</button>
       <div class="result" id="result"></div>
     `,
     "file-name": `
@@ -986,6 +1116,9 @@ function bindToolEvents(id) {
     "pdf-rotate": ["#runPdfRotate", runPdfRotate],
     "image-convert": ["#runImageConvert", runImageConvert],
     "image-compress": ["#runImageCompress", runImageCompress],
+    "image-resize": ["#runImageResize", runImageResize],
+    "image-rotate": ["#runImageRotate", runImageRotate],
+    "image-watermark": ["#runImageWatermark", runImageWatermark],
     "file-name": ["#runFileName", runFileName],
     "submit-checklist": ["#runSubmitChecklist", runSubmitChecklist],
     "submit-package": ["#runSubmitPackage", runSubmitPackage],
@@ -1404,6 +1537,106 @@ async function runImageCompress() {
   });
 }
 
+async function runImageResize() {
+  await withProgress(async () => {
+    const files = selectedFiles();
+    requireFiles(files, "이미지 파일을 선택하세요.");
+    const format = value("#imageResizeFormat");
+    const quality = Number(value("#imageResizeQuality"));
+    const maxWidth = clampNumber(value("#imageResizeMaxWidth"), 320, 8000, 1600);
+    const maxHeight = clampNumber(value("#imageResizeMaxHeight"), 320, 8000, 1600);
+    const JSZip = await getJSZip();
+    const zip = new JSZip();
+    const rows = [];
+    let before = 0;
+    let after = 0;
+
+    for (const file of files) {
+      before += file.size;
+      const mime = outputMimeForImage(file, format);
+      const result = await resizeImage(file, { mime, quality, maxWidth, maxHeight });
+      after += result.blob.size;
+      zip.file(imageOutputName(file, "resize", mime), result.blob);
+      rows.push([file.name, `${result.width}x${result.height}`, formatBytes(result.blob.size)]);
+    }
+
+    const blob = await zip.generateAsync({ type: "blob" });
+    setResult(`
+      ${compareSize(before, after)}
+      ${imageResultTable(rows, ["파일", "크기", "결과"])}
+      ${downloadButton(blob, "reportfit_image_resize.zip", "리사이즈 이미지 ZIP 다운로드")}
+    `);
+  });
+}
+
+async function runImageRotate() {
+  await withProgress(async () => {
+    const files = selectedFiles();
+    requireFiles(files, "이미지 파일을 선택하세요.");
+    const angle = Number(value("#imageRotateAngle")) || 90;
+    const flip = value("#imageFlip") || "none";
+    const format = value("#imageRotateFormat");
+    const quality = Number(value("#imageRotateQuality"));
+    const JSZip = await getJSZip();
+    const zip = new JSZip();
+    const rows = [];
+    let before = 0;
+    let after = 0;
+
+    for (const file of files) {
+      before += file.size;
+      const mime = outputMimeForImage(file, format);
+      const result = await rotateImage(file, { mime, quality, angle, flip });
+      after += result.blob.size;
+      zip.file(imageOutputName(file, "rotate", mime), result.blob);
+      rows.push([file.name, `${result.width}x${result.height}`, formatBytes(result.blob.size)]);
+    }
+
+    const blob = await zip.generateAsync({ type: "blob" });
+    setResult(`
+      ${compareSize(before, after)}
+      ${imageResultTable(rows, ["파일", "크기", "결과"])}
+      ${downloadButton(blob, "reportfit_image_rotate.zip", "회전 이미지 ZIP 다운로드")}
+    `);
+  });
+}
+
+async function runImageWatermark() {
+  await withProgress(async () => {
+    const files = selectedFiles();
+    requireFiles(files, "이미지 파일을 선택하세요.");
+    const text = value("#imageWatermarkText").trim();
+    if (!text) throw new Error("워터마크 문구를 입력하세요.");
+    const format = value("#imageWatermarkFormat");
+    const quality = 0.9;
+    const position = value("#imageWatermarkPosition") || "bottom-right";
+    const opacity = clampNumber(value("#imageWatermarkOpacity"), 0.15, 0.75, 0.45);
+    const size = clampNumber(value("#imageWatermarkSize"), 16, 96, 32);
+    const color = value("#imageWatermarkColor") || "white";
+    const JSZip = await getJSZip();
+    const zip = new JSZip();
+    const rows = [];
+    let before = 0;
+    let after = 0;
+
+    for (const file of files) {
+      before += file.size;
+      const mime = outputMimeForImage(file, format);
+      const result = await watermarkImage(file, { mime, quality, text, position, opacity, size, color });
+      after += result.blob.size;
+      zip.file(imageOutputName(file, "watermark", mime), result.blob);
+      rows.push([file.name, positionLabel(position), formatBytes(result.blob.size)]);
+    }
+
+    const blob = await zip.generateAsync({ type: "blob" });
+    setResult(`
+      ${compareSize(before, after)}
+      ${imageResultTable(rows, ["파일", "위치", "결과"])}
+      ${downloadButton(blob, "reportfit_image_watermark.zip", "워터마크 이미지 ZIP 다운로드")}
+    `);
+  });
+}
+
 function runFileName() {
   const parts = [
     value("#courseName"),
@@ -1747,6 +1980,151 @@ async function convertImage(file, mime, quality, maxWidth) {
       else resolve(blob);
     }, mime, quality);
   });
+}
+
+async function resizeImage(file, { mime, quality, maxWidth, maxHeight }) {
+  const image = await loadImage(file);
+  const sourceWidth = image.naturalWidth || image.width;
+  const sourceHeight = image.naturalHeight || image.height;
+  const ratio = Math.min(1, maxWidth / sourceWidth, maxHeight / sourceHeight);
+  const width = Math.max(1, Math.round(sourceWidth * ratio));
+  const height = Math.max(1, Math.round(sourceHeight * ratio));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = imageCanvasContext(canvas, mime);
+  ctx.drawImage(image, 0, 0, width, height);
+  URL.revokeObjectURL(image.src);
+  return { blob: await canvasToBlob(canvas, mime, quality), width, height };
+}
+
+async function rotateImage(file, { mime, quality, angle, flip }) {
+  const image = await loadImage(file);
+  const sourceWidth = image.naturalWidth || image.width;
+  const sourceHeight = image.naturalHeight || image.height;
+  const normalizedAngle = ((Number(angle) % 360) + 360) % 360;
+  const swap = normalizedAngle === 90 || normalizedAngle === 270;
+  const width = swap ? sourceHeight : sourceWidth;
+  const height = swap ? sourceWidth : sourceHeight;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = imageCanvasContext(canvas, mime);
+  ctx.save();
+  ctx.translate(width / 2, height / 2);
+  ctx.rotate((normalizedAngle * Math.PI) / 180);
+  ctx.scale(flip === "horizontal" || flip === "both" ? -1 : 1, flip === "vertical" || flip === "both" ? -1 : 1);
+  ctx.drawImage(image, -sourceWidth / 2, -sourceHeight / 2, sourceWidth, sourceHeight);
+  ctx.restore();
+  URL.revokeObjectURL(image.src);
+  return { blob: await canvasToBlob(canvas, mime, quality), width, height };
+}
+
+async function watermarkImage(file, { mime, quality, text, position, opacity, size, color }) {
+  const image = await loadImage(file);
+  const width = image.naturalWidth || image.width;
+  const height = image.naturalHeight || image.height;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = imageCanvasContext(canvas, mime);
+  ctx.drawImage(image, 0, 0, width, height);
+  drawWatermark(ctx, text, { width, height, position, opacity, size, color });
+  URL.revokeObjectURL(image.src);
+  return { blob: await canvasToBlob(canvas, mime, quality), width, height };
+}
+
+function imageCanvasContext(canvas, mime) {
+  const keepAlpha = mime === "image/png" || mime === "image/webp";
+  const ctx = canvas.getContext("2d", { alpha: keepAlpha });
+  if (!keepAlpha) {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  return ctx;
+}
+
+function drawWatermark(ctx, text, { width, height, position, opacity, size, color }) {
+  const fontSize = Math.min(Math.max(size, 16), Math.max(16, Math.floor(Math.min(width, height) * 0.16)));
+  const margin = Math.max(18, Math.round(fontSize * 0.85));
+  ctx.save();
+  ctx.font = `700 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+  ctx.textBaseline = "middle";
+  ctx.lineJoin = "round";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+  ctx.shadowBlur = Math.max(3, Math.round(fontSize * 0.18));
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = Math.max(1, Math.round(fontSize * 0.05));
+  ctx.lineWidth = Math.max(2, Math.round(fontSize * 0.12));
+  ctx.strokeStyle = outlineColorForWatermark(color, opacity);
+  ctx.fillStyle = rgbaFromChoice(color, opacity);
+
+  let x = width - margin;
+  let y = height - margin;
+  ctx.textAlign = "right";
+  if (position === "bottom-left") {
+    x = margin;
+    ctx.textAlign = "left";
+  } else if (position === "top-right") {
+    y = margin;
+  } else if (position === "top-left") {
+    x = margin;
+    y = margin;
+    ctx.textAlign = "left";
+  } else if (position === "center") {
+    x = width / 2;
+    y = height / 2;
+    ctx.textAlign = "center";
+  }
+
+  ctx.strokeText(text, x, y);
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function outputMimeForImage(file, mode) {
+  if (mode && mode !== "original") return mode;
+  return ["image/jpeg", "image/png", "image/webp"].includes(file.type) ? file.type : "image/jpeg";
+}
+
+function imageOutputName(file, suffix, mime) {
+  const base = slugPart(file.name.replace(/\.[^.]+$/, "")) || "image";
+  return cleanOutputName(`${base}_${suffix}`, extensionFor(mime));
+}
+
+function imageResultTable(rows, headers) {
+  const head = headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("");
+  const body = rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
+  return `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+function positionLabel(position) {
+  const map = {
+    "bottom-right": "오른쪽 아래",
+    "bottom-left": "왼쪽 아래",
+    "top-right": "오른쪽 위",
+    "top-left": "왼쪽 위",
+    center: "가운데"
+  };
+  return map[position] || "오른쪽 아래";
+}
+
+function rgbaFromChoice(choice, opacity) {
+  const alpha = Math.min(1, Math.max(0, Number(opacity) || 0.45));
+  if (choice === "black") return `rgba(10, 20, 35, ${alpha})`;
+  if (choice === "green") return `rgba(13, 148, 85, ${alpha})`;
+  return `rgba(255, 255, 255, ${alpha})`;
+}
+
+function outlineColorForWatermark(choice, opacity) {
+  const alpha = Math.min(0.65, Math.max(0.2, Number(opacity) + 0.18 || 0.62));
+  return choice === "black" ? `rgba(255, 255, 255, ${alpha})` : `rgba(0, 0, 0, ${alpha})`;
+}
+
+function clampNumber(raw, min, max, fallback) {
+  const number = Number(raw);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.min(max, Math.max(min, number));
 }
 
 function canvasToBlob(canvas, mime, quality) {
@@ -2153,8 +2531,11 @@ function relatedTools(id) {
     "pdf-split": ["pdf-organize", "pdf-compress", "zip-pack"],
     "pdf-organize": ["pdf-split", "pdf-rotate", "pdf-number"],
     "pdf-rotate": ["pdf-organize", "pdf-watermark", "file-check"],
-    "image-convert": ["image-compress", "pdf-slim", "pdf-split"],
-    "image-compress": ["image-convert", "file-check", "zip-pack"],
+    "image-convert": ["image-resize", "image-compress", "pdf-slim"],
+    "image-compress": ["image-resize", "image-convert", "file-check"],
+    "image-resize": ["image-compress", "image-rotate", "image-watermark"],
+    "image-rotate": ["image-resize", "image-watermark", "image-convert"],
+    "image-watermark": ["image-resize", "image-rotate", "privacy-clean"],
     "file-name": ["file-check", "zip-pack", "pdf-compress"],
     "submit-checklist": ["submit-package", "file-name", "file-check"],
     "submit-package": ["submit-checklist", "file-check", "privacy-clean"],
@@ -2164,7 +2545,7 @@ function relatedTools(id) {
     "citation-cleaner": ["word-count", "text-clean", "file-check"],
     "file-check": ["submit-package", "pdf-compress", "pdf-slim"],
     "zip-pack": ["submit-package", "file-check", "file-name"],
-    "privacy-clean": ["file-check", "image-compress", "pdf-compress"]
+    "privacy-clean": ["file-check", "image-compress", "image-watermark"]
   };
   return (map[id] || popular).map(toolById).filter(Boolean);
 }
@@ -2186,6 +2567,22 @@ function copyFor(id) {
     "image-convert": {
       why: "아이폰 사진, 캡처, 실험 노트 이미지는 제출 형식이 맞지 않아 다시 저장해야 하는 일이 많습니다. 여러 장을 PDF로 묶으면 교수자나 조원이 열어보기 쉽습니다.",
       tip: "글자가 있는 이미지는 너무 낮은 품질로 줄이지 말고, 최대 폭 1600에서 2200 사이를 먼저 시도하세요."
+    },
+    "image-compress": {
+      why: "사진 원본은 한 장만으로도 LMS 첨부 제한을 넘는 경우가 많습니다. 여러 이미지를 같은 품질과 폭으로 줄여 ZIP으로 받으면 제출 파일 정리가 훨씬 빨라집니다.",
+      tip: "글자 캡처는 JPG보다 WebP가 선명도와 용량 균형이 좋은 경우가 많습니다. 결과를 받은 뒤 확대해서 글자가 읽히는지 확인하세요."
+    },
+    "image-resize": {
+      why: "사진의 실제 픽셀 크기가 너무 크면 문서에 붙였을 때 파일이 무거워지고, LMS 미리보기에서도 느리게 열릴 수 있습니다. 최대 가로와 세로를 제한하면 보기 좋은 크기로 정리됩니다.",
+      tip: "A4 문서에 넣을 사진은 1400에서 1800px 정도면 대개 충분합니다. 세부 글자가 많은 캡처는 2000px 이상으로 남겨두세요."
+    },
+    "image-rotate": {
+      why: "휴대폰 사진과 스캔 이미지는 방향 정보가 기기마다 다르게 읽혀 옆으로 눕는 일이 있습니다. 회전본을 새 파일로 만들면 제출 후 미리보기 방향이 더 안정적입니다.",
+      tip: "좌우 반전은 칠판 사진이나 카메라 셀피처럼 글자가 거꾸로 보일 때만 사용하세요. 일반 문서는 보통 90도 회전만으로 충분합니다."
+    },
+    "image-watermark": {
+      why: "초안, 참고용, 이름 표시가 필요한 이미지는 편집 앱을 따로 열지 않고 바로 표시를 얹을 수 있습니다. 원본은 건드리지 않고 결과 파일만 내려받습니다.",
+      tip: "최종 제출본에는 불필요한 워터마크가 남지 않게 다시 열어 확인하세요. 확인용 공유 이미지라면 오른쪽 아래와 낮은 투명도가 가장 무난합니다."
     },
     "citation-cleaner": {
       why: "참고문헌은 내용보다 정렬, 중복, 띄어쓰기에서 어수선해 보이는 경우가 많습니다. 제출 전에 줄 단위로 정리하면 문서의 마감감이 좋아집니다.",
@@ -2410,6 +2807,78 @@ function guideFor(id) {
         {
           q: "아이폰 사진도 변환할 수 있나요?",
           a: "브라우저가 읽을 수 있는 이미지라면 변환할 수 있습니다. 일부 특수 형식은 브라우저 지원 여부에 따라 열리지 않을 수 있습니다."
+        }
+      ]
+    },
+    "image-compress": {
+      title: "이미지 압축 전에 확인할 것",
+      tips: [
+        "글자가 작은 캡처는 품질을 너무 낮추면 읽기 어려워질 수 있습니다.",
+        "사진 위주 이미지는 JPG, 캡처나 도표는 WebP를 먼저 비교해 보세요.",
+        "여러 장을 한 번에 처리하면 결과가 ZIP으로 묶여 내려갑니다."
+      ],
+      faq: [
+        {
+          q: "원본 이미지를 직접 바꾸나요?",
+          a: "아니요. 브라우저에서 새 결과 파일을 만들어 다운로드하는 방식이라 원본 파일은 유지됩니다."
+        },
+        {
+          q: "압축했는데 용량이 더 커질 수도 있나요?",
+          a: "작은 PNG나 단순한 캡처는 형식에 따라 커질 수 있습니다. 이 경우 출력 형식과 품질을 바꿔 다시 시도하세요."
+        }
+      ]
+    },
+    "image-resize": {
+      title: "이미지 리사이즈 전에 확인할 것",
+      tips: [
+        "최대 가로와 세로를 지정하면 비율은 유지한 채 그 안에 들어오도록 줄입니다.",
+        "원본보다 크게 키우지는 않으므로 작은 이미지는 그대로 유지됩니다.",
+        "문서 삽입용 사진은 1600px 전후부터 먼저 시도해 보세요."
+      ],
+      faq: [
+        {
+          q: "비율이 찌그러지나요?",
+          a: "아니요. 가로와 세로 비율을 유지해서 축소합니다."
+        },
+        {
+          q: "여러 이미지를 한 번에 받을 수 있나요?",
+          a: "가능합니다. 선택한 이미지들이 리사이즈된 뒤 ZIP 파일로 묶여 내려갑니다."
+        }
+      ]
+    },
+    "image-rotate": {
+      title: "이미지 회전 전에 확인할 것",
+      tips: [
+        "옆으로 누운 사진은 90도 또는 270도를 먼저 시도하세요.",
+        "좌우 반전은 글자가 거울처럼 보이는 셀피나 카메라 캡처에만 쓰는 편이 좋습니다.",
+        "회전 결과는 새 이미지로 내려받기 때문에 원본 방향은 바뀌지 않습니다."
+      ],
+      faq: [
+        {
+          q: "일부 사진만 회전할 수 있나요?",
+          a: "필요한 사진만 선택해서 처리하면 됩니다. 여러 장을 선택하면 같은 회전 설정이 모두 적용됩니다."
+        },
+        {
+          q: "이미지 품질은 유지되나요?",
+          a: "출력 형식과 품질 설정에 따라 달라집니다. 글자 이미지라면 PNG 또는 높은 품질 값을 권장합니다."
+        }
+      ]
+    },
+    "image-watermark": {
+      title: "이미지 워터마크 전에 확인할 것",
+      tips: [
+        "확인용 문구는 너무 크지 않게 넣어 본문 내용을 가리지 않게 하세요.",
+        "공유용 초안은 낮은 투명도와 오른쪽 아래 위치가 무난합니다.",
+        "최종 제출 파일에는 불필요한 워터마크가 남지 않았는지 다시 열어 확인하세요."
+      ],
+      faq: [
+        {
+          q: "워터마크를 지울 수 있나요?",
+          a: "레포트핏은 결과 이미지를 새로 만드는 방식이라, 원본을 보관해 두고 필요할 때 다시 작업하는 것이 안전합니다."
+        },
+        {
+          q: "한글 문구도 넣을 수 있나요?",
+          a: "가능합니다. 브라우저와 시스템 글꼴이 표시할 수 있는 문자는 그대로 이미지에 그려집니다."
         }
       ]
     },
