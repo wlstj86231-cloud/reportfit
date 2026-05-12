@@ -426,7 +426,7 @@ function render() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="레포트핏 홈">
-          <span class="brand-mark">R</span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
           <span>
             <strong>레포트핏</strong>
             <small>과제 제출 도구함</small>
@@ -508,7 +508,7 @@ function renderInfoPage() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="레포트핏 홈">
-          <span class="brand-mark">R</span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
           <span>
             <strong>레포트핏</strong>
             <small>과제 제출 도구함</small>

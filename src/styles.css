@@ -60,14 +60,19 @@ button {
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #18a47a;
-  color: #fff;
-  font-weight: 900;
+  overflow: hidden;
+  background: #0f1719;
+  box-shadow: 0 10px 24px rgba(10, 18, 20, 0.14);
+  flex: 0 0 auto;
+}
+
+.brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .brand strong,
