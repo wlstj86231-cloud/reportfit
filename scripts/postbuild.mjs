@@ -4,7 +4,7 @@ import { articleText, guideArticles } from "../src/guideArticles.js";
 
 const dist = path.resolve("dist");
 const index = await readFile(path.join(dist, "index.html"), "utf8");
-const siteUrl = "https://reportfit.com/";
+const siteUrl = "https://reportools.com/";
 const tools = [
   {
     slug: "pdf-compress",
@@ -228,11 +228,11 @@ const guideIndexMeta = {
   kind: "guide-index"
 };
 
-await writeFile(path.join(dist, "robots.txt"), "User-agent: *\nAllow: /\n\nSitemap: https://reportfit.com/sitemap.xml\n", "utf8");
+await writeFile(path.join(dist, "robots.txt"), "User-agent: *\nAllow: /\n\nSitemap: https://reportools.com/sitemap.xml\n", "utf8");
 await writeFile(
   path.join(dist, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${["", ...tools.map((tool) => `tools/${tool.slug}/`), ...pages.map((page) => `${page.slug}/`), "guides/", ...guideArticles.map((article) => `guides/${article.slug}/`)]
-    .map((loc) => `  <url><loc>https://reportfit.com/${loc}</loc><changefreq>${loc ? "monthly" : "weekly"}</changefreq></url>`)
+    .map((loc) => `  <url><loc>https://reportools.com/${loc}</loc><changefreq>${loc ? "monthly" : "weekly"}</changefreq></url>`)
     .join("\n")}\n</urlset>\n`,
   "utf8"
 );

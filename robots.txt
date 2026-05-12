@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://reportfit.com/sitemap.xml
+Sitemap: https://reportools.com/sitemap.xml
