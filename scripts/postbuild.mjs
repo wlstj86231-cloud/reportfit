@@ -86,6 +86,26 @@ const tools = [
     description: "여러 제출 파일의 이름을 규칙에 맞게 정리하고 점검표와 함께 하나의 ZIP 파일로 묶습니다."
   },
   {
+    slug: "deadline-planner",
+    title: "과제 마감 계산기 - 레포트핏",
+    description: "과제 마감까지 남은 시간과 제출 전 작업 순서를 계산해 마감 직전 실수를 줄입니다."
+  },
+  {
+    slug: "submission-note",
+    title: "제출 메모 만들기 - 레포트핏",
+    description: "LMS 댓글이나 메일 본문에 붙일 과제 제출 메모와 첨부파일 안내 문구를 만듭니다."
+  },
+  {
+    slug: "rubric-check",
+    title: "루브릭 점검 - 레포트핏",
+    description: "평가 기준과 배점을 입력해 제출 전 충족 여부와 보완할 항목을 정리합니다."
+  },
+  {
+    slug: "attachment-list",
+    title: "첨부파일 목록 만들기 - 레포트핏",
+    description: "제출 파일의 파일명과 용량을 복사 가능한 첨부파일 목록으로 정리합니다."
+  },
+  {
     slug: "word-count",
     title: "레포트 글자수 계산 - 레포트핏",
     description: "공백 포함, 공백 제외, 단어 수, A4 예상 분량을 빠르게 계산해 레포트 분량을 확인합니다."

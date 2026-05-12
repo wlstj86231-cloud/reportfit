@@ -173,6 +173,42 @@ const tools = [
     description: "여러 제출 파일의 이름을 규칙에 맞게 정리하고 점검표와 함께 하나의 ZIP으로 묶습니다."
   },
   {
+    id: "deadline-planner",
+    label: "마감 계산기",
+    short: "남은 시간, 작업 순서",
+    icon: "DUE",
+    group: "제출",
+    path: "/tools/deadline-planner/",
+    description: "과제 마감까지 남은 시간과 제출 전 작업 순서를 빠르게 계산합니다."
+  },
+  {
+    id: "submission-note",
+    label: "제출 메모 만들기",
+    short: "LMS, 메일 문구",
+    icon: "MSG",
+    group: "제출",
+    path: "/tools/submission-note/",
+    description: "LMS 댓글이나 메일 본문에 붙일 제출 메모와 첨부파일 안내 문구를 만듭니다."
+  },
+  {
+    id: "rubric-check",
+    label: "루브릭 점검",
+    short: "배점, 충족 여부",
+    icon: "CHK",
+    group: "제출",
+    path: "/tools/rubric-check/",
+    description: "평가 기준과 배점을 입력해 제출 전 충족 여부와 예상 점검 포인트를 정리합니다."
+  },
+  {
+    id: "attachment-list",
+    label: "첨부파일 목록",
+    short: "파일명, 용량 기록",
+    icon: "LST",
+    group: "제출",
+    path: "/tools/attachment-list/",
+    description: "제출한 파일명과 용량 목록을 복사 가능한 제출 기록으로 만듭니다."
+  },
+  {
     id: "word-count",
     label: "글자수 계산",
     short: "공백 제외, A4 예상",
@@ -309,7 +345,7 @@ const tools = [
   }
 ];
 
-const popular = ["pdf-slim", "image-resize", "document-check", "privacy-scan", "submit-package", "file-check"];
+const popular = ["pdf-slim", "image-resize", "document-check", "deadline-planner", "submit-package", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -596,6 +632,10 @@ function stepStrip(id) {
     "file-name": ["정보 입력", "파일명 생성", "복사"],
     "submit-checklist": ["조건 입력", "확인 항목 선택", "점검표 복사"],
     "submit-package": ["정보 입력", "파일 묶기", "제출팩 받기"],
+    "deadline-planner": ["마감 입력", "남은 시간 확인", "작업 순서"],
+    "submission-note": ["정보 입력", "문구 생성", "복사"],
+    "rubric-check": ["기준 입력", "충족 확인", "수정 포인트"],
+    "attachment-list": ["파일 선택", "목록 생성", "복사"],
     "word-count": ["본문 붙여넣기", "분량 확인", "다음 정리"],
     "text-clean": ["텍스트 붙여넣기", "정리 방식", "복사"],
     "table-convert": ["표 붙여넣기", "형식 선택", "복사"],
@@ -1015,6 +1055,87 @@ function workspaceFor(id) {
       <button class="primary-action" id="runSubmitPackage" type="button">제출 패키지 만들기</button>
       <div class="result" id="result"></div>
     `,
+    "deadline-planner": `
+      <div class="tool-head"><h2>마감 계산기</h2><p>과제 마감까지 남은 시간과 제출 전 작업 순서를 계산합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="deadline-planner">마감 예시</button><button type="button" data-clear="form">입력 비우기</button></div>
+      <div class="form-grid">
+        <label>과제명
+          <input id="deadlineAssignment" type="text" placeholder="1주차 개인과제">
+        </label>
+        <label>마감일
+          <input id="deadlineDate" type="date">
+        </label>
+        <label>마감 시간
+          <input id="deadlineTime" type="time" value="23:59">
+        </label>
+        <label>제출처
+          <input id="deadlineChannel" type="text" placeholder="학교 LMS">
+        </label>
+        <label>현재 진행률
+          <select id="deadlineProgress">
+            <option value="draft">초안 작성 중</option>
+            <option value="review">검토/수정 중</option>
+            <option value="final">최종 파일 정리 중</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runDeadlinePlanner" type="button">마감 계산하기</button>
+      <div class="result" id="result"></div>
+    `,
+    "submission-note": `
+      <div class="tool-head"><h2>제출 메모 만들기</h2><p>LMS 댓글이나 메일 본문에 붙일 제출 안내 문구를 만듭니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="submission-note">메모 예시</button><button type="button" data-clear="form">입력 비우기</button></div>
+      <div class="form-grid">
+        <label>수신자/담당자
+          <input id="noteRecipient" type="text" placeholder="교수님 또는 조교님">
+        </label>
+        <label>과목명
+          <input id="noteCourse" type="text" placeholder="마케팅원론">
+        </label>
+        <label>과제명
+          <input id="noteAssignment" type="text" placeholder="1주차 개인과제">
+        </label>
+        <label>이름
+          <input id="noteName" type="text" placeholder="홍길동">
+        </label>
+        <label>학번
+          <input id="noteStudentId" type="text" placeholder="20261234">
+        </label>
+        <label>첨부파일
+          <input id="noteFiles" type="text" placeholder="마케팅원론_20261234_홍길동.pdf">
+        </label>
+        <label>제출 방식
+          <select id="noteTone">
+            <option value="lms">LMS 댓글</option>
+            <option value="mail">메일 본문</option>
+            <option value="formal">정중한 메일</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runSubmissionNote" type="button">제출 메모 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "rubric-check": `
+      <div class="tool-head"><h2>루브릭 점검</h2><p>평가 기준과 배점을 입력해 제출 전 충족 여부를 정리합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="rubric-check">루브릭 예시</button><button type="button" data-clear="textarea">비우기</button></div>
+      <textarea id="rubricText" class="big-textarea" placeholder="항목 | 배점 | 상태&#10;주제 적합성 | 20 | 완료&#10;근거 제시 | 30 | 보완"></textarea>
+      <button class="primary-action" id="runRubricCheck" type="button">루브릭 점검하기</button>
+      <div class="result" id="result"></div>
+    `,
+    "attachment-list": `
+      <div class="tool-head"><h2>첨부파일 목록</h2><p>제출한 파일명과 용량을 복사 가능한 기록으로 정리합니다.</p></div>
+      ${drop("*/*", true)}
+      <div class="option-row">
+        <label>제출처
+          <input id="attachmentChannel" type="text" placeholder="학교 LMS">
+        </label>
+        <label>과제명
+          <input id="attachmentAssignment" type="text" placeholder="1주차 개인과제">
+        </label>
+      </div>
+      <button class="primary-action" id="runAttachmentList" type="button">첨부 목록 만들기</button>
+      <div class="result" id="result"></div>
+    `,
     "word-count": `
       <div class="tool-head"><h2>글자수 계산</h2><p>공백 포함, 공백 제외, 단어 수, A4 예상 장수를 계산합니다.</p></div>
       <div class="sample-row"><button type="button" data-sample="word-count">예시 본문</button><button type="button" data-clear="textarea">비우기</button></div>
@@ -1334,6 +1455,10 @@ function bindToolEvents(id) {
     "file-name": ["#runFileName", runFileName],
     "submit-checklist": ["#runSubmitChecklist", runSubmitChecklist],
     "submit-package": ["#runSubmitPackage", runSubmitPackage],
+    "deadline-planner": ["#runDeadlinePlanner", runDeadlinePlanner],
+    "submission-note": ["#runSubmissionNote", runSubmissionNote],
+    "rubric-check": ["#runRubricCheck", runRubricCheck],
+    "attachment-list": ["#runAttachmentList", runAttachmentList],
     "word-count": ["#runWordCount", runWordCount],
     "text-clean": ["#runTextClean", runTextClean],
     "table-convert": ["#runTableConvert", runTableConvert],
@@ -1978,6 +2103,135 @@ async function runSubmitPackage() {
     `);
     app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
   });
+}
+
+function runDeadlinePlanner() {
+  const assignment = value("#deadlineAssignment").trim() || "과제";
+  const dueDate = value("#deadlineDate");
+  const dueTime = value("#deadlineTime") || "23:59";
+  const channel = value("#deadlineChannel").trim() || "제출처 미입력";
+  const progress = value("#deadlineProgress") || "draft";
+  if (!dueDate) {
+    setResult(`<p class="error">마감일을 입력하세요.</p>`);
+    return;
+  }
+  const due = new Date(`${dueDate}T${dueTime}`);
+  const now = new Date();
+  const diffMs = due.getTime() - now.getTime();
+  const status = deadlineStatus(diffMs);
+  const plan = deadlinePlan(diffMs, progress);
+  const output = [
+    `[마감 계산]`,
+    `과제: ${assignment}`,
+    `제출처: ${channel}`,
+    `마감: ${formatDateTime(due)}`,
+    `남은 시간: ${formatDuration(diffMs)}`,
+    `상태: ${status}`,
+    ``,
+    `[지금 할 일]`,
+    ...plan.map((item) => `- ${item}`)
+  ].join("\n");
+  setResult(`
+    <textarea class="result-text" id="deadlineResult" readonly>${escapeHtml(output)}</textarea>
+    <div class="metric-grid">
+      <div><span>상태</span><strong>${escapeHtml(status)}</strong></div>
+      <div><span>남은 시간</span><strong>${escapeHtml(formatDuration(diffMs))}</strong></div>
+      <div><span>작업</span><strong>${plan.length}개</strong></div>
+    </div>
+    <button class="secondary-action" type="button" data-copy="#deadlineResult">마감 계획 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function runSubmissionNote() {
+  const recipient = value("#noteRecipient").trim() || "교수님";
+  const course = value("#noteCourse").trim() || "과목명";
+  const assignment = value("#noteAssignment").trim() || "과제명";
+  const name = value("#noteName").trim() || "이름";
+  const studentId = value("#noteStudentId").trim() || "학번";
+  const files = value("#noteFiles").split(/[,;\n]+/).map((item) => item.trim()).filter(Boolean);
+  const tone = value("#noteTone") || "lms";
+  const note = buildSubmissionNote({ recipient, course, assignment, name, studentId, files, tone });
+  setResult(`
+    <textarea class="result-text" id="submissionNoteResult" readonly>${escapeHtml(note)}</textarea>
+    <div class="metric-grid">
+      <div><span>문구 유형</span><strong>${escapeHtml(submissionToneLabel(tone))}</strong></div>
+      <div><span>첨부파일</span><strong>${files.length || 0}개</strong></div>
+      <div><span>복사</span><strong>준비 완료</strong></div>
+    </div>
+    <button class="secondary-action" type="button" data-copy="#submissionNoteResult">제출 메모 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function runRubricCheck() {
+  const rows = parseRubricRows(value("#rubricText"));
+  if (!rows.length) {
+    setResult(`<p class="error">루브릭 항목을 입력하세요.</p>`);
+    return;
+  }
+  const total = rows.reduce((sum, row) => sum + row.points, 0);
+  const done = rows.filter((row) => row.status === "done").reduce((sum, row) => sum + row.points, 0);
+  const partial = rows.filter((row) => row.status === "partial").reduce((sum, row) => sum + row.points, 0);
+  const needs = rows.filter((row) => row.status !== "done");
+  const output = [
+    `[루브릭 점검]`,
+    `총 배점: ${total}점`,
+    `완료: ${done}점`,
+    `보완 필요: ${Math.max(0, total - done)}점`,
+    ``,
+    ...rows.map((row) => `- ${row.name} (${row.points}점): ${rubricStatusLabel(row.status)}`)
+  ].join("\n");
+  setResult(`
+    <textarea class="result-text" id="rubricResult" readonly>${escapeHtml(output)}</textarea>
+    <div class="metric-grid">
+      <div><span>총 배점</span><strong>${total}점</strong></div>
+      <div><span>완료</span><strong>${done}점</strong></div>
+      <div><span>보완</span><strong>${needs.length}개</strong></div>
+      <div><span>부분 충족</span><strong>${partial}점</strong></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>항목</th><th>배점</th><th>상태</th></tr></thead><tbody>
+      ${rows.map((row) => `<tr><td>${escapeHtml(row.name)}</td><td>${row.points}점</td><td>${escapeHtml(rubricStatusLabel(row.status))}</td></tr>`).join("")}
+    </tbody></table></div>
+    ${needs.length ? `<ul class="warning-list">${needs.map((row) => `<li>${escapeHtml(row.name)} 확인 필요</li>`).join("")}</ul>` : `<p class="soft-note">입력한 루브릭 기준에서는 모든 항목이 완료로 표시되었습니다.</p>`}
+    <button class="secondary-action" type="button" data-copy="#rubricResult">루브릭 점검표 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function runAttachmentList() {
+  const files = selectedFiles();
+  if (!files.length) {
+    setResult(`<p class="error">목록으로 만들 파일을 선택하세요.</p>`);
+    return;
+  }
+  const channel = value("#attachmentChannel").trim() || "제출처 미입력";
+  const assignment = value("#attachmentAssignment").trim() || "과제명 미입력";
+  const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+  const lines = [
+    `[첨부파일 목록]`,
+    `과제: ${assignment}`,
+    `제출처: ${channel}`,
+    `작성 시각: ${formatDateTime(new Date())}`,
+    `파일 수: ${files.length}개`,
+    `총 용량: ${formatBytes(totalSize)}`,
+    ``,
+    ...files.map((file, index) => `${index + 1}. ${file.name} (${formatBytes(file.size)})`)
+  ];
+  const output = lines.join("\n");
+  setResult(`
+    <textarea class="result-text" id="attachmentListResult" readonly>${escapeHtml(output)}</textarea>
+    <div class="metric-grid">
+      <div><span>파일</span><strong>${files.length}개</strong></div>
+      <div><span>총 용량</span><strong>${formatBytes(totalSize)}</strong></div>
+      <div><span>목록</span><strong>생성 완료</strong></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>파일</th><th>용량</th><th>형식</th></tr></thead><tbody>
+      ${files.map((file) => `<tr><td>${escapeHtml(file.name)}</td><td>${formatBytes(file.size)}</td><td>${escapeHtml(file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "없음")}</td></tr>`).join("")}
+    </tbody></table></div>
+    <button class="secondary-action" type="button" data-copy="#attachmentListResult">첨부 목록 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
 }
 
 function runWordCount() {
@@ -3039,6 +3293,104 @@ function buildPackageChecklist(meta, rows, totalSize) {
   ].join("\n");
 }
 
+function formatDateTime(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "날짜 확인 필요";
+  const pad = (number) => String(number).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function formatDuration(ms) {
+  const overdue = ms < 0;
+  const abs = Math.abs(ms);
+  const days = Math.floor(abs / 86400000);
+  const hours = Math.floor(abs % 86400000 / 3600000);
+  const minutes = Math.max(0, Math.round(abs % 3600000 / 60000));
+  const text = days ? `${days}일 ${hours}시간` : hours ? `${hours}시간 ${minutes}분` : `${minutes}분`;
+  return overdue ? `${text} 지남` : `${text} 남음`;
+}
+
+function deadlineStatus(ms) {
+  if (ms < 0) return "마감 지남";
+  if (ms <= 2 * 3600000) return "즉시 제출 준비";
+  if (ms <= 24 * 3600000) return "오늘 마감";
+  if (ms <= 3 * 86400000) return "마감 임박";
+  return "여유 있음";
+}
+
+function deadlinePlan(ms, progress) {
+  if (ms < 0) return ["제출 가능 여부와 지각 제출 규정을 먼저 확인", "완성본과 첨부파일 목록 정리", "교수자나 조교에게 상황 설명 메모 작성"];
+  const urgent = ms <= 6 * 3600000;
+  const plans = {
+    draft: urgent
+      ? ["본문 핵심 문단만 먼저 완성", "참고문헌과 파일명을 최소 기준으로 정리", "PDF 변환 후 바로 파일 점검", "제출 완료 화면 캡처"]
+      : ["초안 완성", "문서 구조 점검", "참고문헌과 표기 정리", "파일명과 용량 점검", "제출 완료 화면 캡처"],
+    review: urgent
+      ? ["맞춤법보다 누락 파일과 조건을 먼저 확인", "PDF 용량과 페이지 수 점검", "LMS 첨부 후 제출 완료 화면 캡처"]
+      : ["문서 구조 점검", "문단과 참고문헌 정리", "PDF/이미지 용량 점검", "제출 메모와 첨부 목록 준비"],
+    final: ["최종 파일 열어보기", "파일명, 용량, 확장자 확인", "첨부파일 목록 만들기", "제출 완료 화면 캡처"]
+  };
+  return plans[progress] || plans.draft;
+}
+
+function buildSubmissionNote({ recipient, course, assignment, name, studentId, files, tone }) {
+  const fileLines = files.length ? files.map((file) => `- ${file}`).join("\n") : "- 첨부파일명 미입력";
+  if (tone === "mail" || tone === "formal") {
+    const polite = tone === "formal" ? "확인 부탁드립니다." : "제출합니다.";
+    return [
+      `${recipient}께,`,
+      ``,
+      `안녕하세요. ${course} 수강생 ${studentId} ${name}입니다.`,
+      `${assignment} 과제를 아래 파일로 제출드립니다.`,
+      ``,
+      `[첨부파일]`,
+      fileLines,
+      ``,
+      polite,
+      `${name} 드림`
+    ].join("\n");
+  }
+  return [
+    `${course} ${assignment} 제출합니다.`,
+    `학번/이름: ${studentId} ${name}`,
+    ``,
+    `[첨부파일]`,
+    fileLines,
+    ``,
+    `제출 후 파일이 정상 첨부되었는지 확인했습니다.`
+  ].join("\n");
+}
+
+function submissionToneLabel(tone) {
+  const labels = { lms: "LMS 댓글", mail: "메일 본문", formal: "정중한 메일" };
+  return labels[tone] || "LMS 댓글";
+}
+
+function parseRubricRows(raw) {
+  return raw.split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.split(/\||,|\t/).map((cell) => cell.trim()))
+    .filter((parts) => parts.length >= 2 && !/^항목$/i.test(parts[0]))
+    .map((parts) => {
+      const points = Number((parts[1] || "").replace(/[^\d.]/g, "")) || 0;
+      return { name: parts[0] || "항목", points, status: normalizeRubricStatus(parts[2] || "") };
+    })
+    .filter((row) => row.name && row.points > 0);
+}
+
+function normalizeRubricStatus(text) {
+  const raw = text.toLowerCase();
+  if (/완료|충족|ok|done|yes/.test(raw)) return "done";
+  if (/보완|부분|중간|진행|partial/.test(raw)) return "partial";
+  return "todo";
+}
+
+function rubricStatusLabel(status) {
+  if (status === "done") return "완료";
+  if (status === "partial") return "부분 충족";
+  return "확인 필요";
+}
+
 function value(selector) {
   return app.querySelector(selector)?.value || "";
 }
@@ -3084,6 +3436,25 @@ function applySample(type) {
       setValue("#packageNameMode", "prefix");
       setValue("#packageZipName", "마케팅원론_20261234_홍길동_제출팩.zip");
     },
+    "deadline-planner": () => {
+      const due = new Date();
+      due.setDate(due.getDate() + 1);
+      setValue("#deadlineAssignment", "1주차 개인과제");
+      setValue("#deadlineDate", due.toISOString().slice(0, 10));
+      setValue("#deadlineTime", "23:59");
+      setValue("#deadlineChannel", "학교 LMS");
+      setValue("#deadlineProgress", "review");
+    },
+    "submission-note": () => {
+      setValue("#noteRecipient", "교수님");
+      setValue("#noteCourse", "마케팅원론");
+      setValue("#noteAssignment", "1주차 개인과제");
+      setValue("#noteName", "홍길동");
+      setValue("#noteStudentId", "20261234");
+      setValue("#noteFiles", "마케팅원론_20261234_홍길동_1주차.pdf");
+      setValue("#noteTone", "mail");
+    },
+    "rubric-check": () => setValue("#rubricText", "항목 | 배점 | 상태\n주제 적합성 | 20 | 완료\n근거 제시 | 30 | 보완\n참고문헌 | 20 | 완료\n형식/분량 | 30 | 확인"),
     "word-count": () => setValue("#wordText", "서론에서는 과제의 배경과 문제의식을 정리합니다.\n\n본론에서는 핵심 근거를 나누어 설명하고, 결론에서는 내가 확인한 시사점과 한계를 짧게 정리합니다."),
     "text-clean": () => setValue("#dirtyText", "PDF에서 복사한 문장입니다.\n줄바꿈이\n이상하게 들어가고      공백도     많습니다.\n\n문단을 다시 정리해야 합니다."),
     "table-convert": () => setValue("#tableText", "항목\t기준\t확인\nPDF 용량\t20MB 이하\t필요\n파일명\t학번_이름_과제명\t필요\n참고문헌\t가나다순\t선택"),
@@ -3153,9 +3524,13 @@ function relatedTools(id) {
     "image-resize": ["image-compress", "image-rotate", "image-watermark"],
     "image-rotate": ["image-resize", "image-watermark", "image-convert"],
     "image-watermark": ["image-resize", "image-rotate", "privacy-clean"],
-    "file-name": ["file-check", "zip-pack", "pdf-compress"],
-    "submit-checklist": ["submit-package", "file-name", "file-check"],
-    "submit-package": ["submit-checklist", "file-check", "privacy-clean"],
+    "file-name": ["attachment-list", "file-check", "zip-pack"],
+    "submit-checklist": ["deadline-planner", "submit-package", "rubric-check"],
+    "submit-package": ["submit-checklist", "attachment-list", "file-check"],
+    "deadline-planner": ["submit-checklist", "submission-note", "attachment-list"],
+    "submission-note": ["attachment-list", "deadline-planner", "submit-checklist"],
+    "rubric-check": ["document-check", "submit-checklist", "text-clean"],
+    "attachment-list": ["file-check", "submission-note", "submit-package"],
     "word-count": ["reading-time", "text-clean", "document-check"],
     "text-clean": ["document-check", "text-compare", "citation-cleaner"],
     "table-convert": ["text-clean", "document-outline", "file-check"],
@@ -3164,8 +3539,8 @@ function relatedTools(id) {
     "document-check": ["text-clean", "word-count", "citation-cleaner"],
     "text-compare": ["text-clean", "document-check", "word-count"],
     "reading-time": ["word-count", "document-check", "text-clean"],
-    "file-check": ["submit-package", "pdf-compress", "pdf-slim"],
-    "zip-pack": ["submit-package", "file-check", "file-name"],
+    "file-check": ["attachment-list", "submit-package", "pdf-compress"],
+    "zip-pack": ["submit-package", "attachment-list", "file-name"],
     "privacy-clean": ["privacy-scan", "privacy-mask", "file-hash"],
     "privacy-scan": ["privacy-mask", "privacy-clean", "file-hash"],
     "privacy-mask": ["privacy-scan", "privacy-clean", "password-maker"],
@@ -3256,6 +3631,22 @@ function copyFor(id) {
     "submit-package": {
       why: "조별 과제나 첨부 파일이 많은 과제는 최종본, 참고자료, 이미지 파일이 흩어져 제출 직전에 실수가 생기기 쉽습니다. 제출 패키지는 파일명을 같은 규칙으로 맞추고 점검표를 함께 넣어 마감본을 한 묶음으로 정리합니다.",
       tip: "ZIP 제출이 허용되는 과목인지 먼저 확인하세요. ZIP 제출이 안 되는 경우에도 패키지 안 파일명 목록과 점검표를 참고해 개별 파일 첨부 순서를 확인할 수 있습니다."
+    },
+    "deadline-planner": {
+      why: "마감이 가까워질수록 본문 품질보다 파일명, 첨부, 제출 완료 캡처 같은 작은 단계에서 실수가 납니다. 남은 시간을 먼저 보면 지금 버릴 일과 챙길 일을 빠르게 나눌 수 있습니다.",
+      tip: "마감 직전에는 완벽한 수정 욕심보다 파일 열림, 용량, 첨부 상태, 제출 완료 화면 캡처를 우선하세요."
+    },
+    "submission-note": {
+      why: "메일이나 LMS 댓글에 제출 정보를 대충 적으면 첨부 누락이나 과제 식별 문제가 생길 수 있습니다. 제출 메모는 과목, 학번, 이름, 파일명을 한 번에 정리해 둡니다.",
+      tip: "메일 제출이라면 첨부파일을 실제로 넣은 뒤 보내기 직전에 메모의 파일명과 첨부명이 같은지 확인하세요."
+    },
+    "rubric-check": {
+      why: "평가 기준이 있는 과제는 내용이 좋아도 배점 항목 하나를 놓치면 손해가 큽니다. 루브릭 점검은 완료와 보완 항목을 배점 기준으로 다시 보게 해줍니다.",
+      tip: "보완 항목은 배점이 큰 순서부터 처리하세요. 마감이 임박했다면 작은 형식보다 큰 배점 기준을 먼저 맞추는 편이 낫습니다."
+    },
+    "attachment-list": {
+      why: "여러 파일을 제출할 때는 어떤 파일을 올렸는지 나중에 헷갈리기 쉽습니다. 첨부파일 목록을 남겨두면 제출 기록이나 조별 확인용으로 바로 공유할 수 있습니다.",
+      tip: "제출 완료 화면 캡처와 함께 첨부파일 목록을 보관하면 파일 누락 이슈가 생겼을 때 확인이 훨씬 쉬워집니다."
     },
     "pdf-number": {
       why: "PDF를 합치거나 스캔하면 페이지 순서가 헷갈릴 수 있습니다. 하단 번호를 넣어두면 제출 전 검토와 조별 확인이 쉬워집니다.",
@@ -3432,6 +3823,78 @@ function guideFor(id) {
         {
           q: "원본 파일명이 바뀌나요?",
           a: "원본 파일은 그대로 두고 ZIP 안에 들어가는 복사본 이름만 선택한 규칙에 맞게 정리합니다."
+        }
+      ]
+    },
+    "deadline-planner": {
+      title: "마감 계산에서 봐야 할 것",
+      tips: [
+        "마감 직전에는 본문 수정보다 파일 열림, 용량, 첨부 상태, 제출 완료 캡처를 먼저 확인하세요.",
+        "진행률을 초안, 검토, 최종 파일 정리 중에서 고르면 남은 시간에 맞는 작업 순서가 바뀝니다.",
+        "마감이 이미 지났다면 지각 제출 규정과 교수자 안내를 먼저 확인하세요."
+      ],
+      faq: [
+        {
+          q: "자동 알림도 보내주나요?",
+          a: "아니요. 이 도구는 현재 화면에서 남은 시간과 작업 순서를 계산합니다. 알림은 휴대폰 캘린더나 학교 LMS 알림을 함께 쓰세요."
+        },
+        {
+          q: "시간대는 어떻게 계산되나요?",
+          a: "사용 중인 브라우저와 기기의 현재 시간 기준으로 계산합니다."
+        }
+      ]
+    },
+    "submission-note": {
+      title: "제출 메모를 만들 때 확인할 것",
+      tips: [
+        "파일명을 직접 입력했다면 실제 첨부 파일명과 같은지 마지막에 비교하세요.",
+        "메일 제출은 수신자, 과목명, 학번, 이름, 과제명이 한 번에 보이게 쓰는 편이 좋습니다.",
+        "LMS 댓글은 너무 길게 쓰기보다 제출 정보와 첨부파일만 간단히 남기세요."
+      ],
+      faq: [
+        {
+          q: "메모가 자동으로 발송되나요?",
+          a: "아니요. 복사 가능한 문구만 만듭니다. 실제 발송이나 제출은 사용자가 LMS나 메일에서 직접 해야 합니다."
+        },
+        {
+          q: "첨부파일을 여러 개 적을 수 있나요?",
+          a: "쉼표, 세미콜론, 줄바꿈으로 여러 파일명을 나눠 입력할 수 있습니다."
+        }
+      ]
+    },
+    "rubric-check": {
+      title: "루브릭 점검에서 봐야 할 것",
+      tips: [
+        "항목, 배점, 상태 순서로 입력하면 표와 복사 가능한 점검표가 만들어집니다.",
+        "마감이 가까우면 배점이 큰 보완 항목부터 처리하세요.",
+        "루브릭은 교수자 기준이 우선이므로 과제 안내 문구를 그대로 옮겨 점검하는 편이 안전합니다."
+      ],
+      faq: [
+        {
+          q: "예상 점수를 계산해주나요?",
+          a: "완료 표시한 배점을 합산해 보여주지만 실제 점수를 보장하지는 않습니다. 보완 우선순위를 정하는 용도로 사용하세요."
+        },
+        {
+          q: "상태는 어떻게 입력하나요?",
+          a: "완료, 보완, 확인 같은 단어를 넣으면 완료, 부분 충족, 확인 필요로 분류합니다."
+        }
+      ]
+    },
+    "attachment-list": {
+      title: "첨부파일 목록에서 봐야 할 것",
+      tips: [
+        "목록을 만든 뒤 실제 LMS 첨부 영역에 보이는 파일명과 같은지 비교하세요.",
+        "여러 파일 제출은 파일 수와 총 용량을 같이 남겨두면 나중에 확인하기 쉽습니다.",
+        "제출 완료 화면 캡처와 첨부파일 목록을 함께 보관하세요."
+      ],
+      faq: [
+        {
+          q: "파일 내용이 업로드되나요?",
+          a: "아니요. 브라우저에서 선택한 파일명과 용량 정보를 읽어 목록을 만듭니다."
+        },
+        {
+          q: "첨부 목록 파일을 따로 내려받나요?",
+          a: "현재는 복사 가능한 텍스트로 제공합니다. 제출 메모나 개인 기록에 붙여넣기 좋게 만들었습니다."
         }
       ]
     },
