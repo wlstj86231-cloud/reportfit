@@ -87,6 +87,15 @@ const tools = [
     description: "과제 제출 직전에 확인할 항목을 과목, 마감, 파일 조건에 맞춰 복사 가능한 체크리스트로 만듭니다."
   },
   {
+    id: "submit-package",
+    label: "제출 패키지",
+    short: "파일명 + ZIP + 점검표",
+    icon: "PKG",
+    group: "제출",
+    path: "/tools/submit-package/",
+    description: "여러 제출 파일의 이름을 규칙에 맞게 정리하고 점검표와 함께 하나의 ZIP으로 묶습니다."
+  },
+  {
     id: "word-count",
     label: "글자수 계산",
     short: "공백 제외, A4 예상",
@@ -151,7 +160,7 @@ const tools = [
   }
 ];
 
-const popular = ["pdf-compress", "image-convert", "submit-checklist", "file-name", "citation-cleaner", "file-check"];
+const popular = ["submit-package", "pdf-compress", "image-convert", "submit-checklist", "file-name", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -255,6 +264,8 @@ function render() {
             <strong>${escapeHtml(currentTool.short)}</strong>
           </div>
         </section>
+
+        ${toolCategoryOverview()}
 
         <section class="tool-layout">
           <aside class="tool-menu" aria-label="도구 카테고리">
@@ -363,6 +374,25 @@ function toolCard(tool) {
   `;
 }
 
+function toolCategoryOverview() {
+  const groups = [...new Set(tools.map((tool) => tool.group))];
+  return `
+    <section class="category-overview" aria-label="도구 묶음">
+      ${groups.map((group) => {
+        const groupTools = tools.filter((tool) => tool.group === group);
+        const active = group === currentTool.group ? " is-active" : "";
+        return `
+          <button class="category-card${active}" type="button" data-tool-group="${escapeHtml(group)}">
+            <span>${escapeHtml(group)}</span>
+            <strong>${groupTools.length}개 도구</strong>
+            <small>${groupTools.slice(0, 3).map((tool) => tool.label).join(" · ")}</small>
+          </button>
+        `;
+      }).join("")}
+    </section>
+  `;
+}
+
 function relatedCard(tool) {
   return `
     <button type="button" class="related-card" data-tool-link="${tool.id}">
@@ -409,6 +439,7 @@ function stepStrip(id) {
     "image-compress": ["이미지 선택", "품질 조절", "ZIP 받기"],
     "file-name": ["정보 입력", "파일명 생성", "복사"],
     "submit-checklist": ["조건 입력", "확인 항목 선택", "점검표 복사"],
+    "submit-package": ["정보 입력", "파일 묶기", "제출팩 받기"],
     "word-count": ["본문 붙여넣기", "분량 확인", "다음 정리"],
     "text-clean": ["텍스트 붙여넣기", "정리 방식", "복사"],
     "table-convert": ["표 붙여넣기", "형식 선택", "복사"],
@@ -610,6 +641,29 @@ function workspaceFor(id) {
       <button class="primary-action" id="runSubmitChecklist" type="button">점검표 만들기</button>
       <div class="result" id="result"></div>
     `,
+    "submit-package": `
+      <div class="tool-head"><h2>제출 패키지</h2><p>본문, 참고자료, 이미지 파일을 제출 규칙에 맞는 이름으로 정리하고 점검표와 함께 ZIP으로 묶습니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="submit-package">예시 채우기</button><button type="button" data-clear="form">입력 비우기</button></div>
+      ${drop("*/*", true)}
+      <div class="form-grid">
+        <label>과목명<input id="packageCourse" type="text" placeholder="마케팅원론"></label>
+        <label>과제명<input id="packageAssignment" type="text" placeholder="1주차 개인과제"></label>
+        <label>학번<input id="packageStudentId" type="text" placeholder="20261234"></label>
+        <label>이름<input id="packageStudentName" type="text" placeholder="홍길동"></label>
+        <label>제출처<input id="packageChannel" type="text" placeholder="학교 LMS"></label>
+        <label>마감일<input id="packageDueDate" type="date"></label>
+        <label>파일명 방식
+          <select id="packageNameMode">
+            <option value="prefix">과목_학번_이름_과제명_원본명</option>
+            <option value="numbered">과목_학번_이름_과제명_01</option>
+            <option value="keep">원본 파일명 유지</option>
+          </select>
+        </label>
+        <label>ZIP 파일명<input id="packageZipName" type="text" placeholder="마케팅원론_20261234_홍길동_제출팩.zip"></label>
+      </div>
+      <button class="primary-action" id="runSubmitPackage" type="button">제출 패키지 만들기</button>
+      <div class="result" id="result"></div>
+    `,
     "word-count": `
       <div class="tool-head"><h2>글자수 계산</h2><p>공백 포함, 공백 제외, 단어 수, A4 예상 장수를 계산합니다.</p></div>
       <div class="sample-row"><button type="button" data-sample="word-count">예시 본문</button><button type="button" data-clear="textarea">비우기</button></div>
@@ -775,6 +829,7 @@ function bindGlobalEvents() {
   });
   bindDropzones();
   bindToolSearch();
+  bindCategoryOverview();
   bindUtilityButtons();
 }
 
@@ -788,6 +843,7 @@ function bindToolEvents(id) {
     "image-compress": ["#runImageCompress", runImageCompress],
     "file-name": ["#runFileName", runFileName],
     "submit-checklist": ["#runSubmitChecklist", runSubmitChecklist],
+    "submit-package": ["#runSubmitPackage", runSubmitPackage],
     "word-count": ["#runWordCount", runWordCount],
     "text-clean": ["#runTextClean", runTextClean],
     "table-convert": ["#runTableConvert", runTableConvert],
@@ -840,6 +896,18 @@ function bindToolSearch() {
       if (match) visible += 1;
     });
     if (count) count.textContent = `${visible}개 도구`;
+  });
+}
+
+function bindCategoryOverview() {
+  app.querySelectorAll("[data-tool-group]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const search = app.querySelector("#toolSearch");
+      if (!search) return;
+      search.value = button.dataset.toolGroup || "";
+      search.dispatchEvent(new Event("input"));
+      app.querySelector(".tool-menu")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   });
 }
 
@@ -1095,6 +1163,61 @@ function runSubmitChecklist() {
     <button class="secondary-action" type="button" data-copy="#submitChecklistResult">점검표 복사</button>
   `);
   app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+async function runSubmitPackage() {
+  await withProgress(async () => {
+    const JSZip = await getJSZip();
+    const files = selectedFiles();
+    requireFiles(files, "묶을 제출 파일을 선택하세요.");
+
+    const meta = {
+      course: value("#packageCourse").trim() || "과목명",
+      assignment: value("#packageAssignment").trim() || "과제명",
+      studentId: value("#packageStudentId").trim() || "학번",
+      studentName: value("#packageStudentName").trim() || "이름",
+      channel: value("#packageChannel").trim() || "제출처 미입력",
+      dueDate: value("#packageDueDate"),
+      mode: value("#packageNameMode") || "prefix"
+    };
+    const zip = new JSZip();
+    const rows = [];
+    let totalSize = 0;
+
+    files.forEach((file, index) => {
+      totalSize += file.size;
+      const packagedName = packageFileName(file, index, meta);
+      zip.file(packagedName, file);
+      rows.push({ original: file.name, packaged: packagedName, size: file.size });
+    });
+
+    const checklist = buildPackageChecklist(meta, rows, totalSize);
+    zip.file("제출점검표.txt", checklist);
+
+    const blob = await zip.generateAsync({
+      type: "blob",
+      compression: "DEFLATE",
+      compressionOptions: { level: 6 }
+    });
+    const outName = cleanOutputName(value("#packageZipName") || `${slugPart(meta.course)}_${slugPart(meta.studentId)}_${slugPart(meta.studentName)}_제출팩.zip`, "zip");
+
+    setResult(`
+      <div class="submit-summary">
+        <div><span>묶은 파일</span><strong>${files.length}개</strong></div>
+        <div><span>원본 합계</span><strong>${formatBytes(totalSize)}</strong></div>
+        <div><span>ZIP 용량</span><strong>${formatBytes(blob.size)}</strong></div>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>원본</th><th>패키지 안 파일명</th><th>용량</th></tr></thead><tbody>
+          ${rows.map((row) => `<tr><td>${escapeHtml(row.original)}</td><td>${escapeHtml(row.packaged)}</td><td>${formatBytes(row.size)}</td></tr>`).join("")}
+        </tbody></table>
+      </div>
+      <textarea class="result-text submit-output" id="packageChecklistResult" readonly>${escapeHtml(checklist)}</textarea>
+      ${downloadButton(blob, outName, "제출 패키지 ZIP 다운로드")}
+      <button class="secondary-action" type="button" data-copy="#packageChecklistResult">점검표 복사</button>
+    `);
+    app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+  });
 }
 
 function runWordCount() {
@@ -1388,6 +1511,7 @@ function setResult(html) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
+  result.querySelector("[data-share-tool]")?.addEventListener("click", copyToolLink);
 }
 
 function shouldAttachNextActions(html) {
@@ -1402,6 +1526,7 @@ function nextActionsHtml(id) {
       <strong>다음에 바로 할 작업</strong>
       <div>
         ${related.map((tool) => `<button type="button" data-tool-link="${tool.id}">${escapeHtml(tool.label)}</button>`).join("")}
+        <button type="button" data-share-tool>도구 링크 복사</button>
       </div>
     </div>
   `;
@@ -1505,6 +1630,40 @@ function dueLabel(date, time) {
   return `${base} · ${relative}`;
 }
 
+function packageFileName(file, index, meta) {
+  if (meta.mode === "keep") return file.name;
+  const ext = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "file";
+  const originalBase = slugPart(file.name.replace(/\.[^.]+$/, ""));
+  const prefix = [meta.course, meta.studentId, meta.studentName, meta.assignment].map(slugPart).filter(Boolean).join("_");
+  const number = String(index + 1).padStart(2, "0");
+  const base = meta.mode === "numbered"
+    ? `${prefix}_${number}`
+    : `${prefix}_${number}_${originalBase}`;
+  return `${base || `reportfit_${number}`}.${ext}`;
+}
+
+function buildPackageChecklist(meta, rows, totalSize) {
+  return [
+    "[레포트핏 제출 패키지]",
+    `과목: ${meta.course}`,
+    `과제: ${meta.assignment}`,
+    `학번/이름: ${meta.studentId} ${meta.studentName}`,
+    `제출처: ${meta.channel}`,
+    `마감일: ${meta.dueDate || "마감일 미입력"}`,
+    `파일 수: ${rows.length}개`,
+    `원본 합계: ${formatBytes(totalSize)}`,
+    "",
+    "[패키지 파일 목록]",
+    ...rows.map((row, index) => `${index + 1}. ${row.packaged} (${formatBytes(row.size)})`),
+    "",
+    "[제출 직전 확인]",
+    "- ZIP 파일을 한 번 열어 모든 파일이 들어 있는지 확인",
+    "- LMS나 이메일 화면에서 첨부 완료 상태 확인",
+    "- 제출 완료 화면, 접수 메일, 제출 시간을 캡처 또는 저장",
+    "- 교수자 안내가 ZIP 제출을 허용하는지 마지막으로 확인"
+  ].join("\n");
+}
+
 function value(selector) {
   return app.querySelector(selector)?.value || "";
 }
@@ -1537,6 +1696,18 @@ function applySample(type) {
       app.querySelectorAll("[data-submit-check]").forEach((input, index) => {
         input.checked = index < 4;
       });
+    },
+    "submit-package": () => {
+      const due = new Date();
+      due.setDate(due.getDate() + 2);
+      setValue("#packageCourse", "마케팅원론");
+      setValue("#packageAssignment", "1주차 개인과제");
+      setValue("#packageStudentId", "20261234");
+      setValue("#packageStudentName", "홍길동");
+      setValue("#packageChannel", "학교 LMS");
+      setValue("#packageDueDate", due.toISOString().slice(0, 10));
+      setValue("#packageNameMode", "prefix");
+      setValue("#packageZipName", "마케팅원론_20261234_홍길동_제출팩.zip");
     },
     "word-count": () => setValue("#wordText", "서론에서는 과제의 배경과 문제의식을 정리합니다.\n\n본론에서는 핵심 근거를 나누어 설명하고, 결론에서는 내가 확인한 시사점과 한계를 짧게 정리합니다."),
     "text-clean": () => setValue("#dirtyText", "PDF에서 복사한 문장입니다.\n줄바꿈이\n이상하게 들어가고      공백도     많습니다.\n\n문단을 다시 정리해야 합니다."),
@@ -1589,13 +1760,14 @@ function relatedTools(id) {
     "image-convert": ["image-compress", "pdf-compress", "privacy-clean"],
     "image-compress": ["image-convert", "file-check", "zip-pack"],
     "file-name": ["file-check", "zip-pack", "pdf-compress"],
-    "submit-checklist": ["file-name", "file-check", "citation-cleaner"],
+    "submit-checklist": ["submit-package", "file-name", "file-check"],
+    "submit-package": ["submit-checklist", "file-check", "privacy-clean"],
     "word-count": ["text-clean", "citation-cleaner", "file-name"],
     "text-clean": ["word-count", "table-convert", "citation-cleaner"],
     "table-convert": ["text-clean", "citation-cleaner", "file-check"],
     "citation-cleaner": ["word-count", "text-clean", "file-check"],
-    "file-check": ["pdf-compress", "file-name", "zip-pack"],
-    "zip-pack": ["file-check", "file-name", "privacy-clean"],
+    "file-check": ["submit-package", "pdf-compress", "file-name"],
+    "zip-pack": ["submit-package", "file-check", "file-name"],
     "privacy-clean": ["file-check", "image-compress", "pdf-compress"]
   };
   return (map[id] || popular).map(toolById).filter(Boolean);
@@ -1622,6 +1794,10 @@ function copyFor(id) {
     "submit-checklist": {
       why: "과제 제출 실패는 본문 내용보다 파일명, 용량, 첨부 누락, 참고문헌 정리 같은 마지막 단계에서 생기는 경우가 많습니다. 제출 전 점검표는 이 항목을 한 화면에서 정리해 실제 제출 직전 확인 시간을 줄입니다.",
       tip: "점검표를 만든 뒤에는 파일명 만들기, 파일 점검, 참고문헌 정리 도구로 이어가면 제출 전 흐름을 끊지 않고 마감본을 정리할 수 있습니다."
+    },
+    "submit-package": {
+      why: "조별 과제나 첨부 파일이 많은 과제는 최종본, 참고자료, 이미지 파일이 흩어져 제출 직전에 실수가 생기기 쉽습니다. 제출 패키지는 파일명을 같은 규칙으로 맞추고 점검표를 함께 넣어 마감본을 한 묶음으로 정리합니다.",
+      tip: "ZIP 제출이 허용되는 과목인지 먼저 확인하세요. ZIP 제출이 안 되는 경우에도 패키지 안 파일명 목록과 점검표를 참고해 개별 파일 첨부 순서를 확인할 수 있습니다."
     },
     "pdf-number": {
       why: "PDF를 합치거나 스캔하면 페이지 순서가 헷갈릴 수 있습니다. 하단 번호를 넣어두면 제출 전 검토와 조별 확인이 쉬워집니다.",
@@ -1696,6 +1872,24 @@ function guideFor(id) {
         {
           q: "마감 시간이 없으면 어떻게 쓰면 되나요?",
           a: "마감 시간이 명확하지 않으면 과목 공지나 LMS 안내를 먼저 확인하세요. 시간이 없으면 날짜만 입력해도 점검표를 만들 수 있습니다."
+        }
+      ]
+    },
+    "submit-package": {
+      title: "제출 패키지를 만들 때 확인할 것",
+      tips: [
+        "첨부해야 할 파일을 모두 선택한 뒤 빠진 참고자료나 이미지가 없는지 파일 목록을 먼저 확인하세요.",
+        "파일명 방식은 교수자 안내가 따로 없으면 과목명, 학번, 이름, 과제명이 들어가는 방식이 가장 무난합니다.",
+        "ZIP 파일을 내려받은 뒤 실제로 열어보고, 제출처가 ZIP 업로드를 허용하는지 마지막으로 확인하세요."
+      ],
+      faq: [
+        {
+          q: "ZIP 안에 어떤 파일이 들어가나요?",
+          a: "선택한 제출 파일과 함께 제출점검표.txt가 들어갑니다. 점검표에는 과목, 과제, 제출처, 파일 목록, 제출 직전 확인 항목이 정리됩니다."
+        },
+        {
+          q: "원본 파일명이 바뀌나요?",
+          a: "원본 파일은 그대로 두고 ZIP 안에 들어가는 복사본 이름만 선택한 규칙에 맞게 정리합니다."
         }
       ]
     },
@@ -1977,6 +2171,12 @@ function copyGenerated(event) {
   target.select?.();
   navigator.clipboard?.writeText(target.value || target.textContent || "");
   event.currentTarget.textContent = "복사 완료";
+}
+
+function copyToolLink(event) {
+  const url = new URL(currentTool.path, location.origin).href;
+  navigator.clipboard?.writeText(`${currentTool.label} - 레포트핏\n${url}`);
+  event.currentTarget.textContent = "링크 복사 완료";
 }
 
 function slugPart(text) {

@@ -201,6 +201,52 @@ p {
   line-height: 1.2;
 }
 
+.category-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.category-card {
+  min-height: 108px;
+  border: 1px solid #dce5e1;
+  border-radius: 16px;
+  padding: 16px;
+  background: #fff;
+  color: #14201f;
+  text-align: left;
+  box-shadow: 0 12px 28px rgba(16, 35, 32, 0.05);
+}
+
+.category-card.is-active {
+  border-color: #18a47a;
+  background: #e8f8f1;
+}
+
+.category-card span,
+.category-card strong,
+.category-card small {
+  display: block;
+}
+
+.category-card span {
+  color: #0b815e;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.category-card strong {
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+.category-card small {
+  margin-top: 8px;
+  color: #63706d;
+  line-height: 1.45;
+}
+
 .tool-layout {
   display: grid;
   grid-template-columns: 284px 1fr;
@@ -875,6 +921,7 @@ th {
   }
 
   .work-hero,
+  .category-overview,
   .tool-layout,
   .content-grid,
   .tool-guide {
@@ -895,6 +942,10 @@ th {
   }
 
   .tool-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .category-overview {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -965,6 +1016,22 @@ th {
 
   .tool-card {
     min-width: 178px;
+  }
+
+  .category-overview {
+    display: flex;
+    overflow-x: auto;
+    margin: 0 -12px 14px;
+    padding: 0 12px 4px;
+    scrollbar-width: none;
+  }
+
+  .category-overview::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-card {
+    min-width: 176px;
   }
 
   h1 {
