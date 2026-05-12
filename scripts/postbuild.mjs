@@ -106,6 +106,26 @@ const tools = [
     description: "참고문헌 줄을 만들고 정렬, 중복 제거, 누락 경고, 본문 인용까지 한 번에 정리합니다."
   },
   {
+    slug: "document-outline",
+    title: "문서 개요 만들기 - 레포트핏",
+    description: "과제 제목과 핵심 주장으로 보고서 목차와 섹션별 작성 포인트를 브라우저에서 빠르게 정리합니다."
+  },
+  {
+    slug: "document-check",
+    title: "문서 구조 점검 - 레포트핏",
+    description: "보고서 본문의 제목, 문단 길이, 결론, 참고문헌 같은 제출 전 구조 요소를 점검합니다."
+  },
+  {
+    slug: "text-compare",
+    title: "문서 비교 - 레포트핏",
+    description: "초안과 수정본을 줄 단위로 비교해 추가, 삭제, 유지된 내용을 빠르게 확인합니다."
+  },
+  {
+    slug: "reading-time",
+    title: "읽기 시간 계산 - 레포트핏",
+    description: "발표 대본과 보고서 본문을 읽는 데 걸리는 시간을 속도와 여유 시간 기준으로 계산합니다."
+  },
+  {
     slug: "file-check",
     title: "과제 파일 점검 - 레포트핏",
     description: "제출 파일의 용량, 확장자, 파일명, PDF 페이지 수를 제출 전에 확인합니다."

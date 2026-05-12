@@ -209,6 +209,42 @@ const tools = [
     description: "참고문헌 목록을 정렬하고 중복 줄을 제거하며 간단한 인용 형식을 만듭니다."
   },
   {
+    id: "document-outline",
+    label: "문서 개요 만들기",
+    short: "제목, 목차, 순서",
+    icon: "DOC",
+    group: "문서",
+    path: "/tools/document-outline/",
+    description: "과제 제목과 핵심 주장으로 보고서 목차와 섹션별 작성 포인트를 만듭니다."
+  },
+  {
+    id: "document-check",
+    label: "문서 구조 점검",
+    short: "제목, 문단, 결론",
+    icon: "DOC",
+    group: "문서",
+    path: "/tools/document-check/",
+    description: "본문의 제목, 문단 길이, 결론, 참고문헌 같은 제출 전 구조 요소를 점검합니다."
+  },
+  {
+    id: "text-compare",
+    label: "문서 비교",
+    short: "초안, 수정본 차이",
+    icon: "DOC",
+    group: "문서",
+    path: "/tools/text-compare/",
+    description: "초안과 수정본을 줄 단위로 비교해 추가, 삭제, 유지된 내용을 확인합니다."
+  },
+  {
+    id: "reading-time",
+    label: "읽기 시간 계산",
+    short: "발표, 낭독 시간",
+    icon: "DOC",
+    group: "문서",
+    path: "/tools/reading-time/",
+    description: "발표 대본이나 보고서 본문을 읽는 데 걸리는 시간을 속도별로 계산합니다."
+  },
+  {
     id: "file-check",
     label: "파일 점검",
     short: "용량, 확장자, 페이지",
@@ -273,7 +309,7 @@ const tools = [
   }
 ];
 
-const popular = ["pdf-slim", "image-resize", "privacy-scan", "file-hash", "submit-package", "file-check"];
+const popular = ["pdf-slim", "image-resize", "document-check", "privacy-scan", "submit-package", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -564,6 +600,10 @@ function stepStrip(id) {
     "text-clean": ["텍스트 붙여넣기", "정리 방식", "복사"],
     "table-convert": ["표 붙여넣기", "형식 선택", "복사"],
     "citation-cleaner": ["자료 입력", "스타일 선택", "정리/복사"],
+    "document-outline": ["핵심 입력", "목차 생성", "복사"],
+    "document-check": ["본문 붙여넣기", "구조 점검", "수정 포인트"],
+    "text-compare": ["초안 입력", "수정본 입력", "차이 확인"],
+    "reading-time": ["대본 입력", "속도 선택", "시간 확인"],
     "file-check": ["파일 선택", "기준 확인", "주의점 보기"],
     "zip-pack": ["파일 선택", "이름 지정", "ZIP 받기"],
     "privacy-clean": ["파일 선택", "정보 정리", "새 파일 받기"],
@@ -1084,6 +1124,76 @@ function workspaceFor(id) {
       <button class="primary-action" id="runCitation" type="button">참고문헌 정리하기</button>
       <div class="result" id="result"></div>
     `,
+    "document-outline": `
+      <div class="tool-head"><h2>문서 개요 만들기</h2><p>제목과 핵심 주장으로 보고서 목차와 섹션별 작성 포인트를 만듭니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="document-outline">개요 예시</button><button type="button" data-clear="form">입력 비우기</button></div>
+      <div class="form-grid">
+        <label>과제 제목
+          <input id="outlineTitle" type="text" placeholder="지역 청년 정책의 효과 분석">
+        </label>
+        <label>핵심 주장
+          <input id="outlineThesis" type="text" placeholder="정책 접근성은 높아졌지만 실제 참여 장벽은 남아 있다.">
+        </label>
+        <label>문서 유형
+          <select id="outlineMode">
+            <option value="report">보고서</option>
+            <option value="research">연구형 과제</option>
+            <option value="presentation">발표 대본</option>
+          </select>
+        </label>
+        <label>섹션 수
+          <input id="outlineSectionCount" type="number" min="3" max="8" step="1" value="5">
+        </label>
+      </div>
+      <button class="primary-action" id="runDocumentOutline" type="button">문서 개요 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "document-check": `
+      <div class="tool-head"><h2>문서 구조 점검</h2><p>제목, 문단 길이, 결론, 참고문헌 같은 제출 전 구조 요소를 확인합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="document-check">점검 예시</button><button type="button" data-clear="textarea">비우기</button></div>
+      <textarea id="documentCheckText" class="big-textarea" placeholder="보고서 본문이나 발표 대본을 붙여넣으세요."></textarea>
+      <div class="option-row">
+        <label>문서 유형
+          <select id="documentCheckMode">
+            <option value="report">보고서</option>
+            <option value="presentation">발표 대본</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runDocumentCheck" type="button">문서 구조 점검하기</button>
+      <div class="result" id="result"></div>
+    `,
+    "text-compare": `
+      <div class="tool-head"><h2>문서 비교</h2><p>초안과 수정본을 줄 단위로 비교해 추가, 삭제, 유지된 내용을 확인합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="text-compare">비교 예시</button><button type="button" data-clear="textarea">비우기</button></div>
+      <textarea id="compareBefore" class="big-textarea" placeholder="초안을 붙여넣으세요."></textarea>
+      <textarea id="compareAfter" class="big-textarea" placeholder="수정본을 붙여넣으세요."></textarea>
+      <button class="primary-action" id="runTextCompare" type="button">문서 비교하기</button>
+      <div class="result" id="result"></div>
+    `,
+    "reading-time": `
+      <div class="tool-head"><h2>읽기 시간 계산</h2><p>발표 대본이나 보고서 본문을 읽는 데 걸리는 시간을 속도별로 계산합니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="reading-time">대본 예시</button><button type="button" data-clear="textarea">비우기</button></div>
+      <textarea id="readingText" class="big-textarea" placeholder="발표 대본이나 본문을 붙여넣으세요."></textarea>
+      <div class="option-row">
+        <label>읽기 속도
+          <select id="readingSpeed">
+            <option value="450">보통 발표 속도</option>
+            <option value="320">천천히 또박또박</option>
+            <option value="600">빠른 낭독</option>
+          </select>
+        </label>
+        <label>질의응답/여유
+          <select id="readingBuffer">
+            <option value="0">추가 없음</option>
+            <option value="20">20% 여유 포함</option>
+            <option value="30">30% 여유 포함</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runReadingTime" type="button">읽기 시간 계산하기</button>
+      <div class="result" id="result"></div>
+    `,
     "file-check": `
       <div class="tool-head"><h2>파일 점검</h2><p>제출 파일의 용량, 확장자, 이름, PDF 페이지 수를 확인합니다.</p></div>
       ${drop("*/*", true)}
@@ -1228,6 +1338,10 @@ function bindToolEvents(id) {
     "text-clean": ["#runTextClean", runTextClean],
     "table-convert": ["#runTableConvert", runTableConvert],
     "citation-cleaner": ["#runCitation", runCitationCleaner],
+    "document-outline": ["#runDocumentOutline", runDocumentOutline],
+    "document-check": ["#runDocumentCheck", runDocumentCheck],
+    "text-compare": ["#runTextCompare", runTextCompare],
+    "reading-time": ["#runReadingTime", runReadingTime],
     "file-check": ["#runFileCheck", runFileCheck],
     "zip-pack": ["#runZipPack", runZipPack],
     "privacy-clean": ["#runPrivacyClean", runPrivacyClean],
@@ -1971,6 +2085,114 @@ function runCitationCleaner() {
     <button class="secondary-action" type="button" data-copy="#cleanCitation">정리한 참고문헌 복사</button>
   `);
   app.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", copyGenerated));
+}
+
+function runDocumentOutline() {
+  const title = value("#outlineTitle").trim() || "과제 제목";
+  const thesis = value("#outlineThesis").trim() || "핵심 주장을 한 문장으로 정리하세요.";
+  const mode = value("#outlineMode") || "report";
+  const sectionCount = clampNumber(value("#outlineSectionCount"), 3, 8, 5);
+  const sections = buildOutlineSections(mode, sectionCount, thesis);
+  const output = [
+    `# ${title}`,
+    ``,
+    `핵심 주장: ${thesis}`,
+    ``,
+    ...sections.flatMap((section, index) => [
+      `## ${index + 1}. ${section.title}`,
+      ...section.points.map((point) => `- ${point}`),
+      ``
+    ]),
+    `## 제출 전 확인`,
+    `- 제목, 이름, 학번, 과목명 표기 확인`,
+    `- 본문 주장과 결론이 같은 방향인지 확인`,
+    `- 참고문헌과 파일명 조건 확인`
+  ].join("\n");
+
+  setResult(`
+    <textarea class="result-text" id="outlineResult" readonly>${escapeHtml(output)}</textarea>
+    <div class="metric-grid">
+      <div><span>문서 유형</span><strong>${escapeHtml(outlineModeLabel(mode))}</strong></div>
+      <div><span>섹션</span><strong>${sections.length}개</strong></div>
+      <div><span>복사 준비</span><strong>완료</strong></div>
+    </div>
+    <button class="secondary-action" type="button" data-copy="#outlineResult">문서 개요 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function runDocumentCheck() {
+  const text = value("#documentCheckText");
+  if (!text.trim()) {
+    setResult(`<p class="error">점검할 문서 본문을 붙여넣으세요.</p>`);
+    return;
+  }
+  const mode = value("#documentCheckMode") || "report";
+  const stats = documentStats(text);
+  const warnings = documentWarnings(text, stats, mode);
+  setResult(`
+    <div class="metric-grid">
+      <div><span>공백 제외</span><strong>${stats.noSpace.toLocaleString()}자</strong></div>
+      <div><span>문단</span><strong>${stats.paragraphs.length}개</strong></div>
+      <div><span>제목 후보</span><strong>${stats.headings.length}개</strong></div>
+      <div><span>점검 결과</span><strong>${warnings.length ? `${warnings.length}개 확인` : "양호"}</strong></div>
+    </div>
+    ${warnings.length
+      ? `<ul class="warning-list">${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>`
+      : `<p class="soft-note">기본 구조상 큰 누락은 보이지 않습니다. 과목별 세부 양식은 강의 안내를 우선하세요.</p>`}
+  `);
+}
+
+function runTextCompare() {
+  const before = value("#compareBefore");
+  const after = value("#compareAfter");
+  if (!before.trim() || !after.trim()) {
+    setResult(`<p class="error">초안과 수정본을 모두 붙여넣으세요.</p>`);
+    return;
+  }
+  const diff = diffLines(before, after);
+  const additions = diff.filter((item) => item.type === "add").length;
+  const removals = diff.filter((item) => item.type === "remove").length;
+  const kept = diff.filter((item) => item.type === "same").length;
+  const preview = diff.slice(0, 90);
+  const output = diff.map((item) => `${diffPrefix(item.type)} ${item.text}`).join("\n");
+  setResult(`
+    <textarea class="result-text" id="compareResult" readonly>${escapeHtml(output)}</textarea>
+    <div class="metric-grid">
+      <div><span>추가</span><strong>${additions}줄</strong></div>
+      <div><span>삭제</span><strong>${removals}줄</strong></div>
+      <div><span>유지</span><strong>${kept}줄</strong></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>상태</th><th>내용</th></tr></thead><tbody>
+      ${preview.map((item) => `<tr><td>${escapeHtml(diffLabel(item.type))}</td><td>${escapeHtml(item.text)}</td></tr>`).join("")}
+    </tbody></table></div>
+    ${diff.length > preview.length ? `<p class="soft-note">표에는 처음 ${preview.length}줄만 표시했습니다. 전체 차이는 위 텍스트 박스에서 복사할 수 있습니다.</p>` : ""}
+    <button class="secondary-action" type="button" data-copy="#compareResult">비교 결과 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function runReadingTime() {
+  const text = value("#readingText");
+  if (!text.trim()) {
+    setResult(`<p class="error">읽기 시간을 계산할 대본이나 본문을 붙여넣으세요.</p>`);
+    return;
+  }
+  const speed = Number(value("#readingSpeed")) || 450;
+  const buffer = Number(value("#readingBuffer")) || 0;
+  const noSpace = text.replace(/\s/g, "");
+  const baseMinutes = noSpace.length / speed;
+  const totalMinutes = baseMinutes * (1 + buffer / 100);
+  const sentences = text.split(/[.!?。]|다\.|요\.|니다\./).map((part) => part.trim()).filter(Boolean).length;
+  setResult(`
+    <div class="metric-grid">
+      <div><span>공백 제외</span><strong>${noSpace.length.toLocaleString()}자</strong></div>
+      <div><span>예상 시간</span><strong>${formatMinutes(totalMinutes)}</strong></div>
+      <div><span>문장 후보</span><strong>${sentences.toLocaleString()}개</strong></div>
+      <div><span>속도</span><strong>분당 ${speed}자</strong></div>
+    </div>
+    <p class="soft-note">${readingAdvice(totalMinutes, buffer)}</p>
+  `);
 }
 
 async function runFileCheck() {
@@ -2882,7 +3104,19 @@ function applySample(type) {
       setValue("#citationTitle", "대학생 과제 제출 과정에서의 파일 형식 문제");
       setValue("#citationSource", "디지털학습연구 12(3)");
       setValue("#citationUrl", "");
-    }
+    },
+    "document-outline": () => {
+      setValue("#outlineTitle", "지역 청년 정책의 효과 분석");
+      setValue("#outlineThesis", "청년 정책은 접근성은 높아졌지만 실제 참여 장벽은 여전히 남아 있다.");
+      setValue("#outlineMode", "report");
+      setValue("#outlineSectionCount", "5");
+    },
+    "document-check": () => setValue("#documentCheckText", "서론\n지역 청년 정책은 다양한 지원 제도를 제공하지만 실제 참여 과정에서는 정보 접근성과 신청 절차의 장벽이 남아 있다.\n\n본론\n첫째, 정책 정보가 여러 기관에 흩어져 있어 대상자가 자신에게 맞는 제도를 찾기 어렵다. 둘째, 신청 조건과 필요 서류가 복잡해 중도 포기 가능성이 높다.\n\n결론\n정책 효과를 높이려면 정보 안내와 신청 절차를 더 단순하게 설계해야 한다.\n\n참고문헌\n지역청년정책보고서, 2026."),
+    "text-compare": () => {
+      setValue("#compareBefore", "서론에서는 정책의 배경을 설명한다.\n청년 지원 정책은 충분히 알려져 있다.\n결론에서는 개선 방향을 제시한다.");
+      setValue("#compareAfter", "서론에서는 정책의 배경과 문제의식을 설명한다.\n청년 지원 정책은 존재하지만 실제 접근성은 낮을 수 있다.\n결론에서는 정보 접근성과 신청 절차 개선 방향을 제시한다.");
+    },
+    "reading-time": () => setValue("#readingText", "안녕하세요. 오늘 발표에서는 지역 청년 정책의 효과와 한계를 살펴보겠습니다. 먼저 정책 접근성이 높아진 배경을 설명하고, 이어서 실제 참여 과정에서 남는 장벽을 사례 중심으로 정리하겠습니다. 마지막으로 신청 절차를 단순화해야 한다는 결론을 제시하겠습니다.")
   };
   samples[type]?.();
 }
@@ -2922,10 +3156,14 @@ function relatedTools(id) {
     "file-name": ["file-check", "zip-pack", "pdf-compress"],
     "submit-checklist": ["submit-package", "file-name", "file-check"],
     "submit-package": ["submit-checklist", "file-check", "privacy-clean"],
-    "word-count": ["text-clean", "citation-cleaner", "file-name"],
-    "text-clean": ["word-count", "table-convert", "citation-cleaner"],
-    "table-convert": ["text-clean", "citation-cleaner", "file-check"],
-    "citation-cleaner": ["word-count", "text-clean", "file-check"],
+    "word-count": ["reading-time", "text-clean", "document-check"],
+    "text-clean": ["document-check", "text-compare", "citation-cleaner"],
+    "table-convert": ["text-clean", "document-outline", "file-check"],
+    "citation-cleaner": ["document-check", "document-outline", "word-count"],
+    "document-outline": ["document-check", "word-count", "citation-cleaner"],
+    "document-check": ["text-clean", "word-count", "citation-cleaner"],
+    "text-compare": ["text-clean", "document-check", "word-count"],
+    "reading-time": ["word-count", "document-check", "text-clean"],
     "file-check": ["submit-package", "pdf-compress", "pdf-slim"],
     "zip-pack": ["submit-package", "file-check", "file-name"],
     "privacy-clean": ["privacy-scan", "privacy-mask", "file-hash"],
@@ -2994,6 +3232,22 @@ function copyFor(id) {
     "citation-cleaner": {
       why: "참고문헌은 내용보다 정렬, 중복, 띄어쓰기에서 어수선해 보이는 경우가 많습니다. 제출 전에 줄 단위로 정리하면 문서의 마감감이 좋아집니다.",
       tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요. 레포트핏은 누락 가능성을 알려주지만 최종 양식 판단은 강의 안내를 우선합니다."
+    },
+    "document-outline": {
+      why: "보고서를 쓰기 전 목차가 흐릿하면 본문이 길어질수록 주장이 흔들립니다. 먼저 섹션과 작성 포인트를 잡아두면 자료 조사와 본문 작성 순서를 빠르게 정리할 수 있습니다.",
+      tip: "생성된 개요는 초안입니다. 과목에서 요구한 목차 형식이나 평가 기준이 있으면 그 순서에 맞게 섹션명을 바꿔 사용하세요."
+    },
+    "document-check": {
+      why: "내용을 다 쓴 뒤에는 제목, 문단 길이, 결론, 참고문헌 같은 구조 문제를 놓치기 쉽습니다. 구조 점검은 제출 전 글의 뼈대를 빠르게 확인하게 해줍니다.",
+      tip: "경고가 나온다고 글이 틀렸다는 뜻은 아닙니다. 긴 문단, 결론 누락, 출처 표시처럼 실제로 확인해야 할 지점을 알려주는 용도로 쓰세요."
+    },
+    "text-compare": {
+      why: "초안과 수정본이 섞이면 어떤 문장을 고쳤는지 확인하기 어렵습니다. 줄 단위 비교를 하면 추가된 문장과 삭제된 문장을 빠르게 볼 수 있습니다.",
+      tip: "문단을 크게 다시 쓴 경우에는 삭제와 추가가 많이 보일 수 있습니다. 최종 제출 전에는 비교 결과보다 수정본 전체 흐름을 한 번 더 읽으세요."
+    },
+    "reading-time": {
+      why: "발표 대본은 글자수만 맞아도 실제 말하는 시간과 다를 수 있습니다. 읽기 시간을 먼저 계산하면 발표 제한 시간을 넘기기 전에 분량을 줄일 수 있습니다.",
+      tip: "발표는 실제로 말하면 더 길어지는 경우가 많습니다. 질문이나 숨 돌릴 시간을 포함하려면 20% 이상 여유를 넣어 계산하세요."
     },
     "submit-checklist": {
       why: "과제 제출 실패는 본문 내용보다 파일명, 용량, 첨부 누락, 참고문헌 정리 같은 마지막 단계에서 생기는 경우가 많습니다. 제출 전 점검표는 이 항목을 한 화면에서 정리해 실제 제출 직전 확인 시간을 줄입니다.",
@@ -3196,6 +3450,78 @@ function guideFor(id) {
         {
           q: "본문 인용도 만들 수 있나요?",
           a: "입력값으로 참고문헌 줄을 만들면 간단한 본문 인용도 함께 복사할 수 있습니다. 다만 직접 인용, 간접 인용 규칙은 과목 기준에 맞춰 확인해야 합니다."
+        }
+      ]
+    },
+    "document-outline": {
+      title: "문서 개요를 만들 때 확인할 것",
+      tips: [
+        "핵심 주장을 한 문장으로 먼저 적으면 목차가 덜 흔들립니다.",
+        "생성된 섹션명은 과목에서 요구한 양식에 맞게 바꿔 사용하세요.",
+        "개요를 만든 뒤 참고문헌 정리와 문서 구조 점검으로 이어가면 제출 전 흐름이 깔끔합니다."
+      ],
+      faq: [
+        {
+          q: "자동으로 완성된 보고서를 써주나요?",
+          a: "아니요. 문서의 뼈대와 작성 포인트를 정리하는 도구입니다. 실제 본문과 근거는 사용자가 작성해야 합니다."
+        },
+        {
+          q: "섹션 수를 늘리면 더 좋은가요?",
+          a: "항상 그렇지는 않습니다. 짧은 과제는 3~5개 섹션이 더 읽기 쉽고, 긴 보고서만 세분화하는 편이 좋습니다."
+        }
+      ]
+    },
+    "document-check": {
+      title: "문서 구조 점검에서 봐야 할 것",
+      tips: [
+        "긴 문단은 모바일이나 LMS 미리보기에서 읽기 어렵게 보일 수 있습니다.",
+        "결론, 요약, 시사점 같은 마무리 신호가 있는지 확인하세요.",
+        "출처가 필요한 과제라면 참고문헌이나 링크 표시가 본문과 함께 있는지 확인하세요."
+      ],
+      faq: [
+        {
+          q: "점검 결과가 평가 점수를 보장하나요?",
+          a: "아니요. 구조상 확인할 지점을 알려주는 보조 기능입니다. 최종 평가는 과제 기준과 본문 품질에 따라 달라집니다."
+        },
+        {
+          q: "제목 후보는 어떻게 찾나요?",
+          a: "번호, Markdown 제목, 서론·본론·결론·참고문헌 같은 흔한 섹션명을 기준으로 찾습니다."
+        }
+      ]
+    },
+    "text-compare": {
+      title: "문서 비교에서 봐야 할 것",
+      tips: [
+        "줄 단위 비교라서 문단을 통째로 옮기면 삭제와 추가가 크게 보일 수 있습니다.",
+        "수정 전후에 같은 줄이 유지되는지 확인하면 실수로 빠진 문장을 찾기 쉽습니다.",
+        "최종본은 비교 결과보다 전체 흐름을 다시 읽어 확인하세요."
+      ],
+      faq: [
+        {
+          q: "단어 단위로 비교하나요?",
+          a: "아니요. 빠른 확인을 위해 줄 단위로 비교합니다. 세밀한 문장 교정은 워드프로세서의 변경 추적 기능을 함께 쓰세요."
+        },
+        {
+          q: "비교한 내용이 저장되나요?",
+          a: "아니요. 브라우저 화면에서 비교 결과를 만들고 복사할 수 있게만 처리합니다."
+        }
+      ]
+    },
+    "reading-time": {
+      title: "읽기 시간 계산에서 봐야 할 것",
+      tips: [
+        "발표는 실제로 말하면 계산보다 길어질 수 있으니 여유 시간을 포함하세요.",
+        "자료 화면을 넘기거나 숨을 고르는 시간은 따로 잡는 편이 좋습니다.",
+        "제한 시간이 빡빡하면 핵심 근거와 예시를 먼저 줄이세요."
+      ],
+      faq: [
+        {
+          q: "한국어 발표 기준인가요?",
+          a: "공백을 제외한 글자 수를 기준으로 대략 계산합니다. 실제 시간은 말하는 속도와 쉬는 시간에 따라 달라집니다."
+        },
+        {
+          q: "보고서 읽기 시간에도 쓸 수 있나요?",
+          a: "가능합니다. 발표 대본뿐 아니라 본문 검토에 걸리는 대략적인 시간을 보는 용도로도 쓸 수 있습니다."
         }
       ]
     },
@@ -3417,6 +3743,128 @@ function guideFor(id) {
     }
   };
   return guides[id] || base;
+}
+
+function buildOutlineSections(mode, count, thesis) {
+  const presets = {
+    report: [
+      ["서론", ["주제의 배경과 문제의식을 제시합니다.", `글의 방향을 "${thesis}"로 분명히 잡습니다.`]],
+      ["개념과 기준 정리", ["핵심 용어와 판단 기준을 짧게 정의합니다.", "과제에서 요구한 범위를 벗어나지 않게 기준을 좁힙니다."]],
+      ["현황 또는 사례 분석", ["자료, 사례, 관찰 내용을 근거별로 나눕니다.", "표나 인용을 넣을 위치를 미리 표시합니다."]],
+      ["쟁점과 해석", ["앞선 근거가 핵심 주장과 어떻게 연결되는지 설명합니다.", "반대 관점이나 한계를 한 단락으로 정리합니다."]],
+      ["결론", ["핵심 주장을 다시 요약합니다.", "시사점, 한계, 후속 과제를 짧게 남깁니다."]]
+    ],
+    research: [
+      ["연구 배경", ["문제 상황과 연구 필요성을 설명합니다.", "선행 논의에서 비어 있는 지점을 제시합니다."]],
+      ["연구 질문", [`"${thesis}"와 연결되는 질문을 1~2개로 좁힙니다.`, "분석 대상과 범위를 명확히 적습니다."]],
+      ["자료와 방법", ["사용할 자료, 기준, 비교 방식을 정리합니다.", "자료 한계와 제외 기준을 함께 적습니다."]],
+      ["분석 결과", ["핵심 결과를 소제목별로 나눕니다.", "표, 수치, 인용이 필요한 위치를 표시합니다."]],
+      ["논의와 결론", ["결과가 연구 질문에 주는 답을 정리합니다.", "한계와 다음 연구 방향을 덧붙입니다."]]
+    ],
+    presentation: [
+      ["도입", ["청중이 바로 이해할 문제 상황으로 시작합니다.", "발표의 결론을 먼저 한 문장으로 예고합니다."]],
+      ["핵심 배경", ["용어와 맥락을 1분 안에 설명할 수 있게 줄입니다.", "슬라이드 한 장에 한 메시지만 둡니다."]],
+      ["근거 1", ["가장 강한 근거를 먼저 보여줍니다.", "숫자나 사례는 짧은 문장으로 해석까지 붙입니다."]],
+      ["근거 2", ["다른 관점의 근거를 이어 붙입니다.", "앞선 근거와 중복되지 않게 역할을 나눕니다."]],
+      ["마무리", ["핵심 주장과 청중이 가져갈 메시지를 반복합니다.", "질문을 받을 수 있는 열린 문장으로 끝냅니다."]]
+    ]
+  };
+  const base = presets[mode] || presets.report;
+  return Array.from({ length: count }, (_, index) => {
+    const section = base[index] || [`본론 ${index}`, ["이 섹션에서 다룰 근거를 정리합니다.", "핵심 주장과 연결되는 해석을 붙입니다."]];
+    return { title: section[0], points: section[1] };
+  });
+}
+
+function outlineModeLabel(mode) {
+  const labels = { report: "보고서", research: "연구형 과제", presentation: "발표 대본" };
+  return labels[mode] || "보고서";
+}
+
+function documentStats(text) {
+  const lines = text.split(/\r?\n/).map((line) => line.trim());
+  const paragraphs = text.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+  const headings = lines.filter((line) => /^(#{1,3}\s+|[0-9]+[.)]\s+|[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+[.)]?\s*|서론|본론|결론|참고문헌)/.test(line));
+  return {
+    lines,
+    paragraphs,
+    headings,
+    noSpace: text.replace(/\s/g, "").length,
+    longParagraphs: paragraphs.filter((paragraph) => paragraph.replace(/\s/g, "").length > 650),
+    shortParagraphs: paragraphs.filter((paragraph) => paragraph.replace(/\s/g, "").length < 80)
+  };
+}
+
+function documentWarnings(text, stats, mode) {
+  const warnings = [];
+  if (stats.noSpace < (mode === "presentation" ? 600 : 1200)) warnings.push("분량이 짧아 보입니다. 과제 기준 분량과 맞는지 확인하세요.");
+  if (!stats.headings.length) warnings.push("제목이나 소제목 후보가 거의 없습니다. 긴 문서는 섹션을 나누는 편이 읽기 쉽습니다.");
+  if (stats.longParagraphs.length) warnings.push(`650자 이상 긴 문단이 ${stats.longParagraphs.length}개 있습니다. 두 문단으로 나눌 수 있는지 확인하세요.`);
+  if (!/(결론|요약|시사점|마무리|정리)/.test(text)) warnings.push("결론, 요약, 시사점 같은 마무리 신호가 보이지 않습니다.");
+  if (mode === "report" && !/(참고문헌|출처|인용|doi|https?:\/\/)/i.test(text)) warnings.push("참고문헌이나 출처 표시가 필요한 과제인지 확인하세요.");
+  if (/[ ]{3,}|\t/.test(text)) warnings.push("연속 공백이나 탭이 남아 있습니다. 텍스트 정리 도구로 한 번 다듬는 것이 좋습니다.");
+  return warnings;
+}
+
+function diffLines(before, after) {
+  const oldLines = normalizeCompareLines(before);
+  const newLines = normalizeCompareLines(after);
+  const dp = Array.from({ length: oldLines.length + 1 }, () => Array(newLines.length + 1).fill(0));
+  for (let i = oldLines.length - 1; i >= 0; i -= 1) {
+    for (let j = newLines.length - 1; j >= 0; j -= 1) {
+      dp[i][j] = oldLines[i] === newLines[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const result = [];
+  let i = 0;
+  let j = 0;
+  while (i < oldLines.length && j < newLines.length) {
+    if (oldLines[i] === newLines[j]) {
+      result.push({ type: "same", text: oldLines[i] });
+      i += 1;
+      j += 1;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      result.push({ type: "remove", text: oldLines[i] });
+      i += 1;
+    } else {
+      result.push({ type: "add", text: newLines[j] });
+      j += 1;
+    }
+  }
+  while (i < oldLines.length) result.push({ type: "remove", text: oldLines[i++] });
+  while (j < newLines.length) result.push({ type: "add", text: newLines[j++] });
+  return result;
+}
+
+function normalizeCompareLines(text) {
+  return text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+}
+
+function diffPrefix(type) {
+  if (type === "add") return "+";
+  if (type === "remove") return "-";
+  return " ";
+}
+
+function diffLabel(type) {
+  if (type === "add") return "추가";
+  if (type === "remove") return "삭제";
+  return "유지";
+}
+
+function formatMinutes(minutes) {
+  const totalSeconds = Math.max(1, Math.round(minutes * 60));
+  const min = Math.floor(totalSeconds / 60);
+  const sec = totalSeconds % 60;
+  if (!min) return `${sec}초`;
+  return `${min}분 ${String(sec).padStart(2, "0")}초`;
+}
+
+function readingAdvice(minutes, buffer) {
+  const bufferText = buffer ? ` 여유 시간 ${buffer}%를 포함했습니다.` : "";
+  if (minutes < 3) return `짧은 발표나 도입부 분량에 가깝습니다.${bufferText}`;
+  if (minutes < 8) return `일반 과제 발표 한 꼭지로 무난한 분량입니다.${bufferText}`;
+  return `발표 시간이 길어질 수 있습니다. 핵심 근거와 예시를 줄일 수 있는지 확인하세요.${bufferText}`;
 }
 
 function cleanText(raw, mode, gap) {
