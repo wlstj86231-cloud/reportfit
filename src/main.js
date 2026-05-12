@@ -60,6 +60,8 @@ const uiText = {
     langLabel: "영어로 보기",
     guideIndexTitle: "과제 제출 가이드",
     guideIndexLead: "도구 화면은 빠르게 쓰고, 자세한 설명은 별도 가이드에서 읽을 수 있게 분리했습니다.",
+    guideIndexPath: "가이드 목록 경로",
+    guideCurrentPath: "현재 가이드 경로",
     guideRead: "가이드 읽기",
     guideHome: "가이드 목록",
     privacyAdTitle: "광고와 쿠키 안내",
@@ -95,6 +97,8 @@ const uiText = {
     langLabel: "View in Korean",
     guideIndexTitle: "Assignment Submission Guides",
     guideIndexLead: "Tools stay fast and focused. Detailed explanations live in separate long-form guides.",
+    guideIndexPath: "Guide index path",
+    guideCurrentPath: "Current guide path",
     guideRead: "Read guide",
     guideHome: "Guide list",
     privacyAdTitle: "Advertising and Cookie Notice",
@@ -609,6 +613,7 @@ function infoPageText(pathname) {
 let currentPage = findPageFromLocation();
 let currentGuide = findGuideFromLocation();
 let currentTool = findToolFromLocation() || tools[0];
+let activeToolGroupKey = "";
 
 render();
 
@@ -652,9 +657,7 @@ function render() {
             <small>${escapeHtml(t("brandSub"))}</small>
           </span>
         </a>
-        <nav class="quick-nav" aria-label="${escapeHtml(t("quickTools"))}">
-          ${popular.map((id) => navButton(toolById(id))).join("")}
-        </nav>
+        ${quickNavMarkup()}
         ${languageToggle()}
       </header>
 
@@ -730,9 +733,7 @@ function renderInfoPage() {
             <small>${escapeHtml(t("brandSub"))}</small>
           </span>
         </a>
-        <nav class="quick-nav" aria-label="${escapeHtml(t("quickTools"))}">
-          ${popular.map((id) => navButton(toolById(id))).join("")}
-        </nav>
+        ${quickNavMarkup()}
         ${languageToggle()}
       </header>
       <main class="info-page">
@@ -771,9 +772,7 @@ function renderGuidePage() {
             <small>${escapeHtml(t("brandSub"))}</small>
           </span>
         </a>
-        <nav class="quick-nav" aria-label="${escapeHtml(t("quickTools"))}">
-          ${popular.map((id) => navButton(toolById(id))).join("")}
-        </nav>
+        ${quickNavMarkup()}
         ${languageToggle()}
       </header>
       <main class="info-page">
@@ -818,12 +817,17 @@ function guideIndexMarkup() {
       <p class="eyebrow">${escapeHtml(brandName())}</p>
       <h1>${escapeHtml(t("guideIndexTitle"))}</h1>
       <p class="info-lead">${escapeHtml(t("guideIndexLead"))}</p>
+      <div class="guide-route-panel">
+        <span>${escapeHtml(t("guideIndexPath"))}</span>
+        <code>/guides/</code>
+      </div>
       <div class="guide-card-list">
         ${guideArticles.map((article) => `
           <a class="guide-card" href="/guides/${article.slug}/">
             <span>${escapeHtml(t("guides"))}</span>
             <strong>${escapeHtml(articleTitle(article))}</strong>
             <small>${escapeHtml(articleSummary(article))}</small>
+            <code class="guide-path">/guides/${escapeHtml(article.slug)}/</code>
           </a>
         `).join("")}
       </div>
@@ -839,6 +843,10 @@ function guideArticleMarkup(article) {
       <p class="eyebrow"><a href="/guides/">${escapeHtml(t("guideHome"))}</a></p>
       <h1>${escapeHtml(articleTitle(article))}</h1>
       <p class="info-lead">${escapeHtml(articleSummary(article))}</p>
+      <div class="guide-route-panel">
+        <span>${escapeHtml(t("guideCurrentPath"))}</span>
+        <code>/guides/${escapeHtml(article.slug)}/</code>
+      </div>
       ${articleExperienceNote(article)}
       ${sections.map((section) => `
         <section>
@@ -924,11 +932,20 @@ function navButton(tool) {
   return `<button type="button" class="${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}">${escapeHtml(displayTool.label)}</button>`;
 }
 
+function quickNavMarkup() {
+  return `
+    <nav class="quick-nav" aria-label="${escapeHtml(t("quickTools"))}">
+      ${popular.map((id) => navButton(toolById(id))).join("")}
+      <a class="${currentGuide ? "is-active" : ""}" href="/guides/" data-guide-link>${escapeHtml(t("guides"))}</a>
+    </nav>
+  `;
+}
+
 function toolCard(tool) {
   const displayTool = localizedTool(tool);
   const searchText = `${tool.id} ${tool.label} ${tool.short} ${tool.group} ${tool.description} ${displayTool.label} ${displayTool.short} ${displayTool.group} ${displayTool.description}`.toLowerCase();
   return `
-    <button type="button" class="tool-card ${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}" data-search="${escapeHtml(searchText)}">
+    <button type="button" class="tool-card ${tool.id === currentTool.id ? "is-active" : ""}" data-tool-link="${tool.id}" data-search="${escapeHtml(searchText)}" data-group-key="${escapeHtml(tool.group)}">
       <span class="tool-icon">${escapeHtml(tool.icon)}</span>
       <span>
         <strong>${escapeHtml(displayTool.label)}</strong>
@@ -938,19 +955,33 @@ function toolCard(tool) {
   `;
 }
 
+function toolGroupEntries() {
+  const groups = new Map();
+  tools.forEach((tool) => {
+    if (!groups.has(tool.group)) {
+      groups.set(tool.group, {
+        key: tool.group,
+        label: localizedTool(tool).group,
+        tools: []
+      });
+    }
+    groups.get(tool.group).tools.push(tool);
+  });
+  return [...groups.values()];
+}
+
 function toolCategoryOverview() {
-  const groups = [...new Set(tools.map((tool) => localizedTool(tool).group))];
-  const currentGroup = localizedTool(currentTool).group;
+  const groups = toolGroupEntries();
+  const activeKey = activeToolGroupKey || currentTool.group;
   return `
     <section class="category-overview" aria-label="${escapeHtml(t("toolBundles"))}">
       ${groups.map((group) => {
-        const groupTools = tools.filter((tool) => localizedTool(tool).group === group);
-        const active = group === currentGroup ? " is-active" : "";
+        const active = group.key === activeKey ? " is-active" : "";
         return `
-          <button class="category-card${active}" type="button" data-tool-group="${escapeHtml(group)}">
-            <span>${escapeHtml(group)}</span>
-            <strong>${escapeHtml(t("toolCount", groupTools.length))}</strong>
-            <small>${escapeHtml(groupTools.slice(0, 3).map((tool) => localizedTool(tool).label).join(" · "))}</small>
+          <button class="category-card${active}" type="button" data-tool-group-key="${escapeHtml(group.key)}" data-tool-group-label="${escapeHtml(group.label)}">
+            <span>${escapeHtml(group.label)}</span>
+            <strong>${escapeHtml(t("toolCount", group.tools.length))}</strong>
+            <small>${escapeHtml(group.tools.slice(0, 3).map((tool) => localizedTool(tool).label).join(" · "))}</small>
           </button>
         `;
       }).join("")}
@@ -2036,6 +2067,16 @@ function bindGlobalEvents() {
     setLanguage(currentLang === "en" ? "ko" : "en");
   });
 
+  app.querySelector("[data-guide-link]")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    currentPage = null;
+    currentGuide = { type: "index" };
+    activeToolGroupKey = "";
+    history.pushState({ guide: "index" }, "", "/guides/");
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   app.querySelectorAll("[data-tool-link]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
@@ -2044,6 +2085,7 @@ function bindGlobalEvents() {
       currentTool = tool;
       currentPage = null;
       currentGuide = null;
+      activeToolGroupKey = "";
       history.pushState({ tool: tool.id }, "", tool.path);
       render();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2129,30 +2171,63 @@ function bindDropzones() {
 
 function bindToolSearch() {
   const search = app.querySelector("#toolSearch");
-  const count = app.querySelector("#toolSearchCount");
   if (!search) return;
   search.addEventListener("input", () => {
-    const keyword = search.value.trim().toLowerCase();
-    let visible = 0;
-    app.querySelectorAll(".tool-card").forEach((card) => {
-      const haystack = card.dataset.search || "";
-      const match = !keyword || haystack.includes(keyword);
-      card.hidden = !match;
-      if (match) visible += 1;
-    });
-    if (count) count.textContent = t("toolCount", visible);
+    activeToolGroupKey = "";
+    search.placeholder = t("toolSearch");
+    setActiveCategory(currentTool.group);
+    updateToolListFilter({ keyword: search.value });
   });
+  if (activeToolGroupKey) {
+    const activeGroup = toolGroupEntries().find((group) => group.key === activeToolGroupKey);
+    search.placeholder = activeGroup ? `${activeGroup.label} 도구 검색` : t("toolSearch");
+    updateToolListFilter({ groupKey: activeToolGroupKey });
+  }
 }
 
 function bindCategoryOverview() {
-  app.querySelectorAll("[data-tool-group]").forEach((button) => {
+  app.querySelectorAll("[data-tool-group-key]").forEach((button) => {
     button.addEventListener("click", () => {
+      const groupKey = button.dataset.toolGroupKey || "";
+      const label = button.dataset.toolGroupLabel || "";
       const search = app.querySelector("#toolSearch");
-      if (!search) return;
-      search.value = button.dataset.toolGroup || "";
-      search.dispatchEvent(new Event("input"));
-      app.querySelector(".tool-menu")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      activeToolGroupKey = groupKey;
+      const nextTool = tools.find((tool) => tool.group === groupKey);
+      if (nextTool) {
+        currentTool = nextTool;
+        currentPage = null;
+        currentGuide = null;
+        history.pushState({ tool: nextTool.id, group: groupKey }, "", nextTool.path);
+        render();
+        return;
+      }
+      if (search) {
+        search.value = "";
+        search.placeholder = label ? `${label} 도구 검색` : t("toolSearch");
+      }
+      setActiveCategory(groupKey);
+      updateToolListFilter({ groupKey });
     });
+  });
+}
+
+function updateToolListFilter({ keyword = "", groupKey = "" } = {}) {
+  const count = app.querySelector("#toolSearchCount");
+  const normalizedKeyword = keyword.trim().toLowerCase();
+  let visible = 0;
+  app.querySelectorAll(".tool-card").forEach((card) => {
+    const matchesGroup = !groupKey || card.dataset.groupKey === groupKey;
+    const matchesKeyword = !normalizedKeyword || (card.dataset.search || "").includes(normalizedKeyword);
+    const match = matchesGroup && matchesKeyword;
+    card.hidden = !match;
+    if (match) visible += 1;
+  });
+  if (count) count.textContent = t("toolCount", visible);
+}
+
+function setActiveCategory(groupKey) {
+  app.querySelectorAll("[data-tool-group-key]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.toolGroupKey === groupKey);
   });
 }
 
@@ -2169,6 +2244,7 @@ window.addEventListener("popstate", () => {
   currentPage = findPageFromLocation();
   currentGuide = findGuideFromLocation();
   currentTool = findToolFromLocation() || tools[0];
+  activeToolGroupKey = "";
   render();
 });
 

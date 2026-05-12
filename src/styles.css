@@ -102,6 +102,7 @@ button {
 }
 
 .quick-nav button,
+.quick-nav a,
 .tool-card,
 .related-card {
   border: 1px solid #dce5e1;
@@ -109,11 +110,15 @@ button {
   color: #162523;
 }
 
-.quick-nav button {
+.quick-nav button,
+.quick-nav a {
+  display: inline-flex;
+  align-items: center;
   min-width: max-content;
   border-radius: 999px;
   padding: 10px 13px;
   font-weight: 800;
+  text-decoration: none;
 }
 
 .language-toggle {
@@ -219,16 +224,16 @@ p {
 
 .category-overview {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin: 0 0 16px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
 }
 
 .category-card {
-  min-height: 108px;
+  min-height: 94px;
   border: 1px solid #dce5e1;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 14px;
+  padding: 14px;
   background: #fff;
   color: #14201f;
   text-align: left;
@@ -253,12 +258,12 @@ p {
 }
 
 .category-card strong {
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 18px;
 }
 
 .category-card small {
-  margin-top: 8px;
+  margin-top: 6px;
   color: #63706d;
   line-height: 1.45;
 }
@@ -274,45 +279,69 @@ p {
   position: sticky;
   top: 84px;
   display: grid;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 18px;
+  gap: 7px;
+  max-height: calc(100vh - 104px);
+  overflow: hidden;
+  padding: 8px;
+  border-radius: 16px;
 }
 
 .tool-search {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-  align-items: center;
-  padding: 4px;
+  position: relative;
+  display: block;
+  padding: 0;
 }
 
 .tool-search input {
-  min-height: 42px;
+  min-height: 38px;
   border-radius: 999px;
+  padding: 8px 78px 8px 14px;
   background: #f8fbf8;
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .tool-search span {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
   min-width: max-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #edf5f1;
   color: #63706d;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
 }
 
 .tool-list {
   display: grid;
-  gap: 8px;
+  gap: 7px;
+  max-height: calc(100vh - 166px);
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-color: #bad7ce transparent;
+  scrollbar-width: thin;
+}
+
+.tool-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tool-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #bad7ce;
 }
 
 .tool-card {
   display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 11px;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
   align-items: center;
-  min-height: 68px;
-  padding: 10px;
-  border-radius: 14px;
+  min-height: 58px;
+  padding: 8px;
+  border-radius: 13px;
   text-align: left;
 }
 
@@ -323,9 +352,9 @@ p {
 .tool-icon {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 11px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   background: #f2f5f1;
   color: #0b815e;
   font-size: 12px;
@@ -338,13 +367,13 @@ p {
 }
 
 .tool-card strong {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .tool-card small {
-  margin-top: 4px;
+  margin-top: 3px;
   color: #63706d;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .workspace {
@@ -907,6 +936,42 @@ th {
   margin-top: 24px;
 }
 
+.guide-route-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid #cfe3da;
+  border-radius: 14px;
+  background: #f4fbf7;
+}
+
+.guide-route-panel span {
+  color: #0b815e;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.guide-route-panel code,
+.guide-path {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  color: #102420;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.guide-path {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #edf5f1;
+  overflow-wrap: anywhere;
+}
+
 .guide-card {
   display: grid;
   gap: 8px;
@@ -1068,10 +1133,18 @@ th {
 
   .tool-menu {
     position: static;
+    max-height: none;
+    overflow: visible;
   }
 
   .tool-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: none;
+    overflow: visible;
+  }
+
+  .language-toggle {
+    align-self: flex-end;
   }
 
   .category-overview {
@@ -1134,6 +1207,7 @@ th {
   .tool-list {
     display: flex;
     overflow-x: auto;
+    overflow-y: hidden;
     gap: 8px;
     padding-bottom: 4px;
     scrollbar-width: none;
