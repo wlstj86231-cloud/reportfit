@@ -17,25 +17,7 @@
     <link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
     <link rel="manifest" href="/site.webmanifest?v=4" />
-    <script>
-      window.addEventListener("load", () => {
-        if (location.hostname !== "reportools.com") return;
-        const loadAdSense = () => {
-          if (document.querySelector("script[data-adsense-loader]")) return;
-          const script = document.createElement("script");
-          script.async = true;
-          script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7217591196020054";
-          script.crossOrigin = "anonymous";
-          script.dataset.adsenseLoader = "true";
-          document.head.appendChild(script);
-        };
-        if ("requestIdleCallback" in window) {
-          window.requestIdleCallback(loadAdSense, { timeout: 3500 });
-        } else {
-          window.setTimeout(loadAdSense, 1800);
-        }
-      }, { once: true });
-    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7217591196020054" crossorigin="anonymous"></script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
