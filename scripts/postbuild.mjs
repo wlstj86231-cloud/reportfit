@@ -11,6 +11,11 @@ const tools = [
     description: "LMS 업로드 제한에 맞게 PDF 용량과 문서 정보를 브라우저에서 빠르게 정리하는 대학 과제 제출 도구입니다."
   },
   {
+    slug: "pdf-slim",
+    title: "스캔 PDF 경량화 - 레포트핏",
+    description: "스캔본이나 이미지가 많은 PDF를 페이지 이미지로 다시 저장해 제출용 PDF 용량을 줄입니다."
+  },
+  {
     slug: "pdf-edit",
     title: "PDF 편집 - 레포트핏",
     description: "여러 PDF 합치기, 페이지 범위 추출, PDF 회전을 과제 제출 전에 브라우저에서 처리합니다."

@@ -1,11 +1,25 @@
 import "./styles.css";
 
 let pdfLibPromise;
+let pdfJsPromise;
 let zipPromise;
 
 function getPdfLib() {
   pdfLibPromise ||= import("pdf-lib");
   return pdfLibPromise;
+}
+
+async function getPdfJs() {
+  if (!pdfJsPromise) {
+    pdfJsPromise = Promise.all([
+      import("pdfjs-dist"),
+      import("pdfjs-dist/build/pdf.worker.mjs?url")
+    ]).then(([pdfjs, worker]) => {
+      pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+      return pdfjs;
+    });
+  }
+  return pdfJsPromise;
 }
 
 async function getJSZip() {
@@ -22,6 +36,15 @@ const tools = [
     group: "PDF",
     path: "/tools/pdf-compress/",
     description: "LMS 업로드 제한에 맞게 PDF를 다시 저장하고 불필요한 문서 정보를 정리합니다."
+  },
+  {
+    id: "pdf-slim",
+    label: "PDF 경량화",
+    short: "스캔본 크게 줄이기",
+    icon: "PDF",
+    group: "PDF",
+    path: "/tools/pdf-slim/",
+    description: "스캔본이나 이미지가 많은 PDF를 페이지 이미지로 다시 저장해 용량을 줄입니다."
   },
   {
     id: "pdf-edit",
@@ -187,7 +210,7 @@ const tools = [
   }
 ];
 
-const popular = ["pdf-compress", "pdf-split", "pdf-organize", "submit-package", "image-convert", "file-check"];
+const popular = ["pdf-slim", "pdf-compress", "pdf-split", "pdf-organize", "submit-package", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -459,6 +482,7 @@ function toolGuideSection(id) {
 function stepStrip(id) {
   const map = {
     "pdf-compress": ["PDF 선택", "기준 확인", "압축본 받기"],
+    "pdf-slim": ["PDF 선택", "품질 조절", "경량본 받기"],
     "pdf-edit": ["PDF 선택", "작업 선택", "새 PDF 받기"],
     "pdf-number": ["PDF 선택", "번호 위치", "번호본 받기"],
     "pdf-watermark": ["PDF 선택", "문구 조절", "표시본 받기"],
@@ -512,6 +536,30 @@ function workspaceFor(id) {
         </label>
       </div>
       <button class="primary-action" id="runPdfCompress" type="button">압축 PDF 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "pdf-slim": `
+      <div class="tool-head"><h2>스캔 PDF 경량화</h2><p>스캔본이나 이미지가 많은 PDF를 다시 이미지화해 더 작은 제출용 PDF로 만듭니다.</p></div>
+      ${drop("application/pdf")}
+      <div class="option-row">
+        <label>출력 품질
+          <input id="pdfSlimQuality" type="range" min="0.4" max="0.9" step="0.05" value="0.68">
+        </label>
+        <label>페이지 최대 폭
+          <input id="pdfSlimWidth" type="number" min="700" max="1800" step="100" value="1200">
+        </label>
+        <label>색상
+          <select id="pdfSlimColor">
+            <option value="color">컬러 유지</option>
+            <option value="gray">흑백 느낌으로 줄이기</option>
+          </select>
+        </label>
+        <label>파일명
+          <input id="pdfSlimName" type="text" placeholder="과제_경량화.pdf">
+        </label>
+      </div>
+      <button class="primary-action" id="runPdfSlim" type="button">경량 PDF 만들기</button>
+      <p class="soft-note">스캔본에는 효과가 크지만, 텍스트 선택, 링크, 주석은 이미지화되면서 사라질 수 있습니다.</p>
       <div class="result" id="result"></div>
     `,
     "pdf-edit": `
@@ -929,6 +977,7 @@ function bindGlobalEvents() {
 function bindToolEvents(id) {
   const map = {
     "pdf-compress": ["#runPdfCompress", runPdfCompress],
+    "pdf-slim": ["#runPdfSlim", runPdfSlim],
     "pdf-edit": ["#runPdfEdit", runPdfEdit],
     "pdf-number": ["#runPdfNumber", runPdfNumber],
     "pdf-watermark": ["#runPdfWatermark", runPdfWatermark],
@@ -1037,6 +1086,61 @@ async function runPdfCompress() {
       ${compareSize(file.size, blob.size)}
       ${downloadButton(blob, outName, "압축 PDF 다운로드")}
       <p class="soft-note">스캔 이미지가 가득한 PDF는 이미지 자체를 다시 압축해야 크게 줄어듭니다.</p>
+    `);
+  });
+}
+
+async function runPdfSlim() {
+  await withProgress(async () => {
+    const { PDFDocument } = await getPdfLib();
+    const pdfjs = await getPdfJs();
+    const file = singleFile();
+    requireFile(file, "PDF 파일을 선택하세요.");
+
+    const quality = Number(value("#pdfSlimQuality") || 0.68);
+    const maxWidth = Number(value("#pdfSlimWidth") || 1200);
+    const grayscale = value("#pdfSlimColor") === "gray";
+    const input = await file.arrayBuffer();
+    const source = await pdfjs.getDocument({ data: input }).promise;
+    const output = await PDFDocument.create();
+    const rows = [];
+
+    for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber += 1) {
+      const sourcePage = await source.getPage(pageNumber);
+      const baseViewport = sourcePage.getViewport({ scale: 1 });
+      const scale = Math.max(0.6, Math.min(maxWidth / baseViewport.width, 2.8));
+      const renderViewport = sourcePage.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(renderViewport.width);
+      canvas.height = Math.ceil(renderViewport.height);
+      const ctx = canvas.getContext("2d", { alpha: false });
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await sourcePage.render({ canvasContext: ctx, viewport: renderViewport }).promise;
+      if (grayscale) applyCanvasGrayscale(ctx, canvas.width, canvas.height);
+
+      const imageBlob = await canvasToBlob(canvas, "image/jpeg", quality);
+      const jpg = await output.embedJpg(await imageBlob.arrayBuffer());
+      const page = output.addPage([baseViewport.width, baseViewport.height]);
+      page.drawImage(jpg, { x: 0, y: 0, width: baseViewport.width, height: baseViewport.height });
+      rows.push({ page: pageNumber, width: canvas.width, size: imageBlob.size });
+      sourcePage.cleanup?.();
+    }
+
+    source.cleanup?.();
+    scrubPdfInfo(output);
+    const blob = new Blob([await output.save({ useObjectStreams: true })], { type: "application/pdf" });
+    const outName = cleanOutputName(value("#pdfSlimName") || replaceExt(file.name, "slim.pdf"), "pdf");
+    const avgWidth = Math.round(rows.reduce((sum, row) => sum + row.width, 0) / rows.length);
+    const sizeNote = blob.size < file.size
+      ? "용량이 줄었습니다. 제출 전에는 결과 PDF를 열어 작은 글자와 표가 읽히는지 확인하세요."
+      : "원본이 이미 가볍거나 텍스트 중심이면 더 커질 수 있습니다. 스캔본은 페이지 최대 폭과 품질을 더 낮춰 다시 시도하세요.";
+
+    setResult(`
+      ${compareSize(file.size, blob.size)}
+      <div class="metric-grid"><div><span>페이지</span><strong>${source.numPages}쪽</strong></div><div><span>품질</span><strong>${Math.round(quality * 100)}%</strong></div><div><span>평균 폭</span><strong>${avgWidth}px</strong></div></div>
+      ${downloadButton(blob, outName, "경량 PDF 다운로드")}
+      <p class="soft-note">${escapeHtml(sizeNote)} 결과 PDF는 페이지를 이미지로 다시 만든 파일입니다.</p>
     `);
   });
 }
@@ -1645,6 +1749,27 @@ async function convertImage(file, mime, quality, maxWidth) {
   });
 }
 
+function canvasToBlob(canvas, mime, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) reject(new Error("이미지를 변환하지 못했습니다."));
+      else resolve(blob);
+    }, mime, quality);
+  });
+}
+
+function applyCanvasGrayscale(ctx, width, height) {
+  const image = ctx.getImageData(0, 0, width, height);
+  const { data } = image;
+  for (let index = 0; index < data.length; index += 4) {
+    const value = Math.round(data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114);
+    data[index] = value;
+    data[index + 1] = value;
+    data[index + 2] = value;
+  }
+  ctx.putImageData(image, 0, 0);
+}
+
 function loadImage(file) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -2020,14 +2145,15 @@ function toolById(id) {
 
 function relatedTools(id) {
   const map = {
-    "pdf-compress": ["pdf-split", "file-check", "pdf-number"],
+    "pdf-compress": ["pdf-slim", "pdf-split", "file-check"],
+    "pdf-slim": ["pdf-compress", "file-check", "pdf-organize"],
     "pdf-edit": ["pdf-organize", "pdf-split", "pdf-rotate"],
     "pdf-number": ["pdf-organize", "pdf-compress", "pdf-watermark"],
     "pdf-watermark": ["pdf-number", "pdf-rotate", "privacy-clean"],
     "pdf-split": ["pdf-organize", "pdf-compress", "zip-pack"],
     "pdf-organize": ["pdf-split", "pdf-rotate", "pdf-number"],
     "pdf-rotate": ["pdf-organize", "pdf-watermark", "file-check"],
-    "image-convert": ["image-compress", "pdf-compress", "pdf-split"],
+    "image-convert": ["image-compress", "pdf-slim", "pdf-split"],
     "image-compress": ["image-convert", "file-check", "zip-pack"],
     "file-name": ["file-check", "zip-pack", "pdf-compress"],
     "submit-checklist": ["submit-package", "file-name", "file-check"],
@@ -2036,7 +2162,7 @@ function relatedTools(id) {
     "text-clean": ["word-count", "table-convert", "citation-cleaner"],
     "table-convert": ["text-clean", "citation-cleaner", "file-check"],
     "citation-cleaner": ["word-count", "text-clean", "file-check"],
-    "file-check": ["submit-package", "pdf-compress", "pdf-rotate"],
+    "file-check": ["submit-package", "pdf-compress", "pdf-slim"],
     "zip-pack": ["submit-package", "file-check", "file-name"],
     "privacy-clean": ["file-check", "image-compress", "pdf-compress"]
   };
@@ -2052,6 +2178,10 @@ function copyFor(id) {
     "pdf-compress": {
       why: "LMS나 메일 첨부는 10MB, 20MB처럼 용량 제한이 걸려 있는 경우가 많습니다. PDF를 다시 저장하면 문서 구조와 메타데이터가 정리되어 제출 실패 가능성을 줄일 수 있습니다.",
       tip: "사진 스캔이 많은 PDF는 이미지 압축이나 이미지 PDF 재생성을 함께 쓰면 더 안정적으로 줄일 수 있습니다."
+    },
+    "pdf-slim": {
+      why: "스캔본이나 이미지가 많은 PDF는 일반 재저장만으로 용량이 거의 줄지 않는 경우가 많습니다. PDF 경량화는 각 페이지를 적당한 해상도와 품질의 이미지로 다시 묶어 LMS 업로드 제한에 맞추기 쉽게 만듭니다.",
+      tip: "글자 선택, 링크, 주석이 중요한 문서는 원본을 보관하세요. 이 도구는 제출용으로 가볍게 만드는 대신 페이지를 이미지처럼 다시 저장합니다."
     },
     "image-convert": {
       why: "아이폰 사진, 캡처, 실험 노트 이미지는 제출 형식이 맞지 않아 다시 저장해야 하는 일이 많습니다. 여러 장을 PDF로 묶으면 교수자나 조원이 열어보기 쉽습니다.",
@@ -2136,6 +2266,24 @@ function guideFor(id) {
         {
           q: "압축하면 내용이 바뀌나요?",
           a: "본문을 새로 작성하거나 수정하는 기능이 아니라 PDF 저장 구조와 문서 정보를 정리하는 기능입니다. 다만 제출 전에는 결과 파일을 직접 열어 페이지와 글자를 확인해야 합니다."
+        }
+      ]
+    },
+    "pdf-slim": {
+      title: "스캔 PDF 경량화 전에 확인할 것",
+      tips: [
+        "글자가 선택되는 일반 PDF도 결과에서는 페이지 이미지처럼 저장될 수 있습니다.",
+        "LMS 제한이 빡빡하면 최대 폭을 900-1200px로 낮추고 품질을 60-70% 사이에서 먼저 시도하세요.",
+        "결과 파일은 반드시 열어 글자 선명도, 페이지 누락, 표나 작은 글자의 가독성을 확인하세요."
+      ],
+      faq: [
+        {
+          q: "왜 일반 PDF 압축보다 더 줄어드나요?",
+          a: "스캔본은 큰 이미지가 페이지 안에 들어 있는 구조라서, 페이지를 더 작은 이미지 품질로 다시 만들면 용량이 크게 줄 수 있습니다."
+        },
+        {
+          q: "단점은 없나요?",
+          a: "텍스트 선택, 링크, 주석 같은 PDF 정보가 이미지화되면서 사라질 수 있습니다. 최종 제출용 경량본으로 쓰고 원본은 따로 보관하는 편이 안전합니다."
         }
       ]
     },
