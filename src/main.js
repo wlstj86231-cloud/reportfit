@@ -78,6 +78,15 @@ const tools = [
     description: "과목명, 학번, 이름, 과제명을 깔끔한 제출 파일명으로 정리합니다."
   },
   {
+    id: "submit-checklist",
+    label: "제출 전 점검표",
+    short: "마감, 파일, 참고문헌",
+    icon: "CHK",
+    group: "제출",
+    path: "/tools/submit-checklist/",
+    description: "과제 제출 직전에 확인할 항목을 과목, 마감, 파일 조건에 맞춰 복사 가능한 체크리스트로 만듭니다."
+  },
+  {
     id: "word-count",
     label: "글자수 계산",
     short: "공백 제외, A4 예상",
@@ -142,7 +151,7 @@ const tools = [
   }
 ];
 
-const popular = ["pdf-compress", "image-convert", "file-name", "word-count", "citation-cleaner", "file-check"];
+const popular = ["pdf-compress", "image-convert", "submit-checklist", "file-name", "citation-cleaner", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -276,6 +285,8 @@ function render() {
             </div>
           </article>
         </section>
+
+        ${toolGuideSection(currentTool.id)}
       </main>
 
       <footer class="footer">
@@ -361,6 +372,33 @@ function relatedCard(tool) {
   `;
 }
 
+function toolGuideSection(id) {
+  const guide = guideFor(id);
+  return `
+    <section class="tool-guide" aria-label="${escapeHtml(guide.title)} 도움말">
+      <article>
+        <p class="eyebrow">제출 전 사용 팁</p>
+        <h2>${escapeHtml(guide.title)}</h2>
+        <ul class="guide-list">
+          ${guide.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}
+        </ul>
+      </article>
+      <article>
+        <p class="eyebrow">자주 묻는 질문</p>
+        <h2>헷갈리기 쉬운 부분</h2>
+        <div class="faq-list">
+          ${guide.faq.map((item) => `
+            <details>
+              <summary>${escapeHtml(item.q)}</summary>
+              <p>${escapeHtml(item.a)}</p>
+            </details>
+          `).join("")}
+        </div>
+      </article>
+    </section>
+  `;
+}
+
 function stepStrip(id) {
   const map = {
     "pdf-compress": ["PDF 선택", "기준 확인", "압축본 받기"],
@@ -370,6 +408,7 @@ function stepStrip(id) {
     "image-convert": ["이미지 선택", "형식 선택", "결과 받기"],
     "image-compress": ["이미지 선택", "품질 조절", "ZIP 받기"],
     "file-name": ["정보 입력", "파일명 생성", "복사"],
+    "submit-checklist": ["조건 입력", "확인 항목 선택", "점검표 복사"],
     "word-count": ["본문 붙여넣기", "분량 확인", "다음 정리"],
     "text-clean": ["텍스트 붙여넣기", "정리 방식", "복사"],
     "table-convert": ["표 붙여넣기", "형식 선택", "복사"],
@@ -536,6 +575,39 @@ function workspaceFor(id) {
         </label>
       </div>
       <button class="primary-action" id="runFileName" type="button">파일명 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "submit-checklist": `
+      <div class="tool-head"><h2>제출 전 점검표</h2><p>마감 직전에 놓치기 쉬운 파일명, 용량, 참고문헌, 첨부 여부를 한 번에 확인할 표로 만듭니다.</p></div>
+      <div class="sample-row"><button type="button" data-sample="submit-checklist">예시 채우기</button><button type="button" data-clear="form">입력 비우기</button></div>
+      <div class="form-grid">
+        <label>과목명<input id="submitCourse" type="text" placeholder="마케팅원론"></label>
+        <label>과제명<input id="submitAssignment" type="text" placeholder="1주차 개인과제"></label>
+        <label>마감일<input id="submitDueDate" type="date"></label>
+        <label>마감 시간<input id="submitDueTime" type="time"></label>
+        <label>LMS/제출처<input id="submitChannel" type="text" placeholder="학교 LMS, 이메일, 구글폼"></label>
+        <label>최종 파일명<input id="submitFileName" type="text" placeholder="마케팅원론_20261234_홍길동_1주차.pdf"></label>
+        <label>허용 형식<input id="submitExts" type="text" placeholder="pdf, docx, zip"></label>
+        <label>용량 제한<input id="submitLimit" type="text" placeholder="20MB 이하"></label>
+      </div>
+      <div class="checklist-panel" aria-label="확인 항목">
+        ${[
+          ["file-open", "최종 파일을 다시 열어봤음"],
+          ["file-name", "파일명에 과목명, 학번, 이름, 과제명이 들어감"],
+          ["file-size", "용량 제한과 확장자를 확인함"],
+          ["pages", "PDF 페이지 순서와 누락 페이지를 확인함"],
+          ["citation", "참고문헌/출처 표기를 마지막에 정리함"],
+          ["privacy", "개인정보, 위치정보, 불필요한 메타데이터를 확인함"],
+          ["attach", "제출 화면에서 파일 첨부 완료 상태를 확인함"],
+          ["receipt", "제출 완료 화면이나 접수 메일을 저장함"]
+        ].map(([id, label]) => `
+          <label class="check-item">
+            <input type="checkbox" data-submit-check="${id}">
+            <span>${label}</span>
+          </label>
+        `).join("")}
+      </div>
+      <button class="primary-action" id="runSubmitChecklist" type="button">점검표 만들기</button>
       <div class="result" id="result"></div>
     `,
     "word-count": `
@@ -715,6 +787,7 @@ function bindToolEvents(id) {
     "image-convert": ["#runImageConvert", runImageConvert],
     "image-compress": ["#runImageCompress", runImageCompress],
     "file-name": ["#runFileName", runFileName],
+    "submit-checklist": ["#runSubmitChecklist", runSubmitChecklist],
     "word-count": ["#runWordCount", runWordCount],
     "text-clean": ["#runTextClean", runTextClean],
     "table-convert": ["#runTableConvert", runTableConvert],
@@ -970,6 +1043,56 @@ function runFileName() {
       <input id="generatedName" value="${escapeHtml(name)}" readonly>
       <button type="button" data-copy="#generatedName">복사</button>
     </div>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function runSubmitChecklist() {
+  const course = value("#submitCourse").trim() || "과목명 미입력";
+  const assignment = value("#submitAssignment").trim() || "과제명 미입력";
+  const dueDate = value("#submitDueDate");
+  const dueTime = value("#submitDueTime");
+  const channel = value("#submitChannel").trim() || "제출처 미입력";
+  const fileName = value("#submitFileName").trim() || "최종 파일명 미입력";
+  const exts = value("#submitExts").trim() || "형식 기준 미입력";
+  const limit = value("#submitLimit").trim() || "용량 기준 미입력";
+  const checked = [...app.querySelectorAll("[data-submit-check]")]
+    .filter((input) => input.checked)
+    .map((input) => input.closest(".check-item")?.innerText.trim())
+    .filter(Boolean);
+  const unchecked = [...app.querySelectorAll("[data-submit-check]")]
+    .filter((input) => !input.checked)
+    .map((input) => input.closest(".check-item")?.innerText.trim())
+    .filter(Boolean);
+  const due = dueLabel(dueDate, dueTime);
+  const checklistText = [
+    `[과제 제출 전 점검표]`,
+    `과목: ${course}`,
+    `과제: ${assignment}`,
+    `제출처: ${channel}`,
+    `마감: ${due}`,
+    `최종 파일명: ${fileName}`,
+    `허용 형식: ${exts}`,
+    `용량 제한: ${limit}`,
+    ``,
+    `[확인 완료]`,
+    ...(checked.length ? checked.map((item) => `- ${item}`) : ["- 아직 체크한 항목 없음"]),
+    ``,
+    `[마지막으로 볼 항목]`,
+    ...(unchecked.length ? unchecked.map((item) => `- ${item}`) : ["- 남은 확인 항목 없음"]),
+    ``,
+    `제출 후에는 완료 화면, 접수 메일, LMS 제출 시간을 캡처해 보관합니다.`
+  ].join("\n");
+
+  setResult(`
+    <div class="submit-summary">
+      <div><span>과목</span><strong>${escapeHtml(course)}</strong></div>
+      <div><span>마감</span><strong>${escapeHtml(due)}</strong></div>
+      <div><span>남은 확인</span><strong>${unchecked.length}개</strong></div>
+    </div>
+    <textarea class="result-text submit-output" id="submitChecklistResult" readonly>${escapeHtml(checklistText)}</textarea>
+    ${unchecked.length ? `<ul class="warning-list">${unchecked.slice(0, 5).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : `<p class="soft-note">선택한 항목 기준으로 남은 확인 항목이 없습니다. 실제 제출 화면에서 첨부 상태만 마지막으로 확인하세요.</p>`}
+    <button class="secondary-action" type="button" data-copy="#submitChecklistResult">점검표 복사</button>
   `);
   app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
 }
@@ -1366,6 +1489,22 @@ function formatBytes(bytes) {
   return `${size.toFixed(size >= 10 || unit === 0 ? 0 : 1)}${units[unit]}`;
 }
 
+function dueLabel(date, time) {
+  if (!date && !time) return "마감 미입력";
+  const base = [date, time].filter(Boolean).join(" ");
+  if (!date) return base;
+  const due = new Date(`${date}T${time || "23:59"}`);
+  if (Number.isNaN(due.getTime())) return base;
+  const diff = due.getTime() - Date.now();
+  const absHours = Math.abs(diff) / 36e5;
+  const days = Math.floor(absHours / 24);
+  const hours = Math.round(absHours % 24);
+  const relative = diff >= 0
+    ? days > 0 ? `${days}일 ${hours}시간 남음` : `${Math.max(0, Math.round(absHours))}시간 남음`
+    : days > 0 ? `${days}일 ${hours}시간 지남` : `${Math.round(absHours)}시간 지남`;
+  return `${base} · ${relative}`;
+}
+
 function value(selector) {
   return app.querySelector(selector)?.value || "";
 }
@@ -1383,6 +1522,21 @@ function applySample(type) {
       setValue("#studentName", "홍길동");
       setValue("#assignmentName", "1주차 개인과제");
       setValue("#fileExt", "pdf");
+    },
+    "submit-checklist": () => {
+      const due = new Date();
+      due.setDate(due.getDate() + 2);
+      setValue("#submitCourse", "마케팅원론");
+      setValue("#submitAssignment", "1주차 개인과제");
+      setValue("#submitDueDate", due.toISOString().slice(0, 10));
+      setValue("#submitDueTime", "23:59");
+      setValue("#submitChannel", "학교 LMS");
+      setValue("#submitFileName", "마케팅원론_20261234_홍길동_1주차.pdf");
+      setValue("#submitExts", "pdf");
+      setValue("#submitLimit", "20MB 이하");
+      app.querySelectorAll("[data-submit-check]").forEach((input, index) => {
+        input.checked = index < 4;
+      });
     },
     "word-count": () => setValue("#wordText", "서론에서는 과제의 배경과 문제의식을 정리합니다.\n\n본론에서는 핵심 근거를 나누어 설명하고, 결론에서는 내가 확인한 시사점과 한계를 짧게 정리합니다."),
     "text-clean": () => setValue("#dirtyText", "PDF에서 복사한 문장입니다.\n줄바꿈이\n이상하게 들어가고      공백도     많습니다.\n\n문단을 다시 정리해야 합니다."),
@@ -1435,6 +1589,7 @@ function relatedTools(id) {
     "image-convert": ["image-compress", "pdf-compress", "privacy-clean"],
     "image-compress": ["image-convert", "file-check", "zip-pack"],
     "file-name": ["file-check", "zip-pack", "pdf-compress"],
+    "submit-checklist": ["file-name", "file-check", "citation-cleaner"],
     "word-count": ["text-clean", "citation-cleaner", "file-name"],
     "text-clean": ["word-count", "table-convert", "citation-cleaner"],
     "table-convert": ["text-clean", "citation-cleaner", "file-check"],
@@ -1464,6 +1619,10 @@ function copyFor(id) {
       why: "참고문헌은 내용보다 정렬, 중복, 띄어쓰기에서 어수선해 보이는 경우가 많습니다. 제출 전에 줄 단위로 정리하면 문서의 마감감이 좋아집니다.",
       tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요. 레포트핏은 누락 가능성을 알려주지만 최종 양식 판단은 강의 안내를 우선합니다."
     },
+    "submit-checklist": {
+      why: "과제 제출 실패는 본문 내용보다 파일명, 용량, 첨부 누락, 참고문헌 정리 같은 마지막 단계에서 생기는 경우가 많습니다. 제출 전 점검표는 이 항목을 한 화면에서 정리해 실제 제출 직전 확인 시간을 줄입니다.",
+      tip: "점검표를 만든 뒤에는 파일명 만들기, 파일 점검, 참고문헌 정리 도구로 이어가면 제출 전 흐름을 끊지 않고 마감본을 정리할 수 있습니다."
+    },
     "pdf-number": {
       why: "PDF를 합치거나 스캔하면 페이지 순서가 헷갈릴 수 있습니다. 하단 번호를 넣어두면 제출 전 검토와 조별 확인이 쉬워집니다.",
       tip: "표지나 목차를 번호에서 제외해야 하는 과목이라면 PDF 편집에서 본문만 분리한 뒤 번호를 넣는 방식이 깔끔합니다."
@@ -1482,6 +1641,156 @@ function copyFor(id) {
     }
   };
   return extra[id] || base;
+}
+
+function guideFor(id) {
+  const base = {
+    title: "이 도구를 쓸 때 확인할 것",
+    tips: [
+      "결과를 받은 뒤에는 실제 제출 화면에서 다시 열어 파일이 깨지지 않았는지 확인하세요.",
+      "과목별 제출 형식이 다르면 레포트핏 결과보다 교수자 안내와 LMS 제한을 우선해야 합니다.",
+      "마감 직전에는 파일명, 용량, 첨부 여부처럼 작은 항목을 마지막으로 확인하는 편이 안전합니다."
+    ],
+    faq: [
+      {
+        q: "파일이 서버로 업로드되나요?",
+        a: "레포트핏의 주요 파일 처리 기능은 브라우저 안에서 실행되도록 구성되어 있습니다. 그래도 최종 제출 전에는 결과 파일을 직접 열어 확인하는 것이 좋습니다."
+      },
+      {
+        q: "결과를 바로 제출해도 되나요?",
+        a: "도구 결과는 제출 준비를 돕는 보조 자료입니다. 과목별 제출 규정, 학교 LMS 제한, 교수자 안내를 마지막으로 확인한 뒤 제출하세요."
+      }
+    ]
+  };
+  const guides = {
+    "pdf-compress": {
+      title: "PDF 압축 전에 확인할 것",
+      tips: [
+        "스캔 이미지가 많은 PDF는 단순 재저장만으로 크게 줄지 않을 수 있습니다.",
+        "압축 후에는 글자와 표가 흐려지지 않았는지 첫 페이지와 마지막 페이지를 열어보세요.",
+        "LMS 제한이 20MB라면 19MB 이하로 여유를 두는 편이 업로드 실패를 줄입니다."
+      ],
+      faq: [
+        {
+          q: "PDF가 생각보다 많이 줄지 않는 이유는 뭔가요?",
+          a: "PDF 안에 고해상도 스캔 이미지가 많으면 문서 정보 정리만으로는 용량이 크게 줄지 않을 수 있습니다. 이 경우 이미지 압축이나 이미지 PDF 재생성을 함께 쓰는 편이 좋습니다."
+        },
+        {
+          q: "압축하면 내용이 바뀌나요?",
+          a: "본문을 새로 작성하거나 수정하는 기능이 아니라 PDF 저장 구조와 문서 정보를 정리하는 기능입니다. 다만 제출 전에는 결과 파일을 직접 열어 페이지와 글자를 확인해야 합니다."
+        }
+      ]
+    },
+    "submit-checklist": {
+      title: "제출 전 점검표를 쓰는 순서",
+      tips: [
+        "먼저 과목명, 과제명, 마감 시간, 제출처를 입력해 제출 상황을 한 곳에 모으세요.",
+        "체크하지 않은 항목은 결과 아래 경고 목록으로 남기 때문에 마감 직전 다시 보기 좋습니다.",
+        "점검표를 복사해 메모장이나 카카오톡 나에게 보내기에 저장해두면 제출 완료 확인까지 이어가기 쉽습니다."
+      ],
+      faq: [
+        {
+          q: "점검표만 만들면 제출 준비가 끝난 건가요?",
+          a: "아닙니다. 점검표는 빠뜨린 항목을 줄이는 도구입니다. 실제 제출 화면에서 파일 첨부 완료 상태와 제출 완료 화면을 마지막으로 확인해야 합니다."
+        },
+        {
+          q: "마감 시간이 없으면 어떻게 쓰면 되나요?",
+          a: "마감 시간이 명확하지 않으면 과목 공지나 LMS 안내를 먼저 확인하세요. 시간이 없으면 날짜만 입력해도 점검표를 만들 수 있습니다."
+        }
+      ]
+    },
+    "citation-cleaner": {
+      title: "참고문헌 정리 전에 확인할 것",
+      tips: [
+        "APA, MLA, Chicago, 한국식 중 과목에서 요구한 형식을 먼저 확인하세요.",
+        "웹 자료는 URL뿐 아니라 제목, 저자, 연도, 사이트명을 같이 남기는 편이 안전합니다.",
+        "정렬과 중복 제거 후에도 누락된 저자나 연도가 없는지 한 번 더 읽어보세요."
+      ],
+      faq: [
+        {
+          q: "참고문헌 양식을 완전히 보장하나요?",
+          a: "기본 정리와 누락 경고를 돕지만 학과나 교수자별 세부 규정까지 모두 대체하지는 않습니다. 최종 기준은 강의 안내를 우선하세요."
+        },
+        {
+          q: "본문 인용도 만들 수 있나요?",
+          a: "입력값으로 참고문헌 줄을 만들면 간단한 본문 인용도 함께 복사할 수 있습니다. 다만 직접 인용, 간접 인용 규칙은 과목 기준에 맞춰 확인해야 합니다."
+        }
+      ]
+    },
+    "image-convert": {
+      title: "이미지 변환 전에 확인할 것",
+      tips: [
+        "글자가 들어간 캡처는 너무 낮은 품질로 변환하지 않는 것이 좋습니다.",
+        "여러 장을 PDF로 묶을 때는 페이지 순서가 맞는지 결과 파일을 열어 확인하세요.",
+        "투명 배경이 필요한 이미지는 PNG를, 용량을 줄이고 싶으면 JPG나 WebP를 먼저 고려하세요."
+      ],
+      faq: [
+        {
+          q: "여러 이미지를 PDF 한 파일로 만들 수 있나요?",
+          a: "가능합니다. 이미지 변환에서 출력 형식을 PDF로 선택하면 선택한 이미지들을 하나의 PDF로 묶을 수 있습니다."
+        },
+        {
+          q: "아이폰 사진도 변환할 수 있나요?",
+          a: "브라우저가 읽을 수 있는 이미지라면 변환할 수 있습니다. 일부 특수 형식은 브라우저 지원 여부에 따라 열리지 않을 수 있습니다."
+        }
+      ]
+    },
+    "file-check": {
+      title: "파일 점검에서 봐야 할 것",
+      tips: [
+        "용량 기준은 학교 LMS나 메일 첨부 제한에 맞춰 선택하세요.",
+        "PDF는 페이지 수가 예상과 맞는지 확인해 누락 페이지를 줄일 수 있습니다.",
+        "파일명에 특수문자가 많으면 LMS에서 깨질 수 있으니 제출 전 단순하게 정리하는 편이 좋습니다."
+      ],
+      faq: [
+        {
+          q: "파일명이 왜 중요한가요?",
+          a: "과목명, 학번, 이름, 과제명이 들어간 파일명은 교수자나 조교가 확인하기 쉽고, 업로드 중 깨질 가능성도 줄어듭니다."
+        },
+        {
+          q: "PDF 페이지 수 확인이 실패할 수도 있나요?",
+          a: "암호화되었거나 브라우저에서 읽기 어려운 PDF는 페이지 수 확인이 실패할 수 있습니다. 이 경우 파일을 직접 열어 다시 확인하세요."
+        }
+      ]
+    },
+    "word-count": {
+      title: "글자수 계산을 볼 때 주의할 것",
+      tips: [
+        "공백 포함과 공백 제외 기준은 학교나 과목마다 다를 수 있습니다.",
+        "A4 예상 장수는 글꼴, 줄간격, 여백에 따라 달라지는 참고값입니다.",
+        "본문을 붙여넣기 전에 표지, 목차, 참고문헌을 포함할지 기준을 먼저 정하세요."
+      ],
+      faq: [
+        {
+          q: "A4 예상 장수는 정확한가요?",
+          a: "대략적인 감을 잡기 위한 참고값입니다. 실제 장수는 글꼴, 줄간격, 문단 간격, 표와 이미지 포함 여부에 따라 달라집니다."
+        },
+        {
+          q: "참고문헌도 글자수에 포함해야 하나요?",
+          a: "과목마다 기준이 다릅니다. 분량 기준이 본문만인지 전체 문서인지 강의 안내를 먼저 확인하는 것이 좋습니다."
+        }
+      ]
+    },
+    "privacy-clean": {
+      title: "개인정보 제거 전에 확인할 것",
+      tips: [
+        "이미지 위치정보나 PDF 작성자 정보가 걱정될 때 제출 전 한 번 정리하세요.",
+        "정리한 파일은 새 파일로 내려받은 뒤 원본과 구분해서 보관하는 편이 좋습니다.",
+        "개인정보 제거 후에도 파일 본문 안에 직접 적힌 이름, 학번, 연락처는 직접 확인해야 합니다."
+      ],
+      faq: [
+        {
+          q: "본문 안의 개인정보도 자동으로 지워지나요?",
+          a: "아닙니다. 이 기능은 이미지 재인코딩과 PDF 문서 정보 정리를 돕습니다. 본문에 직접 적힌 개인정보는 사용자가 직접 확인해야 합니다."
+        },
+        {
+          q: "원본 파일이 바뀌나요?",
+          a: "원본을 직접 수정하지 않고 정리된 새 파일을 내려받는 방식으로 사용하는 것이 안전합니다."
+        }
+      ]
+    }
+  };
+  return guides[id] || base;
 }
 
 function cleanText(raw, mode, gap) {
