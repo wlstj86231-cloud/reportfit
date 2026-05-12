@@ -234,10 +234,46 @@ const tools = [
     group: "보안",
     path: "/tools/privacy-clean/",
     description: "이미지 위치정보와 PDF 작성자 정보를 브라우저에서 다시 저장해 줄입니다."
+  },
+  {
+    id: "privacy-scan",
+    label: "민감정보 점검",
+    short: "전화, 이메일, 학번",
+    icon: "SEC",
+    group: "보안",
+    path: "/tools/privacy-scan/",
+    description: "제출 전 문장 안의 이메일, 전화번호, 주민번호 후보, 학번 후보 같은 민감정보를 찾습니다."
+  },
+  {
+    id: "privacy-mask",
+    label: "개인정보 마스킹",
+    short: "복사 전 가리기",
+    icon: "SEC",
+    group: "보안",
+    path: "/tools/privacy-mask/",
+    description: "공유 전 텍스트에 들어간 연락처, 이메일, 학번 후보를 별표로 가려 복사할 수 있게 정리합니다."
+  },
+  {
+    id: "file-hash",
+    label: "파일 해시 확인",
+    short: "SHA-256 체크섬",
+    icon: "SEC",
+    group: "보안",
+    path: "/tools/file-hash/",
+    description: "제출 파일이 바뀌지 않았는지 확인할 수 있도록 브라우저에서 SHA 해시값을 계산합니다."
+  },
+  {
+    id: "password-maker",
+    label: "비밀번호 만들기",
+    short: "공유 암호 생성",
+    icon: "SEC",
+    group: "보안",
+    path: "/tools/password-maker/",
+    description: "ZIP이나 공유 링크에 붙일 임시 비밀번호를 브라우저에서 안전하게 생성합니다."
   }
 ];
 
-const popular = ["pdf-slim", "image-resize", "image-compress", "image-rotate", "submit-package", "file-check"];
+const popular = ["pdf-slim", "image-resize", "privacy-scan", "file-hash", "submit-package", "file-check"];
 const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
@@ -530,7 +566,11 @@ function stepStrip(id) {
     "citation-cleaner": ["자료 입력", "스타일 선택", "정리/복사"],
     "file-check": ["파일 선택", "기준 확인", "주의점 보기"],
     "zip-pack": ["파일 선택", "이름 지정", "ZIP 받기"],
-    "privacy-clean": ["파일 선택", "정보 정리", "새 파일 받기"]
+    "privacy-clean": ["파일 선택", "정보 정리", "새 파일 받기"],
+    "privacy-scan": ["텍스트 입력", "위험 후보 확인", "수정하기"],
+    "privacy-mask": ["텍스트 입력", "자동 마스킹", "복사하기"],
+    "file-hash": ["파일 선택", "해시 계산", "값 복사"],
+    "password-maker": ["조건 선택", "암호 생성", "복사하기"]
   };
   return `
     <div class="step-strip" aria-label="작업 순서">
@@ -1075,6 +1115,68 @@ function workspaceFor(id) {
       ${drop("image/*,application/pdf", true)}
       <button class="primary-action" id="runPrivacyClean" type="button">정리한 파일 받기</button>
       <div class="result" id="result"></div>
+    `,
+    "privacy-scan": `
+      <div class="tool-head"><h2>민감정보 점검</h2><p>제출 전 텍스트 안에 남은 연락처, 이메일, 학번 후보를 빠르게 찾습니다.</p></div>
+      <textarea id="privacyScanText" class="big-textarea" placeholder="과제 본문, 자기소개, 제출 메모를 붙여넣으세요."></textarea>
+      <button class="primary-action" id="runPrivacyScan" type="button">민감정보 점검하기</button>
+      <div class="result" id="result"></div>
+    `,
+    "privacy-mask": `
+      <div class="tool-head"><h2>개인정보 마스킹</h2><p>공유하기 전 텍스트에 들어간 민감정보 후보를 별표로 가립니다.</p></div>
+      <textarea id="privacyMaskText" class="big-textarea" placeholder="공유할 텍스트를 붙여넣으세요."></textarea>
+      <div class="option-row">
+        <label>마스킹 강도
+          <select id="privacyMaskMode">
+            <option value="balanced">일부만 남기기</option>
+            <option value="strict">거의 전부 가리기</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runPrivacyMask" type="button">마스킹 텍스트 만들기</button>
+      <div class="result" id="result"></div>
+    `,
+    "file-hash": `
+      <div class="tool-head"><h2>파일 해시 확인</h2><p>파일이 중간에 바뀌지 않았는지 확인할 SHA 해시값을 계산합니다.</p></div>
+      ${drop("*/*", true)}
+      <div class="option-row">
+        <label>알고리즘
+          <select id="hashAlgorithm">
+            <option value="SHA-256">SHA-256</option>
+            <option value="SHA-1">SHA-1</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runFileHash" type="button">해시 계산하기</button>
+      <div class="result" id="result"></div>
+    `,
+    "password-maker": `
+      <div class="tool-head"><h2>비밀번호 만들기</h2><p>압축 파일이나 공유 링크에 붙일 임시 암호를 안전하게 생성합니다.</p></div>
+      <div class="option-row">
+        <label>길이
+          <input id="passwordLength" type="number" min="8" max="64" step="1" value="18">
+        </label>
+        <label>숫자
+          <select id="passwordNumbers">
+            <option value="yes">포함</option>
+            <option value="no">제외</option>
+          </select>
+        </label>
+        <label>기호
+          <select id="passwordSymbols">
+            <option value="yes">포함</option>
+            <option value="no">제외</option>
+          </select>
+        </label>
+        <label>읽기 쉬운 문자
+          <select id="passwordReadable">
+            <option value="yes">헷갈리는 문자 제외</option>
+            <option value="no">모든 문자 허용</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary-action" id="runPasswordMaker" type="button">비밀번호 생성하기</button>
+      <div class="result" id="result"></div>
     `
   };
 
@@ -1128,7 +1230,11 @@ function bindToolEvents(id) {
     "citation-cleaner": ["#runCitation", runCitationCleaner],
     "file-check": ["#runFileCheck", runFileCheck],
     "zip-pack": ["#runZipPack", runZipPack],
-    "privacy-clean": ["#runPrivacyClean", runPrivacyClean]
+    "privacy-clean": ["#runPrivacyClean", runPrivacyClean],
+    "privacy-scan": ["#runPrivacyScan", runPrivacyScan],
+    "privacy-mask": ["#runPrivacyMask", runPrivacyMask],
+    "file-hash": ["#runFileHash", runFileHash],
+    "password-maker": ["#runPasswordMaker", runPasswordMaker]
   };
   const entry = map[id];
   if (entry) app.querySelector(entry[0])?.addEventListener("click", entry[1]);
@@ -1945,6 +2051,283 @@ async function runPrivacyClean() {
   });
 }
 
+function runPrivacyScan() {
+  const text = value("#privacyScanText");
+  if (!text.trim()) {
+    setResult(`<p class="error">점검할 텍스트를 붙여넣으세요.</p>`);
+    return;
+  }
+  const matches = findSensitiveMatches(text);
+  const groups = summarizeSensitiveMatches(matches);
+  const rows = groups.map((group) => `
+    <tr>
+      <td>${escapeHtml(group.type)}</td>
+      <td>${group.count}개</td>
+      <td>${escapeHtml(group.samples.join(", "))}</td>
+      <td>${escapeHtml(group.risk)}</td>
+    </tr>
+  `).join("");
+  setResult(`
+    <div class="metric-grid">
+      <div><span>감지 후보</span><strong>${matches.length}개</strong></div>
+      <div><span>유형</span><strong>${groups.length}개</strong></div>
+      <div><span>처리</span><strong>${matches.length ? "확인 필요" : "이상 없음"}</strong></div>
+    </div>
+    ${matches.length
+      ? `<div class="table-wrap"><table><thead><tr><th>유형</th><th>개수</th><th>가린 예시</th><th>확인 포인트</th></tr></thead><tbody>${rows}</tbody></table></div>
+         <p class="soft-note">자동 점검은 후보를 찾는 보조 기능입니다. 이름처럼 문맥으로만 알 수 있는 개인정보는 직접 다시 확인하세요.</p>`
+      : `<p class="soft-note">자주 드러나는 연락처, 이메일, 주민번호 후보, 학번 후보는 감지되지 않았습니다.</p>`}
+  `);
+}
+
+function runPrivacyMask() {
+  const text = value("#privacyMaskText");
+  if (!text.trim()) {
+    setResult(`<p class="error">마스킹할 텍스트를 붙여넣으세요.</p>`);
+    return;
+  }
+  const mode = value("#privacyMaskMode") || "balanced";
+  const matches = findSensitiveMatches(text);
+  const masked = maskSensitiveText(text, mode);
+  setResult(`
+    <textarea class="result-text" id="maskedPrivacyText" readonly>${escapeHtml(masked)}</textarea>
+    <div class="metric-grid">
+      <div><span>감지 후보</span><strong>${matches.length}개</strong></div>
+      <div><span>마스킹 강도</span><strong>${mode === "strict" ? "강하게" : "균형"}</strong></div>
+      <div><span>원본 보존</span><strong>수정 안 함</strong></div>
+    </div>
+    <button class="secondary-action" type="button" data-copy="#maskedPrivacyText">마스킹 텍스트 복사</button>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+async function runFileHash() {
+  await withProgress(async () => {
+    const files = selectedFiles();
+    requireFiles(files, "해시를 계산할 파일을 선택하세요.");
+    const algorithm = value("#hashAlgorithm") || "SHA-256";
+    const rows = [];
+    const lines = [];
+
+    for (const file of files) {
+      const hash = await digestFile(file, algorithm);
+      rows.push(`
+        <tr>
+          <td>${escapeHtml(file.name)}</td>
+          <td>${formatBytes(file.size)}</td>
+          <td><code>${hash}</code></td>
+        </tr>
+      `);
+      lines.push(`${algorithm}  ${hash}  ${file.name}`);
+    }
+
+    setResult(`
+      <textarea class="result-text" id="hashResult" readonly>${escapeHtml(lines.join("\n"))}</textarea>
+      <div class="table-wrap"><table><thead><tr><th>파일</th><th>용량</th><th>${escapeHtml(algorithm)}</th></tr></thead><tbody>${rows.join("")}</tbody></table></div>
+      <button class="secondary-action" type="button" data-copy="#hashResult">해시값 복사</button>
+    `);
+    app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+  });
+}
+
+function runPasswordMaker() {
+  const length = clampNumber(value("#passwordLength"), 8, 64, 18);
+  const includeNumbers = value("#passwordNumbers") !== "no";
+  const includeSymbols = value("#passwordSymbols") !== "no";
+  const readable = value("#passwordReadable") !== "no";
+  const password = generatePassword({ length, includeNumbers, includeSymbols, readable });
+  const score = passwordStrengthLabel(password);
+  setResult(`
+    <div class="copy-box">
+      <input id="generatedPassword" value="${escapeHtml(password)}" readonly>
+      <button type="button" data-copy="#generatedPassword">복사</button>
+    </div>
+    <div class="metric-grid">
+      <div><span>길이</span><strong>${password.length}자</strong></div>
+      <div><span>구성</span><strong>${includeSymbols ? "기호 포함" : "기호 제외"}</strong></div>
+      <div><span>강도</span><strong>${score}</strong></div>
+    </div>
+    <p class="soft-note">생성한 암호는 화면에만 표시됩니다. 중요한 계정 비밀번호로 재사용하지 말고 제출 파일 공유용 임시 암호로 쓰는 편이 안전합니다.</p>
+  `);
+  app.querySelector("[data-copy]")?.addEventListener("click", copyGenerated);
+}
+
+function findSensitiveMatches(text) {
+  const patterns = sensitivePatterns();
+  const matches = [];
+  for (const item of patterns) {
+    for (const match of text.matchAll(item.pattern)) {
+      const raw = match[0];
+      if (item.validate && !item.validate(raw)) continue;
+      matches.push({
+        type: item.type,
+        risk: item.risk,
+        raw,
+        masked: item.mask(raw, "balanced"),
+        index: match.index || 0
+      });
+    }
+  }
+  return matches.sort((a, b) => a.index - b.index);
+}
+
+function summarizeSensitiveMatches(matches) {
+  const groups = new Map();
+  for (const match of matches) {
+    const current = groups.get(match.type) || { type: match.type, risk: match.risk, count: 0, samples: [] };
+    current.count += 1;
+    if (current.samples.length < 3 && !current.samples.includes(match.masked)) current.samples.push(match.masked);
+    groups.set(match.type, current);
+  }
+  return [...groups.values()];
+}
+
+function maskSensitiveText(text, mode) {
+  let output = text;
+  for (const item of sensitivePatterns()) {
+    output = output.replace(item.pattern, (raw) => {
+      if (item.validate && !item.validate(raw)) return raw;
+      return item.mask(raw, mode);
+    });
+  }
+  return output;
+}
+
+function sensitivePatterns() {
+  return [
+    {
+      type: "이메일",
+      risk: "공유 전 계정 주소 확인",
+      pattern: /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,
+      mask: maskEmail
+    },
+    {
+      type: "전화번호",
+      risk: "연락처 노출 확인",
+      pattern: /\b(?:01[016789][-\s.]?\d{3,4}[-\s.]?\d{4}|0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4})\b/g,
+      mask: maskPhone
+    },
+    {
+      type: "주민번호 후보",
+      risk: "즉시 제거 권장",
+      pattern: /\b\d{6}[-\s]?[1-4]\d{6}\b/g,
+      mask: () => "******-*******"
+    },
+    {
+      type: "카드번호 후보",
+      risk: "결제정보 여부 확인",
+      pattern: /\b(?:\d[ -]?){13,19}\b/g,
+      validate: luhnPossible,
+      mask: maskCard
+    },
+    {
+      type: "학번 후보",
+      risk: "제출 양식 외 노출 확인",
+      pattern: /\b20\d{6,8}\b/g,
+      mask: maskStudentId
+    },
+    {
+      type: "비밀키 후보",
+      risk: "토큰이나 암호는 공유 금지",
+      pattern: /\b(api[_-]?key|token|secret|password|비밀번호|암호)\s*[:=]\s*[^,\s]+/gi,
+      mask: maskSecret
+    }
+  ];
+}
+
+function maskEmail(raw, mode) {
+  const [local, domain] = raw.split("@");
+  if (!domain) return raw;
+  if (mode === "strict") return `${local.slice(0, 1)}***@***`;
+  return `${local.slice(0, Math.min(2, local.length))}***@${domain.replace(/^([^.]*)/, (part) => `${part.slice(0, 1)}***`)}`;
+}
+
+function maskPhone(raw, mode) {
+  const digits = raw.replace(/\D/g, "");
+  if (mode === "strict") return `${digits.slice(0, 3)}-****-****`;
+  return `${digits.slice(0, 3)}-****-${digits.slice(-4)}`;
+}
+
+function maskCard(raw) {
+  const digits = raw.replace(/\D/g, "");
+  return `****-****-****-${digits.slice(-4)}`;
+}
+
+function maskStudentId(raw, mode) {
+  if (mode === "strict") return `${raw.slice(0, 2)}******`;
+  return `${raw.slice(0, 4)}****${raw.slice(-2)}`;
+}
+
+function maskSecret(raw) {
+  return raw.replace(/(:|=)\s*[^,\s]+/, "$1 ********");
+}
+
+function luhnPossible(raw) {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length < 13 || digits.length > 19) return false;
+  let sum = 0;
+  let doubleDigit = false;
+  for (let index = digits.length - 1; index >= 0; index -= 1) {
+    let number = Number(digits[index]);
+    if (doubleDigit) {
+      number *= 2;
+      if (number > 9) number -= 9;
+    }
+    sum += number;
+    doubleDigit = !doubleDigit;
+  }
+  return sum % 10 === 0;
+}
+
+async function digestFile(file, algorithm) {
+  const buffer = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest(algorithm, buffer);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function generatePassword({ length, includeNumbers, includeSymbols, readable }) {
+  const lower = readable ? "abcdefghijkmnopqrstuvwxyz" : "abcdefghijklmnopqrstuvwxyz";
+  const upper = readable ? "ABCDEFGHJKLMNPQRSTUVWXYZ" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = readable ? "23456789" : "0123456789";
+  const symbols = "!@#$%^&*()-_=+[]{}?";
+  const sets = [lower, upper];
+  if (includeNumbers) sets.push(numbers);
+  if (includeSymbols) sets.push(symbols);
+  const all = sets.join("");
+  const chars = sets.map((set) => pickSecureChar(set));
+  while (chars.length < length) chars.push(pickSecureChar(all));
+  return shuffleSecure(chars).join("");
+}
+
+function pickSecureChar(chars) {
+  const values = new Uint32Array(1);
+  crypto.getRandomValues(values);
+  return chars[values[0] % chars.length];
+}
+
+function shuffleSecure(items) {
+  const array = [...items];
+  for (let index = array.length - 1; index > 0; index -= 1) {
+    const values = new Uint32Array(1);
+    crypto.getRandomValues(values);
+    const swapIndex = values[0] % (index + 1);
+    [array[index], array[swapIndex]] = [array[swapIndex], array[index]];
+  }
+  return array;
+}
+
+function passwordStrengthLabel(password) {
+  const classes = [
+    /[a-z]/.test(password),
+    /[A-Z]/.test(password),
+    /\d/.test(password),
+    /[^a-zA-Z0-9]/.test(password)
+  ].filter(Boolean).length;
+  if (password.length >= 18 && classes >= 3) return "강함";
+  if (password.length >= 12 && classes >= 2) return "보통";
+  return "약함";
+}
+
 async function imagesToPdf(files, quality, maxWidth) {
   const { PDFDocument } = await getPdfLib();
   const pdf = await PDFDocument.create();
@@ -2545,7 +2928,11 @@ function relatedTools(id) {
     "citation-cleaner": ["word-count", "text-clean", "file-check"],
     "file-check": ["submit-package", "pdf-compress", "pdf-slim"],
     "zip-pack": ["submit-package", "file-check", "file-name"],
-    "privacy-clean": ["file-check", "image-compress", "image-watermark"]
+    "privacy-clean": ["privacy-scan", "privacy-mask", "file-hash"],
+    "privacy-scan": ["privacy-mask", "privacy-clean", "file-hash"],
+    "privacy-mask": ["privacy-scan", "privacy-clean", "password-maker"],
+    "file-hash": ["file-check", "privacy-clean", "password-maker"],
+    "password-maker": ["zip-pack", "file-hash", "privacy-mask"]
   };
   return (map[id] || popular).map(toolById).filter(Boolean);
 }
@@ -2583,6 +2970,26 @@ function copyFor(id) {
     "image-watermark": {
       why: "초안, 참고용, 이름 표시가 필요한 이미지는 편집 앱을 따로 열지 않고 바로 표시를 얹을 수 있습니다. 원본은 건드리지 않고 결과 파일만 내려받습니다.",
       tip: "최종 제출본에는 불필요한 워터마크가 남지 않게 다시 열어 확인하세요. 확인용 공유 이미지라면 오른쪽 아래와 낮은 투명도가 가장 무난합니다."
+    },
+    "privacy-clean": {
+      why: "사진 위치정보나 PDF 작성자 정보처럼 눈에 잘 안 보이는 정보가 파일 안에 남을 수 있습니다. 제출이나 공유 전에 새 파일로 다시 저장하면 불필요한 메타데이터 노출을 줄일 수 있습니다.",
+      tip: "본문에 직접 적힌 이름, 학번, 전화번호는 이 도구만으로 지워지지 않습니다. 민감정보 점검과 개인정보 마스킹을 같이 쓰세요."
+    },
+    "privacy-scan": {
+      why: "과제 본문, 자기소개, 캡션에는 이메일, 전화번호, 학번 같은 정보가 생각보다 쉽게 남습니다. 제출 전 후보를 한 번 훑으면 공유 실수를 줄일 수 있습니다.",
+      tip: "자동 점검은 패턴 기반입니다. 이름, 학교명, 조 이름처럼 문맥으로만 민감해지는 정보는 직접 읽어 확인하세요."
+    },
+    "privacy-mask": {
+      why: "친구나 조원에게 예시 문장을 보여줄 때 연락처와 학번을 그대로 보내면 불필요한 노출이 생깁니다. 마스킹본을 만들어 복사하면 공유가 더 안전합니다.",
+      tip: "공식 제출 문서에는 필요한 정보까지 가리면 안 됩니다. 공유용 사본과 제출용 원본을 구분해서 사용하세요."
+    },
+    "file-hash": {
+      why: "파일을 메일, 메신저, 클라우드로 주고받을 때 같은 파일인지 확인해야 할 때가 있습니다. 해시값을 같이 보내면 중간에 파일이 바뀌었는지 비교할 수 있습니다.",
+      tip: "일반 확인에는 SHA-256을 쓰세요. 상대방이 같은 파일로 계산한 값과 한 글자라도 다르면 파일이 다르다고 봐야 합니다."
+    },
+    "password-maker": {
+      why: "ZIP 암호나 공유 링크 암호를 사람 이름, 생일, 학번으로 만들면 쉽게 추측될 수 있습니다. 임시 공유용 암호는 길고 무작위인 편이 안전합니다.",
+      tip: "생성한 암호는 중요한 계정 비밀번호로 재사용하지 마세요. 파일 공유가 끝나면 링크 권한이나 암호도 정리하는 편이 좋습니다."
     },
     "citation-cleaner": {
       why: "참고문헌은 내용보다 정렬, 중복, 띄어쓰기에서 어수선해 보이는 경우가 많습니다. 제출 전에 줄 단위로 정리하면 문서의 마감감이 좋아집니다.",
@@ -2933,6 +3340,78 @@ function guideFor(id) {
         {
           q: "원본 파일이 바뀌나요?",
           a: "원본을 직접 수정하지 않고 정리된 새 파일을 내려받는 방식으로 사용하는 것이 안전합니다."
+        }
+      ]
+    },
+    "privacy-scan": {
+      title: "민감정보 점검에서 봐야 할 것",
+      tips: [
+        "이메일, 전화번호, 주민번호 후보, 학번 후보처럼 형태가 뚜렷한 정보만 자동으로 찾습니다.",
+        "감지된 예시는 일부가 가려져 표시되므로 원문에서 직접 위치를 다시 확인하세요.",
+        "이름, 학교, 회사명처럼 문맥으로 민감해지는 정보는 자동 점검만 믿지 말고 직접 확인하세요."
+      ],
+      faq: [
+        {
+          q: "붙여넣은 텍스트가 서버로 전송되나요?",
+          a: "아니요. 점검은 브라우저 안에서 패턴을 찾는 방식으로 실행됩니다."
+        },
+        {
+          q: "감지되지 않으면 안전한가요?",
+          a: "완전한 보장은 아닙니다. 흔한 패턴을 찾는 보조 도구이므로 최종 제출 전에는 직접 다시 읽어 확인하세요."
+        }
+      ]
+    },
+    "privacy-mask": {
+      title: "개인정보 마스킹 전에 확인할 것",
+      tips: [
+        "공유용 사본을 만들 때 쓰고, 제출에 꼭 필요한 이름이나 학번까지 가려지지 않았는지 확인하세요.",
+        "균형 모드는 일부 숫자를 남기고, 강한 모드는 더 많이 가립니다.",
+        "마스킹 결과는 새 텍스트로 만들어지며 원문 입력값은 자동으로 저장하지 않습니다."
+      ],
+      faq: [
+        {
+          q: "PDF 안의 개인정보도 마스킹되나요?",
+          a: "아니요. 이 도구는 붙여넣은 텍스트용입니다. PDF 파일 자체는 개인정보 제거나 원문 편집 도구를 따로 사용해야 합니다."
+        },
+        {
+          q: "마스킹한 텍스트를 다시 원래대로 돌릴 수 있나요?",
+          a: "아니요. 별표로 바뀐 결과만으로는 원문을 복원할 수 없으니 원본은 따로 보관하세요."
+        }
+      ]
+    },
+    "file-hash": {
+      title: "파일 해시 확인에서 봐야 할 것",
+      tips: [
+        "같은 파일은 같은 알고리즘에서 항상 같은 해시값을 갖습니다.",
+        "파일 이름만 바뀌는 것은 해시에 영향을 주지 않지만, 내용이 한 글자라도 바뀌면 값이 달라집니다.",
+        "과제 최종본을 조원과 비교할 때는 SHA-256 값을 복사해 함께 보내면 됩니다."
+      ],
+      faq: [
+        {
+          q: "해시값으로 파일 내용을 볼 수 있나요?",
+          a: "아니요. 해시는 파일 동일성 확인용 값이며 원문을 복원하는 값이 아닙니다."
+        },
+        {
+          q: "SHA-1과 SHA-256 중 무엇을 쓰면 되나요?",
+          a: "일반적인 파일 확인에는 SHA-256을 권장합니다. SHA-1은 오래된 제출처가 요구할 때만 쓰세요."
+        }
+      ]
+    },
+    "password-maker": {
+      title: "비밀번호 만들 때 확인할 것",
+      tips: [
+        "공유용 암호는 최소 12자 이상, 가능하면 16자 이상으로 만드세요.",
+        "생일, 전화번호, 학번, 이름 조합은 피하는 편이 안전합니다.",
+        "파일 공유가 끝난 뒤에는 링크 권한이나 암호를 정리하세요."
+      ],
+      faq: [
+        {
+          q: "생성한 비밀번호가 저장되나요?",
+          a: "아니요. 화면에 표시하고 복사할 수 있게만 만들며 따로 저장하지 않습니다."
+        },
+        {
+          q: "계정 비밀번호로 써도 되나요?",
+          a: "중요 계정에는 전용 비밀번호 관리자에서 별도로 관리하는 편이 좋습니다. 이 도구는 제출 파일 공유용 임시 암호에 맞춰져 있습니다."
         }
       ]
     }

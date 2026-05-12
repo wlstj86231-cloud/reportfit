@@ -119,6 +119,26 @@ const tools = [
     slug: "privacy-clean",
     title: "개인정보 제거 - 레포트핏",
     description: "이미지 위치정보와 PDF 작성자 정보를 브라우저에서 다시 저장해 제출 전 개인정보 노출을 줄입니다."
+  },
+  {
+    slug: "privacy-scan",
+    title: "민감정보 점검 - 레포트핏",
+    description: "과제 본문과 제출 메모 안의 이메일, 전화번호, 주민번호 후보, 학번 후보를 브라우저에서 빠르게 점검합니다."
+  },
+  {
+    slug: "privacy-mask",
+    title: "개인정보 마스킹 - 레포트핏",
+    description: "공유 전 텍스트에 남은 연락처, 이메일, 학번 후보를 별표로 가려 안전한 사본을 만듭니다."
+  },
+  {
+    slug: "file-hash",
+    title: "파일 해시 확인 - 레포트핏",
+    description: "제출 파일이 바뀌지 않았는지 확인할 수 있도록 SHA-256 해시값을 브라우저에서 계산합니다."
+  },
+  {
+    slug: "password-maker",
+    title: "비밀번호 만들기 - 레포트핏",
+    description: "ZIP 파일이나 공유 링크에 붙일 임시 비밀번호를 브라우저에서 안전하게 생성합니다."
   }
 ];
 const pages = [
