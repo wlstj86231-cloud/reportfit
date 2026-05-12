@@ -350,15 +350,15 @@ const app = document.querySelector("#app");
 const infoPages = {
   "/about/": {
     title: "소개",
-    lead: "레포트핏은 과제를 대신 작성하지 않고, 제출 전에 필요한 파일 변환과 문서 정리를 빠르게 처리하는 도구입니다.",
+    lead: "대학생 도우미는 과제를 대신 작성하지 않고, 제출 전에 필요한 파일 변환과 문서 정리를 빠르게 처리하는 도구입니다.",
     body: [
       "대학생이 과제를 제출할 때 겪는 문제는 대개 거창하지 않습니다. PDF 용량이 제한을 넘거나, 사진 여러 장을 하나로 묶어야 하거나, 파일명이 어수선하거나, 참고문헌 줄이 뒤섞여 있는 식입니다.",
-      "레포트핏은 이런 작은 제출 문제를 브라우저 안에서 해결하도록 설계했습니다. 가능한 작업은 서버 업로드 없이 사용자의 기기에서 처리되며, 도구 화면을 먼저 보여주고 설명은 아래로 내려 실제 사용 흐름을 방해하지 않습니다."
+      "대학생 도우미는 이런 작은 제출 문제를 브라우저 안에서 해결하도록 설계했습니다. 가능한 작업은 서버 업로드 없이 사용자의 기기에서 처리되며, 도구 화면을 먼저 보여주고 설명은 아래로 내려 실제 사용 흐름을 방해하지 않습니다."
     ]
   },
   "/privacy/": {
     title: "개인정보 처리방침",
-    lead: "레포트핏의 파일 처리 기능은 기본적으로 브라우저 안에서 실행됩니다.",
+    lead: "대학생 도우미의 파일 처리 기능은 기본적으로 브라우저 안에서 실행됩니다.",
     body: [
       "선택한 PDF, 이미지, ZIP 대상 파일은 변환 작업을 위해 사용자의 브라우저 메모리에서 읽힙니다. 별도 서버로 파일을 저장하거나 전송하는 구조를 사용하지 않습니다.",
       "사이트 개선을 위해 일반적인 접속 로그나 브라우저가 제공하는 기술 정보가 호스팅 서비스 또는 분석 도구에 남을 수 있습니다. 이름, 학번, 과제 파일 원본을 수집하는 입력 양식은 두지 않습니다.",
@@ -367,10 +367,10 @@ const infoPages = {
   },
   "/terms/": {
     title: "이용안내",
-    lead: "레포트핏은 제출 전 파일과 형식 정리를 돕는 보조 도구입니다.",
+    lead: "대학생 도우미는 제출 전 파일과 형식 정리를 돕는 보조 도구입니다.",
     body: [
       "도구 결과는 제출 전 확인을 편하게 하기 위한 참고용입니다. 과목별 제출 규정, 교수자의 안내, 학교 LMS의 실제 제한을 우선해야 합니다.",
-      "레포트핏은 과제를 대신 작성하거나 표절을 우회하는 서비스를 제공하지 않습니다. 사용자는 본인이 작성하고 제출할 권리가 있는 파일만 처리해야 합니다.",
+      "대학생 도우미는 과제를 대신 작성하거나 표절을 우회하는 서비스를 제공하지 않습니다. 사용자는 본인이 작성하고 제출할 권리가 있는 파일만 처리해야 합니다.",
       "브라우저와 파일 형식에 따라 일부 변환 결과가 다를 수 있으므로, 다운로드한 결과 파일은 제출 전에 직접 열어 확인해야 합니다."
     ]
   },
@@ -385,18 +385,18 @@ const infoPages = {
   },
   "/editorial/": {
     title: "편집 기준",
-    lead: "레포트핏의 설명 문서는 과제 대행이 아니라 제출 전 실수를 줄이는 방법에 집중합니다.",
+    lead: "대학생 도우미의 설명 문서는 과제 대행이 아니라 제출 전 실수를 줄이는 방법에 집중합니다.",
     body: [
       "각 도구 페이지는 먼저 실제 기능을 제공하고, 아래 설명에서는 언제 필요한지, 제출 전에 어떤 점을 확인해야 하는지, 어떤 경우에 결과를 다시 열어봐야 하는지를 다룹니다.",
-      "레포트핏은 레포트 본문을 대신 작성하거나 표절을 숨기는 방향의 기능을 넣지 않습니다. 파일 형식, 참고문헌 정리, 용량 제한, 개인정보 제거처럼 사용자가 직접 작성한 과제를 제출 가능한 상태로 정리하는 작업만 다룹니다.",
+      "대학생 도우미는 레포트 본문을 대신 작성하거나 표절을 숨기는 방향의 기능을 넣지 않습니다. 파일 형식, 참고문헌 정리, 용량 제한, 개인정보 제거처럼 사용자가 직접 작성한 과제를 제출 가능한 상태로 정리하는 작업만 다룹니다.",
       "도구 설명은 실제 제출 상황을 기준으로 업데이트합니다. 사용자가 자주 겪는 파일 오류, LMS 업로드 제한, 이미지 스캔 품질, 참고문헌 누락 같은 구체적인 문제를 우선합니다."
     ]
   },
   "/review-readiness/": {
     title: "승인 준비 체크",
-    lead: "레포트핏은 애드센스 심사 전에 기능, 신뢰 페이지, 내비게이션, 고유 설명 문서를 함께 갖추도록 구성했습니다.",
+    lead: "대학생 도우미는 애드센스 심사 전에 기능, 신뢰 페이지, 내비게이션, 고유 설명 문서를 함께 갖추도록 구성했습니다.",
     body: [
-      "구글 애드센스 공식 안내는 방문자에게 관련성 있는 고유 콘텐츠와 좋은 사용자 경험을 제공하는 사이트를 요구합니다. 레포트핏은 빈 도구 화면만 두지 않고 각 기능별 사용 맥락과 주의점을 함께 제공합니다.",
+      "구글 애드센스 공식 안내는 방문자에게 관련성 있는 고유 콘텐츠와 좋은 사용자 경험을 제공하는 사이트를 요구합니다. 대학생 도우미는 빈 도구 화면만 두지 않고 각 기능별 사용 맥락과 주의점을 함께 제공합니다.",
       "광고 코드는 실제 도메인에서만 유휴 시간에 불러오도록 구성했습니다. 변환 버튼, 다운로드 버튼, 내비게이션과 혼동되는 위치에는 광고를 두지 않는 것이 원칙입니다.",
       "심사 전에는 깨진 링크, 빈 페이지, placeholder 문구, 과도한 광고 영역, 저작권 침해 자료, 과제 대행처럼 보이는 표현을 제거해야 합니다."
     ]
@@ -421,14 +421,14 @@ function render() {
     renderInfoPage();
     return;
   }
-  document.title = `${currentTool.label} - 레포트핏`;
+  document.title = `${currentTool.label} - 대학생 도우미`;
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
-        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="레포트핏 홈">
+        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="대학생 도우미 홈">
           <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
           <span>
-            <strong>레포트핏</strong>
+            <strong>대학생 도우미</strong>
             <small>과제 제출 도구함</small>
           </span>
         </a>
@@ -492,7 +492,7 @@ function render() {
         <a href="/editorial/">편집 기준</a>
         <a href="/review-readiness/">승인 준비</a>
         <a href="/contact/">문의</a>
-        <span>레포트핏은 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
+        <span>대학생 도우미는 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
       </footer>
     </div>
   `;
@@ -503,14 +503,14 @@ function render() {
 
 function renderInfoPage() {
   const page = infoPages[currentPage];
-  document.title = `${page.title} - 레포트핏`;
+  document.title = `${page.title} - 대학생 도우미`;
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
-        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="레포트핏 홈">
+        <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="대학생 도우미 홈">
           <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg" alt=""></span>
           <span>
-            <strong>레포트핏</strong>
+            <strong>대학생 도우미</strong>
             <small>과제 제출 도구함</small>
           </span>
         </a>
@@ -520,7 +520,7 @@ function renderInfoPage() {
       </header>
       <main class="info-page">
         <section class="info-card">
-          <p class="eyebrow">ReportFit</p>
+          <p class="eyebrow">대학생 도우미</p>
           <h1>${escapeHtml(page.title)}</h1>
           <p class="info-lead">${escapeHtml(page.lead)}</p>
           ${page.body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
@@ -536,7 +536,7 @@ function renderInfoPage() {
         <a href="/editorial/">편집 기준</a>
         <a href="/review-readiness/">승인 준비</a>
         <a href="/contact/">문의</a>
-        <span>레포트핏은 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
+        <span>대학생 도우미는 과제를 대신 작성하지 않고 제출 전 파일과 형식 정리를 돕습니다.</span>
       </footer>
     </div>
   `;
@@ -1558,7 +1558,7 @@ async function runPdfCompress() {
     const pdf = await PDFDocument.load(input, { ignoreEncryption: true });
     scrubPdfInfo(pdf);
     const bytes = await pdf.save({ useObjectStreams: true, addDefaultPage: false });
-    const outName = cleanOutputName(value("#pdfCompressName") || file.name.replace(/\.pdf$/i, "_reportfit.pdf"), "pdf");
+    const outName = cleanOutputName(value("#pdfCompressName") || file.name.replace(/\.pdf$/i, "_student_helper.pdf"), "pdf");
     const blob = new Blob([bytes], { type: "application/pdf" });
     setResult(`
       ${compareSize(file.size, blob.size)}
@@ -1650,7 +1650,7 @@ async function runPdfEdit() {
     const blob = new Blob([bytes], { type: "application/pdf" });
     setResult(`
       <div class="metric-grid"><div><span>페이지</span><strong>${output.getPageCount()}쪽</strong></div><div><span>파일</span><strong>${formatBytes(blob.size)}</strong></div></div>
-      ${downloadButton(blob, "reportfit_pdf.pdf", "새 PDF 다운로드")}
+      ${downloadButton(blob, "student_helper_pdf.pdf", "새 PDF 다운로드")}
     `);
   });
 }
@@ -1840,7 +1840,7 @@ async function runImageConvert() {
     if (format === "pdf") {
       const pdfBytes = await imagesToPdf(files, quality, maxWidth);
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
-      setResult(`${downloadButton(blob, "reportfit_images.pdf", "이미지 PDF 다운로드")}`);
+      setResult(`${downloadButton(blob, "student_helper_images.pdf", "이미지 PDF 다운로드")}`);
       return;
     }
 
@@ -1851,7 +1851,7 @@ async function runImageConvert() {
       zip.file(replaceExt(file.name, extensionFor(format)), converted);
     }
     const blob = await zip.generateAsync({ type: "blob" });
-    setResult(`${downloadButton(blob, "reportfit_images.zip", "변환 이미지 ZIP 다운로드")}`);
+    setResult(`${downloadButton(blob, "student_helper_images.zip", "변환 이미지 ZIP 다운로드")}`);
   });
 }
 
@@ -1877,7 +1877,7 @@ async function runImageCompress() {
     const blob = await zip.generateAsync({ type: "blob" });
     setResult(`
       ${compareSize(before, after)}
-      ${downloadButton(blob, "reportfit_image_compress.zip", "압축 이미지 ZIP 다운로드")}
+      ${downloadButton(blob, "student_helper_image_compress.zip", "압축 이미지 ZIP 다운로드")}
     `);
   });
 }
@@ -1909,7 +1909,7 @@ async function runImageResize() {
     setResult(`
       ${compareSize(before, after)}
       ${imageResultTable(rows, ["파일", "크기", "결과"])}
-      ${downloadButton(blob, "reportfit_image_resize.zip", "리사이즈 이미지 ZIP 다운로드")}
+      ${downloadButton(blob, "student_helper_image_resize.zip", "리사이즈 이미지 ZIP 다운로드")}
     `);
   });
 }
@@ -1941,7 +1941,7 @@ async function runImageRotate() {
     setResult(`
       ${compareSize(before, after)}
       ${imageResultTable(rows, ["파일", "크기", "결과"])}
-      ${downloadButton(blob, "reportfit_image_rotate.zip", "회전 이미지 ZIP 다운로드")}
+      ${downloadButton(blob, "student_helper_image_rotate.zip", "회전 이미지 ZIP 다운로드")}
     `);
   });
 }
@@ -1977,7 +1977,7 @@ async function runImageWatermark() {
     setResult(`
       ${compareSize(before, after)}
       ${imageResultTable(rows, ["파일", "위치", "결과"])}
-      ${downloadButton(blob, "reportfit_image_watermark.zip", "워터마크 이미지 ZIP 다운로드")}
+      ${downloadButton(blob, "student_helper_image_watermark.zip", "워터마크 이미지 ZIP 다운로드")}
     `);
   });
 }
@@ -1990,7 +1990,7 @@ function runFileName() {
     value("#assignmentName")
   ].map(slugPart).filter(Boolean);
   const ext = value("#fileExt") || "pdf";
-  const name = `${parts.join("_") || "reportfit_assignment"}.${ext}`;
+  const name = `${parts.join("_") || "student_helper_assignment"}.${ext}`;
   setResult(`
     <div class="copy-box">
       <input id="generatedName" value="${escapeHtml(name)}" readonly>
@@ -2497,7 +2497,7 @@ async function runZipPack() {
     const zip = new JSZip();
     for (const file of files) zip.file(file.name, file);
     const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
-    const outName = cleanOutputName(value("#zipName") || "reportfit_assignment.zip", "zip");
+    const outName = cleanOutputName(value("#zipName") || "student_helper_assignment.zip", "zip");
     setResult(`
       <div class="metric-grid"><div><span>묶은 파일</span><strong>${files.length}개</strong></div><div><span>ZIP 용량</span><strong>${formatBytes(blob.size)}</strong></div></div>
       ${downloadButton(blob, outName, "ZIP 다운로드")}
@@ -2523,7 +2523,7 @@ async function runPrivacyClean() {
       }
     }
     const blob = await zip.generateAsync({ type: "blob" });
-    setResult(`${downloadButton(blob, "reportfit_privacy_clean.zip", "정리한 파일 다운로드")}`);
+    setResult(`${downloadButton(blob, "student_helper_privacy_clean.zip", "정리한 파일 다운로드")}`);
   });
 }
 
@@ -3096,7 +3096,7 @@ function pageSelectionLabel(indices) {
 }
 
 function pdfBaseName(file) {
-  return slugPart(file.name.replace(/\.[^.]+$/, "")) || "reportfit";
+  return slugPart(file.name.replace(/\.[^.]+$/, "")) || "student_helper";
 }
 
 function addPageWithRotation(pdf, page, rotate, degreesFn) {
@@ -3110,8 +3110,8 @@ function scrubPdfInfo(pdf) {
   pdf.setAuthor("");
   pdf.setSubject("");
   pdf.setKeywords([]);
-  pdf.setProducer("ReportFit");
-  pdf.setCreator("ReportFit");
+  pdf.setProducer("대학생 도우미");
+  pdf.setCreator("대학생 도우미");
   pdf.setCreationDate(now);
   pdf.setModificationDate(now);
 }
@@ -3268,12 +3268,12 @@ function packageFileName(file, index, meta) {
   const base = meta.mode === "numbered"
     ? `${prefix}_${number}`
     : `${prefix}_${number}_${originalBase}`;
-  return `${base || `reportfit_${number}`}.${ext}`;
+  return `${base || `student_helper_${number}`}.${ext}`;
 }
 
 function buildPackageChecklist(meta, rows, totalSize) {
   return [
-    "[레포트핏 제출 패키지]",
+    "[대학생 도우미 제출 패키지]",
     `과목: ${meta.course}`,
     `과제: ${meta.assignment}`,
     `학번/이름: ${meta.studentId} ${meta.studentName}`,
@@ -3464,8 +3464,8 @@ function applySample(type) {
       setValue("#citationAuthor", "Kim, J.");
       setValue("#citationYear", "2026");
       setValue("#citationTitle", "mobile assignment submission habits");
-      setValue("#citationSource", "ReportFit Guide");
-      setValue("#citationUrl", "10.1234/reportfit.2026");
+      setValue("#citationSource", "대학생 도우미 가이드");
+      setValue("#citationUrl", "10.1234/student-helper.2026");
     },
     "citation-article": () => {
       setValue("#citationStyle", "korean");
@@ -3552,7 +3552,7 @@ function relatedTools(id) {
 
 function copyFor(id) {
   const base = {
-    why: "제출 직전에는 파일 용량, 확장자, 파일명, 페이지 순서처럼 작은 부분에서 문제가 자주 생깁니다. 레포트핏은 그 작업을 기능별로 쪼개 바로 처리할 수 있게 만든 도구입니다.",
+    why: "제출 직전에는 파일 용량, 확장자, 파일명, 페이지 순서처럼 작은 부분에서 문제가 자주 생깁니다. 대학생 도우미는 그 작업을 기능별로 쪼개 바로 처리할 수 있게 만든 도구입니다.",
     tip: "파일은 가능한 한 마지막 저장본으로 작업하고, 결과 파일을 받은 뒤 실제 제출 화면에서 한 번 더 열어보는 것이 좋습니다."
   };
   const extra = {
@@ -3606,7 +3606,7 @@ function copyFor(id) {
     },
     "citation-cleaner": {
       why: "참고문헌은 내용보다 정렬, 중복, 띄어쓰기에서 어수선해 보이는 경우가 많습니다. 제출 전에 줄 단위로 정리하면 문서의 마감감이 좋아집니다.",
-      tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요. 레포트핏은 누락 가능성을 알려주지만 최종 양식 판단은 강의 안내를 우선합니다."
+      tip: "정리 후에는 과목에서 요구한 APA, MLA, Chicago, 한국식 표기 기준과 맞는지 한 번 더 확인하세요. 대학생 도우미는 누락 가능성을 알려주지만 최종 양식 판단은 강의 안내를 우선합니다."
     },
     "document-outline": {
       why: "보고서를 쓰기 전 목차가 흐릿하면 본문이 길어질수록 주장이 흔들립니다. 먼저 섹션과 작성 포인트를 잡아두면 자료 조사와 본문 작성 순서를 빠르게 정리할 수 있습니다.",
@@ -3685,13 +3685,13 @@ function guideFor(id) {
     title: "이 도구를 쓸 때 확인할 것",
     tips: [
       "결과를 받은 뒤에는 실제 제출 화면에서 다시 열어 파일이 깨지지 않았는지 확인하세요.",
-      "과목별 제출 형식이 다르면 레포트핏 결과보다 교수자 안내와 LMS 제한을 우선해야 합니다.",
+      "과목별 제출 형식이 다르면 대학생 도우미 결과보다 교수자 안내와 LMS 제한을 우선해야 합니다.",
       "마감 직전에는 파일명, 용량, 첨부 여부처럼 작은 항목을 마지막으로 확인하는 편이 안전합니다."
     ],
     faq: [
       {
         q: "파일이 서버로 업로드되나요?",
-        a: "레포트핏의 주요 파일 처리 기능은 브라우저 안에서 실행되도록 구성되어 있습니다. 그래도 최종 제출 전에는 결과 파일을 직접 열어 확인하는 것이 좋습니다."
+        a: "대학생 도우미의 주요 파일 처리 기능은 브라우저 안에서 실행되도록 구성되어 있습니다. 그래도 최종 제출 전에는 결과 파일을 직접 열어 확인하는 것이 좋습니다."
       },
       {
         q: "결과를 바로 제출해도 되나요?",
@@ -4070,7 +4070,7 @@ function guideFor(id) {
       faq: [
         {
           q: "워터마크를 지울 수 있나요?",
-          a: "레포트핏은 결과 이미지를 새로 만드는 방식이라, 원본을 보관해 두고 필요할 때 다시 작업하는 것이 안전합니다."
+          a: "대학생 도우미는 결과 이미지를 새로 만드는 방식이라, 원본을 보관해 두고 필요할 때 다시 작업하는 것이 안전합니다."
         },
         {
           q: "한글 문구도 넣을 수 있나요?",
@@ -4518,7 +4518,7 @@ function copyGenerated(event) {
 
 function copyToolLink(event) {
   const url = new URL(currentTool.path, location.origin).href;
-  navigator.clipboard?.writeText(`${currentTool.label} - 레포트핏\n${url}`);
+  navigator.clipboard?.writeText(`${currentTool.label} - 대학생 도우미\n${url}`);
   event.currentTarget.textContent = "링크 복사 완료";
 }
 
@@ -4531,7 +4531,7 @@ function slugPart(text) {
 
 function cleanOutputName(name, ext) {
   const safe = slugPart(name).replace(new RegExp(`\\.${ext}$`, "i"), "");
-  return `${safe || "reportfit"}.${ext}`;
+  return `${safe || "student_helper"}.${ext}`;
 }
 
 function replaceExt(name, ext) {
