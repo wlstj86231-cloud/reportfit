@@ -657,7 +657,7 @@ function render() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
-          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=3" alt=""></span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=4" alt=""></span>
           <span>
             <strong>${escapeHtml(brandName())}</strong>
             <small>${escapeHtml(t("brandSub"))}</small>
@@ -741,7 +741,7 @@ function renderInfoPage() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
-          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=3" alt=""></span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=4" alt=""></span>
           <span>
             <strong>${escapeHtml(brandName())}</strong>
             <small>${escapeHtml(t("brandSub"))}</small>
@@ -780,7 +780,7 @@ function renderGuidePage() {
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="/" data-tool-link="pdf-compress" aria-label="${escapeHtml(brandName())} 홈">
-          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=3" alt=""></span>
+          <span class="brand-mark" aria-hidden="true"><img src="/assets/icon.svg?v=4" alt=""></span>
           <span>
             <strong>${escapeHtml(brandName())}</strong>
             <small>${escapeHtml(t("brandSub"))}</small>
