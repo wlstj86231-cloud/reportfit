@@ -639,7 +639,7 @@ function renderAppPageV2(): string {
       const items = state.items;
       const best = items[0];
       const avgMargin = items.length ? Math.round(items.reduce((sum, item) => sum + Number(item.expectedMarginRate || 0), 0) / items.length) : 0;
-      const valid = items.filter((item) => Number(item.totalScore || 0) >= 70).length;
+      const valid = items.filter((item) => item.grade === "A" || item.grade === "B").length;
       const moq = best ? best.moq : "-";
       $("sourceLabel").textContent = (state.source === "domeggook" ? "도매꾹 API" : "샘플 데이터") + (keyword ? " / " + keyword : "");
       $("metrics").innerHTML =
@@ -693,10 +693,10 @@ function renderAppPageV2(): string {
       $("detail").innerHTML =
         '<div class="detail-head">' + imageHtml(item.thumb, "detail-thumb") + '<div><div class="grade ' + gradeClass(item.grade) + '">' + esc(item.grade) + '</div><h2>' + esc(item.title) + '</h2><p>상품번호 ' + esc(item.no) + '</p></div></div>' +
         '<div class="next"><span>다음 행동</span><strong>' + esc(item.nextAction) + '</strong></div>' +
-        scoreLine("수요 추정", item.demandScore, 30) +
-        scoreLine("마진", item.marginScore, 25) +
-        scoreLine("경쟁 완화", item.competitionScore, 20) +
-        scoreLine("공급 안정", item.supplyScore, 17) +
+        scoreLine("수요 적합", item.demandScore, 25) +
+        scoreLine("수익성", item.marginScore, 30) +
+        scoreLine("경쟁 완화", item.competitionScore, 15) +
+        scoreLine("공급 안정", item.supplyScore, 20) +
         scoreLine("리스크 낮음", item.riskScore, 10) +
         '<div class="next"><span>입고 기준 원가</span><strong>' + money(item.landedCost) + '</strong></div>' +
         '<div class="risk-tags">' + risks + '</div>' +
@@ -1125,10 +1125,10 @@ function renderAppPage(): string {
       $("detail").innerHTML =
         '<div class="detail-head"><div class="grade ' + gradeClass(item.grade) + '">' + esc(item.grade) + '</div><div><h2>' + esc(item.title) + '</h2><p>상품번호 ' + esc(item.no) + '</p></div></div>' +
         '<div class="next"><span>다음 행동</span><strong>' + esc(item.nextAction) + '</strong></div>' +
-        scoreLine("수요 추정", item.demandScore, 30) +
-        scoreLine("마진", item.marginScore, 25) +
-        scoreLine("경쟁 완화", item.competitionScore, 20) +
-        scoreLine("공급 안정", item.supplyScore, 17) +
+        scoreLine("수요 적합", item.demandScore, 25) +
+        scoreLine("수익성", item.marginScore, 30) +
+        scoreLine("경쟁 완화", item.competitionScore, 15) +
+        scoreLine("공급 안정", item.supplyScore, 20) +
         scoreLine("리스크 낮음", item.riskScore, 10) +
         '<div class="next"><span>입고 기준 원가</span><strong>' + money(item.landedCost) + '</strong></div>' +
         '<div class="risk-tags">' + risks + '</div>' +

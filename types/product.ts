@@ -7,7 +7,13 @@ export type ProductRisk =
   | "MOQ높음"
   | "마진낮음"
   | "이미지확인"
-  | "도매꾹조건확인";
+  | "도매꾹조건확인"
+  | "저가소액"
+  | "초기자금부담"
+  | "인증위험"
+  | "브랜드키워드"
+  | "시즌성"
+  | "상품명부실";
 
 export interface RawProduct {
   no: string;
