@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return htmlResponse(renderAppPage());
+  return htmlResponse(renderAppPageV2());
 }
 
 async function handleProductSearch(request: NextRequest) {
@@ -174,6 +174,512 @@ async function fetchDomeggookProducts(input: {
   const root = data.domeggook ?? data;
   const list = root.list?.item ?? root.item ?? [];
   return normalizeArray<Record<string, unknown>>(list).map(normalizeDomeggookItem);
+}
+
+function renderAppPageV2(): string {
+  return `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>reportools | 도매꾹 소싱 도구</title>
+  <meta name="description" content="도매꾹 상품 후보를 빠르게 찾고 쿠팡 판매 가능성을 점수화하는 개인용 도구" />
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171916;
+      --muted: #6c7069;
+      --line: #ddd9cf;
+      --bg: #f4f1ea;
+      --paper: #fffdfa;
+      --soft: #f8f6f1;
+      --green: #08745d;
+      --green-2: #0b8c70;
+      --gold: #d8af4f;
+      --red: #b65145;
+      --shadow: 0 18px 45px rgba(42, 39, 32, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: 0;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .page { width: min(1180px, calc(100vw - 40px)); margin: 0 auto; padding: 28px 0 42px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 220px; }
+    .brand-mark {
+      width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+      background: #111612; color: white; font-weight: 950; position: relative;
+    }
+    .brand-mark:after {
+      content: ""; position: absolute; right: 9px; bottom: 9px; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--gold);
+    }
+    .brand strong { display: block; font-size: 24px; line-height: 1; font-weight: 950; }
+    .brand span { display: block; margin-top: 6px; color: var(--muted); font-size: 14px; font-weight: 700; }
+    .nav-pills { flex: 1; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .nav-pills button, .top-actions button {
+      border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px;
+      padding: 10px 16px; font-weight: 850; box-shadow: 0 5px 14px rgba(45, 41, 34, .04);
+    }
+    .nav-pills button.active { background: #111612; color: #fff; border-color: #111612; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .top-actions .round { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; }
+    .hero-card {
+      border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow);
+      padding: 34px; margin-bottom: 18px;
+    }
+    .eyebrow { margin: 0 0 12px; color: var(--green); font-weight: 950; font-size: 13px; letter-spacing: .08em; }
+    h1 { margin: 0; max-width: 820px; font-size: clamp(38px, 6vw, 74px); line-height: .98; font-weight: 950; }
+    .hero-card > p { margin: 18px 0 0; max-width: 780px; color: var(--muted); font-size: 19px; line-height: 1.6; font-weight: 650; }
+    .mode-line { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .mode-line span {
+      border: 1px solid var(--line); border-radius: 999px; background: var(--soft); padding: 9px 13px;
+      font-size: 14px; font-weight: 850; color: #343730;
+    }
+    .mode-line b { margin-left: 8px; color: var(--green); }
+    .workspace { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .tool-list, .tool-panel, .panel, .metric {
+      border: 1px solid var(--line); border-radius: 18px; background: var(--paper);
+      box-shadow: 0 10px 28px rgba(45, 41, 34, .05);
+    }
+    .tool-list { padding: 14px; display: grid; gap: 10px; }
+    .tool-list header { padding: 8px 8px 4px; }
+    .tool-list h2, .panel h2 { margin: 0; font-size: 18px; font-weight: 950; }
+    .tool-list p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; font-weight: 650; }
+    #presets { display: grid; gap: 8px; }
+    #presets button {
+      width: 100%; border: 1px solid var(--line); border-radius: 14px; background: var(--soft);
+      padding: 14px; text-align: left; font-weight: 900; color: var(--ink);
+    }
+    #presets button:hover { border-color: rgba(8, 116, 93, .45); background: #f1faf6; }
+    .tool-panel { padding: 26px; }
+    .steps { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+    .steps span {
+      display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px;
+      padding: 9px 13px; background: var(--soft); color: #44483f; font-size: 13px; font-weight: 900;
+    }
+    .steps b {
+      display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+      background: #111612; color: #fff; font-size: 12px;
+    }
+    .search-grid { display: grid; grid-template-columns: minmax(240px, 1fr) 150px 150px auto; gap: 12px; align-items: end; }
+    label { display: grid; gap: 8px; color: #575b54; font-size: 14px; font-weight: 900; }
+    input, select {
+      width: 100%; min-height: 54px; border: 1px solid var(--line); border-radius: 14px;
+      background: #fff; color: var(--ink); padding: 0 15px; font-weight: 850; outline: none;
+    }
+    input:focus, select:focus { border-color: rgba(8, 116, 93, .65); box-shadow: 0 0 0 4px rgba(8, 116, 93, .1); }
+    .primary {
+      min-height: 54px; border: 0; border-radius: 14px; background: var(--green); color: white;
+      padding: 0 24px; font-weight: 950; white-space: nowrap;
+    }
+    .primary:hover { background: var(--green-2); }
+    .secondary {
+      border: 1px solid var(--line); border-radius: 14px; background: var(--paper); color: var(--ink);
+      padding: 0 18px; min-height: 48px; font-weight: 900;
+    }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+    .notice {
+      flex: 1; min-width: 260px; border: 1px solid #ead08a; background: #fff8df; color: #7a5200;
+      border-radius: 14px; padding: 14px 16px; font-weight: 850;
+    }
+    .notice.ok { border-color: #bedccd; background: #f0fbf5; color: var(--green); }
+    .advanced { margin-top: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); overflow: hidden; }
+    .advanced summary { list-style: none; padding: 14px 16px; font-weight: 950; color: #30342f; cursor: pointer; }
+    .advanced summary::-webkit-details-marker { display: none; }
+    .advanced summary:after { content: "+"; float: right; color: var(--green); font-weight: 950; }
+    .advanced[open] summary:after { content: "-"; }
+    .advanced-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 0 16px 16px; }
+    .metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+    .metric { padding: 20px; }
+    .metric span { display: block; color: var(--muted); font-size: 13px; font-weight: 900; margin-bottom: 10px; }
+    .metric strong { font-size: 36px; line-height: 1; font-weight: 950; }
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); gap: 18px; }
+    .panel { min-width: 0; padding: 22px; }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .source { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    th, td { padding: 13px 14px; border-bottom: 1px solid #ece8df; text-align: left; vertical-align: top; font-size: 14px; }
+    th { color: var(--muted); background: #fbfaf7; font-size: 12px; font-weight: 950; }
+    td { font-weight: 750; }
+    tbody tr { cursor: pointer; }
+    tbody tr:hover { background: #f4faf7; }
+    tbody tr.selected { background: #eaf7f1; }
+    .score, .grade {
+      display: inline-grid; place-items: center; min-width: 44px; height: 32px; border-radius: 999px;
+      background: #edf6f1; color: var(--green); font-weight: 950;
+    }
+    .grade { width: 54px; height: 54px; border-radius: 16px; font-size: 20px; }
+    .bad { background: #fff0ec; color: var(--red); }
+    .mid { background: #fff7df; color: #8b6206; }
+    .detail-head { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; }
+    .detail h2 { margin: 0; font-size: 20px; line-height: 1.35; }
+    .detail p { margin: 6px 0 0; color: var(--muted); font-size: 13px; font-weight: 750; }
+    .next { border: 1px solid var(--line); border-radius: 14px; background: var(--soft); padding: 14px; margin: 12px 0; }
+    .next span { display: block; color: var(--muted); font-size: 12px; font-weight: 900; margin-bottom: 6px; }
+    .next strong { font-size: 16px; line-height: 1.45; }
+    .score-line { display: grid; gap: 7px; margin: 13px 0; }
+    .score-line > div:first-child { display: flex; justify-content: space-between; gap: 10px; color: #4b5048; font-size: 13px; font-weight: 850; }
+    .bar { height: 9px; border-radius: 999px; background: #ece8df; overflow: hidden; }
+    .bar i { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+    .risk-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .risk-tags span {
+      border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 7px 10px;
+      color: var(--muted); font-size: 12px; font-weight: 800;
+    }
+    .link { display: inline-flex; margin-top: 14px; color: var(--green); font-weight: 950; text-decoration: none; }
+    .empty { color: var(--muted); font-weight: 800; }
+    .foot { margin-top: 18px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    @media (max-width: 980px) {
+      .topbar, .workspace, .content-grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .nav-pills { justify-content: flex-start; }
+      .search-grid { grid-template-columns: 1fr 1fr; }
+      .primary { grid-column: 1 / -1; }
+      .advanced-grid, .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .page { width: min(100% - 24px, 1180px); padding-top: 18px; }
+      .hero-card, .tool-panel, .panel { padding: 20px; border-radius: 16px; }
+      h1 { font-size: 38px; }
+      .hero-card > p { font-size: 16px; }
+      .search-grid, .advanced-grid, .metrics { grid-template-columns: 1fr; }
+      .metric strong { font-size: 30px; }
+      .top-actions { width: 100%; }
+      .top-actions .secondary { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">R</div>
+        <div>
+          <strong>reportools</strong>
+          <span>도매꾹 전용 소싱 도구</span>
+        </div>
+      </div>
+      <nav class="nav-pills" aria-label="도구 메뉴">
+        <button class="active" type="button">후보 발굴</button>
+        <button type="button">마진 계산</button>
+        <button type="button">쿠팡 점검</button>
+        <button type="button">CSV 정리</button>
+      </nav>
+      <div class="top-actions">
+        <button class="secondary round" type="button" aria-label="한국어">KR</button>
+        <button class="secondary" id="logoutBtn" type="button">로그아웃</button>
+      </div>
+    </header>
+
+    <section class="hero-card">
+      <p class="eyebrow">DOMEGGOOK SOURCING</p>
+      <h1>도매꾹 후보를 빠르게 골라냅니다</h1>
+      <p>검색어 하나만 넣으면 원가, MOQ, 배송 조건, 예상 마진을 자동으로 정리해 쿠팡에 올릴 만한 후보를 먼저 보여줍니다.</p>
+      <div class="mode-line">
+        <span id="modePill">데이터 확인 중</span>
+        <span>핵심 기준 <b>자동 적용</b></span>
+        <span>고급값 <b>접기</b></span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="tool-list">
+        <header>
+          <h2>빠른 검색</h2>
+          <p>자주 보는 키워드만 눌러 바로 분석합니다.</p>
+        </header>
+        <div id="presets"></div>
+      </aside>
+
+      <section class="tool-panel" aria-label="도매꾹 후보 분석">
+        <div class="steps">
+          <span><b>1</b>검색어 입력</span>
+          <span><b>2</b>자동 점수화</span>
+          <span><b>3</b>쿠팡 후보 확인</span>
+        </div>
+
+        <div class="search-grid">
+          <label>검색어
+            <input id="keyword" value="생활" autocomplete="off" placeholder="예: 생활 수납, 차량용 수납" />
+          </label>
+          <label>소싱처
+            <select id="market">
+              <option value="domeggook">도매꾹</option>
+              <option value="domeme">도매매</option>
+            </select>
+          </label>
+          <label>정렬
+            <select id="sort">
+              <option value="rd">추천순</option>
+              <option value="lprc">낮은 가격순</option>
+              <option value="date">신상품순</option>
+            </select>
+          </label>
+          <button class="primary" id="searchBtn" type="button">후보 분석하기</button>
+        </div>
+
+        <details class="advanced">
+          <summary>고급 기준값</summary>
+          <div class="advanced-grid">
+            <label>배송
+              <select id="shipping">
+                <option value="all">전체</option>
+                <option value="free">무료배송 우선</option>
+                <option value="company">업체배송 우선</option>
+              </select>
+            </label>
+            <label>선호 MOQ
+              <input id="maxMoq" type="number" min="1" value="3" />
+            </label>
+            <label>최소 원가
+              <input id="minPrice" type="number" min="0" value="0" />
+            </label>
+            <label>최대 원가
+              <input id="maxPrice" type="number" min="0" value="20000" />
+            </label>
+            <label>목표 마진 %
+              <input id="targetMarginRate" type="number" min="5" max="80" value="28" />
+            </label>
+            <label>쿠팡 수수료 %
+              <input id="platformFeeRate" type="number" min="0" max="35" value="12" />
+            </label>
+            <label>세금/운영 %
+              <input id="taxAndBufferRate" type="number" min="0" max="30" value="6" />
+            </label>
+          </div>
+        </details>
+
+        <div class="toolbar">
+          <div class="notice" id="notice">도매꾹 API 상태를 확인 중입니다.</div>
+          <button class="secondary" id="exportBtn" type="button">CSV 내보내기</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="metrics" id="metrics"></section>
+
+    <section class="content-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>후보 리스트</h2>
+          <span class="source" id="sourceLabel">-</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>상품</th>
+                <th>원가</th>
+                <th>MOQ</th>
+                <th>배송</th>
+                <th>예상 판매가</th>
+                <th>마진</th>
+                <th>점수</th>
+                <th>판단</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="panel detail" id="detail"></aside>
+    </section>
+
+    <p class="foot" id="sourceNote">자료: 도매꾹 API 또는 샘플 데이터. 실제 등록 전 쿠팡 가격과 상세페이지를 다시 확인하세요.</p>
+  </main>
+
+  <script>
+    const AUTH_ENABLED = ${isAuthEnabled() ? "true" : "false"};
+    const presets = ["생활 수납", "차량용 수납", "주방 정리", "케이블 정리", "캠핑 조명"];
+    const state = { items: [], selectedNo: null, source: "sample" };
+    const $ = (id) => document.getElementById(id);
+    const fmt = new Intl.NumberFormat("ko-KR");
+
+    $("logoutBtn").hidden = !AUTH_ENABLED;
+    $("logoutBtn").addEventListener("click", async () => {
+      await fetch("/api/auth/logout", { method: "POST" });
+      location.href = "/login";
+    });
+
+    $("presets").innerHTML = presets.map((word) => '<button type="button" data-keyword="' + word + '">' + word + '</button>').join("");
+    document.querySelectorAll("#presets button").forEach((button) => {
+      button.addEventListener("click", () => {
+        $("keyword").value = button.dataset.keyword;
+        search();
+      });
+    });
+
+    $("searchBtn").addEventListener("click", search);
+    $("exportBtn").addEventListener("click", exportCsv);
+    $("keyword").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") search();
+    });
+
+    async function search() {
+      const query = new URLSearchParams({
+        keyword: $("keyword").value.trim() || "생활",
+        market: $("market").value,
+        sort: $("sort").value,
+        size: "80",
+        targetMarginRate: $("targetMarginRate").value,
+        platformFeeRate: $("platformFeeRate").value,
+        taxAndBufferRate: $("taxAndBufferRate").value,
+        maxPreferredMoq: $("maxMoq").value
+      });
+      const minPrice = Number($("minPrice").value || 0);
+      const maxPrice = Number($("maxPrice").value || 0);
+      if (minPrice > 0) query.set("mnp", String(minPrice));
+      if (maxPrice > 0) query.set("mxp", String(maxPrice));
+      if (Number($("maxMoq").value || 0) > 0) query.set("mxq", $("maxMoq").value);
+      if ($("shipping").value === "free") query.set("fdl", "1");
+      if ($("shipping").value === "company") query.set("sgd", "1");
+
+      $("searchBtn").disabled = true;
+      $("searchBtn").textContent = "분석 중";
+      $("notice").className = "notice";
+      $("notice").textContent = "도매꾹 후보를 불러오고 있습니다.";
+
+      try {
+        const response = await fetch("/api/domeggook/search?" + query.toString());
+        const data = await response.json();
+        state.items = Array.isArray(data.items) ? data.items : [];
+        state.source = data.source || "sample";
+        state.selectedNo = state.items[0]?.no || null;
+        $("modePill").textContent = state.source === "domeggook" ? "도매꾹 API 연결됨" : "샘플 데이터";
+        $("notice").className = state.source === "domeggook" ? "notice ok" : "notice";
+        $("notice").textContent = data.message || "도매꾹 API로 받은 결과입니다.";
+        render(data.keyword || $("keyword").value);
+      } catch (error) {
+        $("notice").className = "notice";
+        $("notice").textContent = "분석 중 오류가 발생했습니다. 잠시 후 다시 시도하세요.";
+      } finally {
+        $("searchBtn").disabled = false;
+        $("searchBtn").textContent = "후보 분석하기";
+      }
+    }
+
+    function render(keyword) {
+      const items = state.items;
+      const best = items[0];
+      const avgMargin = items.length ? Math.round(items.reduce((sum, item) => sum + Number(item.expectedMarginRate || 0), 0) / items.length) : 0;
+      const valid = items.filter((item) => Number(item.totalScore || 0) >= 70).length;
+      const moq = best ? best.moq : "-";
+      $("sourceLabel").textContent = (state.source === "domeggook" ? "도매꾹 API" : "샘플 데이터") + (keyword ? " / " + keyword : "");
+      $("metrics").innerHTML =
+        metric("분석 상품", items.length || 0) +
+        metric("검토 후보", valid) +
+        metric("최고 점수", best ? best.totalScore : "-") +
+        metric("평균 마진", avgMargin + "%") +
+        metric("추천 MOQ", moq);
+      renderRows(items);
+    }
+
+    function metric(label, value) {
+      return '<div class="metric"><span>' + esc(label) + '</span><strong>' + esc(value) + '</strong></div>';
+    }
+
+    function renderRows(items) {
+      if (!items.length) {
+        $("tbody").innerHTML = '<tr><td colspan="8" class="empty">검색 결과가 없습니다.</td></tr>';
+        $("detail").innerHTML = '<p class="empty">검색어를 바꿔 다시 분석해보세요.</p>';
+        return;
+      }
+      $("tbody").innerHTML = items.slice(0, 12).map((item) => {
+        const selected = item.no === state.selectedNo ? "selected" : "";
+        return '<tr class="' + selected + '" data-no="' + esc(item.no) + '">' +
+          '<td>' + esc(item.title) + '</td>' +
+          '<td>' + money(item.price) + '</td>' +
+          '<td>' + esc(item.moq) + '</td>' +
+          '<td>' + money(item.deliveryFee) + '</td>' +
+          '<td>' + money(item.expectedSellPrice) + '</td>' +
+          '<td>' + esc(item.expectedMarginRate) + '%</td>' +
+          '<td><span class="score ' + gradeClass(item.grade) + '">' + esc(item.totalScore) + '</span></td>' +
+          '<td>' + esc(item.verdict) + '</td>' +
+        '</tr>';
+      }).join("");
+
+      document.querySelectorAll("#tbody tr").forEach((row) => {
+        row.addEventListener("click", () => {
+          state.selectedNo = row.dataset.no;
+          render("");
+        });
+      });
+
+      renderDetail(items.find((item) => item.no === state.selectedNo) || items[0]);
+    }
+
+    function renderDetail(item) {
+      if (!item) {
+        $("detail").innerHTML = '<p class="empty">선택한 상품이 없습니다.</p>';
+        return;
+      }
+      const risks = item.risks?.length ? item.risks.map((risk) => '<span>' + esc(risk) + '</span>').join("") : "<span>기본 리스크 낮음</span>";
+      $("detail").innerHTML =
+        '<div class="detail-head"><div class="grade ' + gradeClass(item.grade) + '">' + esc(item.grade) + '</div><div><h2>' + esc(item.title) + '</h2><p>상품번호 ' + esc(item.no) + '</p></div></div>' +
+        '<div class="next"><span>다음 행동</span><strong>' + esc(item.nextAction) + '</strong></div>' +
+        scoreLine("수요 추정", item.demandScore, 30) +
+        scoreLine("마진", item.marginScore, 25) +
+        scoreLine("경쟁 완화", item.competitionScore, 20) +
+        scoreLine("공급 안정", item.supplyScore, 17) +
+        scoreLine("리스크 낮음", item.riskScore, 10) +
+        '<div class="next"><span>입고 기준 원가</span><strong>' + money(item.landedCost) + '</strong></div>' +
+        '<div class="risk-tags">' + risks + '</div>' +
+        '<a class="link" target="_blank" rel="noreferrer" href="' + esc(item.url || "https://domeggook.com") + '">도매꾹 상품 보기</a>';
+    }
+
+    function scoreLine(label, value, max) {
+      const width = Math.max(0, Math.min(100, Math.round((Number(value || 0) / max) * 100)));
+      return '<div class="score-line"><div><span>' + label + '</span><strong>' + esc(value) + '/' + max + '</strong></div><div class="bar"><i style="width:' + width + '%"></i></div></div>';
+    }
+
+    function exportCsv() {
+      if (!state.items.length) return;
+      const headers = ["상품번호", "상품명", "원가", "MOQ", "배송비", "입고기준원가", "예상판매가", "예상마진", "점수", "등급", "판단", "다음행동", "URL"];
+      const rows = state.items.map((item) => [item.no, item.title, item.price, item.moq, item.deliveryFee, item.landedCost, item.expectedSellPrice, item.expectedMarginRate, item.totalScore, item.grade, item.verdict, item.nextAction, item.url || ""]);
+      const csv = [headers, ...rows].map((row) => row.map((cell) => '"' + String(cell).replace(/"/g, '""') + '"').join(",")).join("\\n");
+      const blob = new Blob(["\\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "reportools_" + ($("keyword").value || "products") + ".csv";
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function gradeClass(grade) {
+      if (grade === "A") return "";
+      if (grade === "B") return "mid";
+      return "bad";
+    }
+
+    function money(value) {
+      const number = Number(value || 0);
+      return fmt.format(number) + "원";
+    }
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    search();
+  </script>
+</body>
+</html>`;
 }
 
 function renderAppPage(): string {
