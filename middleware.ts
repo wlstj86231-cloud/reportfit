@@ -231,8 +231,8 @@ function renderAppPageV2(): string {
     .top-actions { display: flex; align-items: center; gap: 8px; }
     .top-actions .round { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; }
     .hero-card {
-      border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow);
-      padding: 34px; margin-bottom: 18px;
+      border: 0; border-radius: 0; background: transparent; box-shadow: none;
+      padding: 48px 8px 38px; margin-bottom: 8px;
     }
     .eyebrow { margin: 0 0 12px; color: var(--green); font-weight: 950; font-size: 13px; letter-spacing: .08em; }
     h1 { margin: 0; max-width: 820px; font-size: clamp(38px, 6vw, 74px); line-height: .98; font-weight: 950; }
@@ -409,7 +409,8 @@ function renderAppPageV2(): string {
     }
     @media (max-width: 640px) {
       .page { width: min(100% - 24px, 1180px); padding-top: 18px; }
-      .hero-card, .tool-panel, .panel { padding: 20px; border-radius: 16px; }
+      .tool-panel, .panel { padding: 20px; border-radius: 16px; }
+      .hero-card { padding: 30px 4px 24px; }
       h1 { font-size: 38px; }
       .hero-card > p { font-size: 16px; }
       .search-grid, .advanced-grid, .metrics { grid-template-columns: 1fr; }
