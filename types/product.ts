@@ -1,6 +1,13 @@
 export type MarketType = "dome" | "supply";
 
-export type ProductRisk = "성인상품" | "해외직배송" | "배송비증가" | "MOQ높음" | "마진낮음" | "이미지확인";
+export type ProductRisk =
+  | "성인상품"
+  | "해외직배송"
+  | "배송비증가"
+  | "MOQ높음"
+  | "마진낮음"
+  | "이미지확인"
+  | "도매꾹조건확인";
 
 export interface RawProduct {
   no: string;
@@ -46,4 +53,5 @@ export interface ScoredProduct extends RawProduct {
   grade: "A" | "B" | "C" | "D";
   risks: ProductRisk[];
   verdict: string;
+  nextAction: string;
 }
