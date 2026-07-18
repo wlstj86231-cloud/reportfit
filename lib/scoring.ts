@@ -229,6 +229,7 @@ function applyPracticalCaps(score: number, product: RawProduct, context: Product
   else if (context.shippingRatio > 0.45) cap = Math.min(cap, 78);
   if (context.purchaseAmount > 100000) cap = Math.min(cap, 72);
   else if (context.purchaseAmount > 60000) cap = Math.min(cap, 82);
+  if (!product.comOnly && !product.lowPriceChecked) cap = Math.min(cap, 84);
   if (!product.thumb) cap = Math.min(cap, 72);
   if (context.hasSeasonalRisk) cap = Math.min(cap, 76);
   if (context.titleQuality === "bad") cap = Math.min(cap, 70);
