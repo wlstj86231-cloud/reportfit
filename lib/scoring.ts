@@ -20,13 +20,14 @@ export function normalizeArray<T>(value: T | T[] | undefined | null): T[] {
 export function normalizeDomeggookItem(item: Record<string, unknown>): RawProduct {
   const deli = (item.deli ?? {}) as Record<string, unknown>;
   const market = (item.market ?? {}) as Record<string, unknown>;
+  const thumb = normalizeImageUrl(pickString(item, ["thumb", "img", "image", "itemImg", "listImg", "mainImg", "smallImg"]));
 
   return {
     no: String(item.no ?? ""),
     title: String(item.title ?? "").trim(),
     price: parseNumber(item.price),
     priceOrg: item.priceOrg ? parseNumber(item.priceOrg) : undefined,
-    thumb: item.thumb ? String(item.thumb).trim() : undefined,
+    thumb,
     sellerId: item.id ? String(item.id) : undefined,
     sellerNick: item.nick ? String(item.nick) : undefined,
     moq: Math.max(parseNumber(item.unitQty, 1), 1),
@@ -48,15 +49,16 @@ export function normalizeDomeggookItem(item: Record<string, unknown>): RawProduc
 export function scoreProduct(product: RawProduct, settings: ScoreSettings = defaultScoreSettings): ScoredProduct {
   const shippingCost = product.deliveryWho === "S" ? 0 : product.deliveryFee;
   const landedCost = Math.round(product.price + shippingCost / Math.max(product.moq, 1));
-  const expectedSellPrice = Math.ceil((landedCost * (1 + settings.targetMarginRate / 100)) / 100) * 100;
+  const sellPriceDenominator = Math.max(0.35, 1 - (settings.platformFeeRate + settings.taxAndBufferRate + settings.targetMarginRate) / 100);
+  const expectedSellPrice = Math.ceil((landedCost / sellPriceDenominator) / 100) * 100;
   const platformFee = expectedSellPrice * (settings.platformFeeRate / 100);
   const buffer = expectedSellPrice * (settings.taxAndBufferRate / 100);
   const expectedProfit = Math.round(expectedSellPrice - landedCost - platformFee - buffer);
   const expectedMarginRate = expectedSellPrice > 0 ? Math.round((expectedProfit / expectedSellPrice) * 1000) / 10 : 0;
 
   const demandScore = estimateDemandScore(product);
-  const marginScore = clamp(Math.round((expectedMarginRate / 28) * 25), 0, 25);
-  const competitionScore = product.lowPriceChecked ? 13 : 18;
+  const marginScore = scoreMargin(expectedMarginRate, expectedProfit, settings);
+  const competitionScore = scoreCompetition(product);
   const supplyScore = scoreSupply(product, settings);
   const riskScore = scoreRisk(product, settings);
   const totalScore = clamp(demandScore + marginScore + competitionScore + supplyScore + riskScore, 0, 100);
@@ -84,16 +86,36 @@ export function scoreProduct(product: RawProduct, settings: ScoreSettings = defa
 
 function estimateDemandScore(product: RawProduct): number {
   const title = product.title.replace(/\s+/g, " ");
-  const hasUseKeyword = /(무타공|정리|수납|차량|주방|욕실|캠핑|펫|고양이|책상|케이블|생활|선반|클립|홀더|쓰레기통)/.test(title);
+  const hasUseKeyword = /(무타공|정리|수납|차량|주방|욕실|캠핑|펫|고양이|책상|케이블|생활|선반|클립|홀더|쓰레기통|보호|필름|파우치|커버|거치대)/.test(title);
+  const hasModelOrUseCase = /([A-Z]{1,4}\d{1,4}|아이폰|갤럭시|프로|미니|플러스|울트라|휴대용|여행용)/i.test(title);
   const hasSpecificShape = title.length >= 12 && /\s/.test(title);
-  const base = hasUseKeyword ? 22 : 16;
-  return clamp(base + (hasSpecificShape ? 4 : 0) + (product.lowPriceChecked ? 2 : 0), 0, 30);
+  const base = hasUseKeyword ? 20 : 14;
+  return clamp(base + (hasSpecificShape ? 4 : 0) + (hasModelOrUseCase ? 3 : 0) + (product.thumb ? 2 : 0) + (product.lowPriceChecked ? 1 : 0), 0, 30);
+}
+
+function scoreMargin(expectedMarginRate: number, expectedProfit: number, settings: ScoreSettings): number {
+  const target = Math.max(settings.targetMarginRate, 1);
+  const rateScore = Math.round((expectedMarginRate / target) * 20);
+  const profitBonus = expectedProfit >= 2500 ? 5 : expectedProfit >= 1200 ? 3 : expectedProfit >= 500 ? 1 : 0;
+  return clamp(rateScore + profitBonus, 0, 25);
+}
+
+function scoreCompetition(product: RawProduct): number {
+  let score = 14;
+  if (product.lowPriceChecked) score += 3;
+  if (product.comOnly) score += 2;
+  if (product.title.length >= 18 && product.title.length <= 80) score += 1;
+  if (product.adultOnly || product.fromOversea) score -= 3;
+  return clamp(score, 0, 20);
 }
 
 function scoreSupply(product: RawProduct, settings: ScoreSettings): number {
-  let score = 17;
-  if (product.moq > settings.maxPreferredMoq) score -= 5;
-  if (product.moq > settings.maxPreferredMoq * 3) score -= 3;
+  let score = 13;
+  if (product.moq <= 1) score += 3;
+  else if (product.moq <= settings.maxPreferredMoq) score += 2;
+  else if (product.moq > settings.maxPreferredMoq * 3) score -= 5;
+  else score -= 3;
+  if (product.deliveryFee === 0 || product.deliveryWho === "S") score += 2;
   if (product.deliveryWho === "B" || product.deliveryWho === "C") score -= 3;
   if (product.deliveryAdd) score -= 3;
   if (product.fromOversea) score -= 4;
@@ -105,7 +127,7 @@ function scoreRisk(product: RawProduct, settings: ScoreSettings): number {
   let score = 10;
   if (product.adultOnly) score -= 7;
   if (product.fromOversea) score -= 4;
-  if (product.deliveryAdd) score -= 2;
+  if (product.deliveryAdd || product.deliveryFee > product.price * 0.45) score -= 2;
   if (product.moq > settings.maxPreferredMoq * 3) score -= 2;
   if (!product.thumb) score -= 2;
   if (!product.url) score -= 1;
@@ -116,9 +138,9 @@ function getRisks(product: RawProduct, settings: ScoreSettings, expectedMarginRa
   const risks: ScoredProduct["risks"] = [];
   if (product.adultOnly) risks.push("성인상품");
   if (product.fromOversea) risks.push("해외직배송");
-  if (product.deliveryAdd) risks.push("배송비증가");
+  if (product.deliveryAdd || product.deliveryFee > product.price * 0.45) risks.push("배송비증가");
   if (product.moq > settings.maxPreferredMoq) risks.push("MOQ높음");
-  if (expectedMarginRate < 18) risks.push("마진낮음");
+  if (expectedMarginRate < settings.targetMarginRate - 7) risks.push("마진낮음");
   if (!product.thumb) risks.push("이미지확인");
   if (!product.comOnly && !product.lowPriceChecked) risks.push("도매꾹조건확인");
   return risks;
@@ -141,4 +163,19 @@ function nextActionFor(grade: ScoredProduct["grade"], risks: ScoredProduct["risk
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+function pickString(item: Record<string, unknown>, keys: string[]): string {
+  for (const key of keys) {
+    const value = item[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
+
+function normalizeImageUrl(value: string): string | undefined {
+  if (!value) return undefined;
+  if (value.startsWith("//")) return `https:${value}`;
+  if (/^https?:\/\//i.test(value)) return value;
+  return undefined;
 }

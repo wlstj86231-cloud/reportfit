@@ -305,21 +305,73 @@ function renderAppPageV2(): string {
     .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
     .source { color: var(--muted); font-size: 13px; font-weight: 800; }
     .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
-    table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    table { width: 100%; min-width: 920px; border-collapse: collapse; table-layout: fixed; }
     th, td { padding: 13px 14px; border-bottom: 1px solid #ece8df; text-align: left; vertical-align: top; font-size: 14px; }
     th { color: var(--muted); background: #fbfaf7; font-size: 12px; font-weight: 950; }
     td { font-weight: 750; }
+    th:nth-child(1), td:nth-child(1) { width: 34%; }
+    th:nth-child(2), td:nth-child(2),
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(4), td:nth-child(4),
+    th:nth-child(5), td:nth-child(5),
+    th:nth-child(6), td:nth-child(6),
+    th:nth-child(7), td:nth-child(7) { white-space: nowrap; }
+    th:nth-child(7), td:nth-child(7) { width: 76px; text-align: center; }
     tbody tr { cursor: pointer; }
     tbody tr:hover { background: #f4faf7; }
     tbody tr.selected { background: #eaf7f1; }
+    .product-cell {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-width: 0;
+    }
+    .thumb, .detail-thumb {
+      display: block;
+      width: 58px;
+      height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--soft);
+      flex: none;
+    }
+    .thumb-fallback {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .product-meta { min-width: 0; }
+    .product-meta strong {
+      display: block;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 1.35;
+    }
+    .product-meta span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .score, .grade {
-      display: inline-grid; place-items: center; min-width: 44px; height: 32px; border-radius: 999px;
-      background: #edf6f1; color: var(--green); font-weight: 950;
+      display: inline-grid; place-items: center; min-width: 54px; height: 36px; border-radius: 999px;
+      background: #edf6f1; color: var(--green); font-weight: 950; line-height: 1; white-space: nowrap;
     }
     .grade { width: 54px; height: 54px; border-radius: 16px; font-size: 20px; }
     .bad { background: #fff0ec; color: var(--red); }
     .mid { background: #fff7df; color: #8b6206; }
     .detail-head { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; }
+    .detail-thumb { width: 86px; height: 86px; border-radius: 16px; }
     .detail h2 { margin: 0; font-size: 20px; line-height: 1.35; }
     .detail p { margin: 6px 0 0; color: var(--muted); font-size: 13px; font-weight: 750; }
     .next { border: 1px solid var(--line); border-radius: 14px; background: var(--soft); padding: 14px; margin: 12px 0; }
@@ -327,6 +379,7 @@ function renderAppPageV2(): string {
     .next strong { font-size: 16px; line-height: 1.45; }
     .score-line { display: grid; gap: 7px; margin: 13px 0; }
     .score-line > div:first-child { display: flex; justify-content: space-between; gap: 10px; color: #4b5048; font-size: 13px; font-weight: 850; }
+    .score-line > div:first-child strong { min-width: 46px; text-align: right; white-space: nowrap; }
     .bar { height: 9px; border-radius: 999px; background: #ece8df; overflow: hidden; }
     .bar i { display: block; height: 100%; border-radius: inherit; background: var(--green); }
     .risk-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
@@ -595,8 +648,9 @@ function renderAppPageV2(): string {
       }
       $("tbody").innerHTML = items.slice(0, 12).map((item) => {
         const selected = item.no === state.selectedNo ? "selected" : "";
+        const seller = item.sellerNick || item.sellerId || "판매자 확인 필요";
         return '<tr class="' + selected + '" data-no="' + esc(item.no) + '">' +
-          '<td>' + esc(item.title) + '</td>' +
+          '<td><div class="product-cell">' + imageHtml(item.thumb, "thumb") + '<div class="product-meta"><strong>' + esc(item.title) + '</strong><span>' + esc(seller) + '</span></div></div></td>' +
           '<td>' + money(item.price) + '</td>' +
           '<td>' + esc(item.moq) + '</td>' +
           '<td>' + money(item.deliveryFee) + '</td>' +
@@ -624,7 +678,7 @@ function renderAppPageV2(): string {
       }
       const risks = item.risks?.length ? item.risks.map((risk) => '<span>' + esc(risk) + '</span>').join("") : "<span>기본 리스크 낮음</span>";
       $("detail").innerHTML =
-        '<div class="detail-head"><div class="grade ' + gradeClass(item.grade) + '">' + esc(item.grade) + '</div><div><h2>' + esc(item.title) + '</h2><p>상품번호 ' + esc(item.no) + '</p></div></div>' +
+        '<div class="detail-head">' + imageHtml(item.thumb, "detail-thumb") + '<div><div class="grade ' + gradeClass(item.grade) + '">' + esc(item.grade) + '</div><h2>' + esc(item.title) + '</h2><p>상품번호 ' + esc(item.no) + '</p></div></div>' +
         '<div class="next"><span>다음 행동</span><strong>' + esc(item.nextAction) + '</strong></div>' +
         scoreLine("수요 추정", item.demandScore, 30) +
         scoreLine("마진", item.marginScore, 25) +
@@ -641,10 +695,18 @@ function renderAppPageV2(): string {
       return '<div class="score-line"><div><span>' + label + '</span><strong>' + esc(value) + '/' + max + '</strong></div><div class="bar"><i style="width:' + width + '%"></i></div></div>';
     }
 
+    function imageHtml(src, className) {
+      const value = String(src || "");
+      if (!/^https?:\\/\\//i.test(value)) {
+        return '<div class="' + esc(className) + ' thumb-fallback">이미지</div>';
+      }
+      return '<img class="' + esc(className) + '" src="' + esc(value) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\\'hidden\\'" />';
+    }
+
     function exportCsv() {
       if (!state.items.length) return;
-      const headers = ["상품번호", "상품명", "원가", "MOQ", "배송비", "입고기준원가", "예상판매가", "예상마진", "점수", "등급", "판단", "다음행동", "URL"];
-      const rows = state.items.map((item) => [item.no, item.title, item.price, item.moq, item.deliveryFee, item.landedCost, item.expectedSellPrice, item.expectedMarginRate, item.totalScore, item.grade, item.verdict, item.nextAction, item.url || ""]);
+      const headers = ["상품번호", "상품명", "원가", "MOQ", "배송비", "입고기준원가", "예상판매가", "예상마진", "점수", "등급", "판단", "다음행동", "이미지", "URL"];
+      const rows = state.items.map((item) => [item.no, item.title, item.price, item.moq, item.deliveryFee, item.landedCost, item.expectedSellPrice, item.expectedMarginRate, item.totalScore, item.grade, item.verdict, item.nextAction, item.thumb || "", item.url || ""]);
       const csv = [headers, ...rows].map((row) => row.map((cell) => '"' + String(cell).replace(/"/g, '""') + '"').join(",")).join("\\n");
       const blob = new Blob(["\\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
