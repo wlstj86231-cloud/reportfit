@@ -1,5 +1,9 @@
 export const AUTH_COOKIE = "reportools_session";
 
+export function isAuthEnabled(): boolean {
+  return process.env.REPORTOOLS_AUTH_ENABLED === "true";
+}
+
 export function hasPasswordConfig(): boolean {
   return Boolean(process.env.REPORTOOLS_PASSWORD);
 }

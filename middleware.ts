@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AUTH_COOKIE, getExpectedSessionValue, hasPasswordConfig } from "@/lib/auth";
+import { AUTH_COOKIE, getExpectedSessionValue, hasPasswordConfig, isAuthEnabled } from "@/lib/auth";
 
 const PUBLIC_PREFIXES = ["/login", "/api/auth", "/_next", "/favicon.ico"];
 
@@ -7,6 +7,10 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    return NextResponse.next();
+  }
+
+  if (!isAuthEnabled()) {
     return NextResponse.next();
   }
 

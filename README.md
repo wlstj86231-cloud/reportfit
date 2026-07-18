@@ -8,13 +8,15 @@
 - MOQ, 배송비, 원가, 예상 판매가, 예상 마진 기반 점수화
 - 리스크 태그와 다음 행동 제안
 - CSV 내보내기
-- `REPORTOOLS_PASSWORD` 기반 비밀번호 잠금
+- `REPORTOOLS_AUTH_ENABLED=true`일 때 `REPORTOOLS_PASSWORD` 기반 비밀번호 잠금
 
 ## 실행
 
 ```powershell
 copy .env.example .env
 # .env에 REPORTOOLS_PASSWORD 입력
+# 바로 열어두려면 REPORTOOLS_AUTH_ENABLED=false
+# 잠그려면 REPORTOOLS_AUTH_ENABLED=true
 # 도매꾹 API 키가 있으면 DOMEGGOOK_API_KEY 입력
 npm run dev
 ```
