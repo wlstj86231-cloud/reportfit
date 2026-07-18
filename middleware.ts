@@ -305,18 +305,16 @@ function renderAppPageV2(): string {
     .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
     .source { color: var(--muted); font-size: 13px; font-weight: 800; }
     .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
-    table { width: 100%; min-width: 920px; border-collapse: collapse; table-layout: fixed; }
+    table { width: 100%; min-width: 680px; border-collapse: collapse; table-layout: fixed; }
     th, td { padding: 13px 14px; border-bottom: 1px solid #ece8df; text-align: left; vertical-align: top; font-size: 14px; }
     th { color: var(--muted); background: #fbfaf7; font-size: 12px; font-weight: 950; }
     td { font-weight: 750; }
-    th:nth-child(1), td:nth-child(1) { width: 34%; }
+    th:nth-child(1), td:nth-child(1) { width: 48%; }
     th:nth-child(2), td:nth-child(2),
     th:nth-child(3), td:nth-child(3),
     th:nth-child(4), td:nth-child(4),
-    th:nth-child(5), td:nth-child(5),
-    th:nth-child(6), td:nth-child(6),
-    th:nth-child(7), td:nth-child(7) { white-space: nowrap; }
-    th:nth-child(7), td:nth-child(7) { width: 76px; text-align: center; }
+    th:nth-child(5), td:nth-child(5) { white-space: nowrap; }
+    th:nth-child(5), td:nth-child(5) { width: 86px; text-align: center; }
     tbody tr { cursor: pointer; }
     tbody tr:hover { background: #f4faf7; }
     tbody tr.selected { background: #eaf7f1; }
@@ -359,6 +357,17 @@ function renderAppPageV2(): string {
       color: var(--muted);
       font-size: 12px;
       font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .product-sub {
+      display: block;
+      margin-top: 4px;
+      color: #687067;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 850;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -407,6 +416,14 @@ function renderAppPageV2(): string {
       .metric strong { font-size: 30px; }
       .top-actions { width: 100%; }
       .top-actions .secondary { flex: 1; }
+      table { min-width: 0; }
+      th:nth-child(2), td:nth-child(2),
+      th:nth-child(3), td:nth-child(3),
+      th:nth-child(4), td:nth-child(4) { display: none; }
+      th:nth-child(1), td:nth-child(1) { width: auto; }
+      th:nth-child(5), td:nth-child(5) { width: 72px; }
+      .product-cell { grid-template-columns: 48px minmax(0, 1fr); gap: 10px; }
+      .thumb { width: 48px; height: 48px; border-radius: 10px; }
     }
   </style>
 </head>
@@ -532,11 +549,8 @@ function renderAppPageV2(): string {
                 <th>상품</th>
                 <th>원가</th>
                 <th>MOQ</th>
-                <th>배송</th>
                 <th>예상 판매가</th>
-                <th>마진</th>
                 <th>점수</th>
-                <th>판단</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
@@ -649,15 +663,13 @@ function renderAppPageV2(): string {
       $("tbody").innerHTML = items.slice(0, 12).map((item) => {
         const selected = item.no === state.selectedNo ? "selected" : "";
         const seller = item.sellerNick || item.sellerId || "판매자 확인 필요";
+        const meta = "배송 " + money(item.deliveryFee) + " / 마진 " + item.expectedMarginRate + "% / " + item.verdict;
         return '<tr class="' + selected + '" data-no="' + esc(item.no) + '">' +
-          '<td><div class="product-cell">' + imageHtml(item.thumb, "thumb") + '<div class="product-meta"><strong>' + esc(item.title) + '</strong><span>' + esc(seller) + '</span></div></div></td>' +
+          '<td><div class="product-cell">' + imageHtml(item.thumb, "thumb") + '<div class="product-meta"><strong>' + esc(item.title) + '</strong><span>' + esc(seller) + '</span><span class="product-sub">' + esc(meta) + '</span></div></div></td>' +
           '<td>' + money(item.price) + '</td>' +
           '<td>' + esc(item.moq) + '</td>' +
-          '<td>' + money(item.deliveryFee) + '</td>' +
           '<td>' + money(item.expectedSellPrice) + '</td>' +
-          '<td>' + esc(item.expectedMarginRate) + '%</td>' +
           '<td><span class="score ' + gradeClass(item.grade) + '">' + esc(item.totalScore) + '</span></td>' +
-          '<td>' + esc(item.verdict) + '</td>' +
         '</tr>';
       }).join("");
 
