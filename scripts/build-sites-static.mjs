@@ -14,11 +14,13 @@ Allow: /
 Sitemap: https://reportools.com/sitemap.xml
 `;
 const googleVerification = "google-site-verification: googleb6f1a59bf29a174e.html\n";
+const indexNowKey = "6d048fe0c10f47789f9b3a98ae4978ee";
 
 const worker = `const HTML=${JSON.stringify(html)};
 const SITEMAP=${JSON.stringify(sitemap)};
 const ROBOTS=${JSON.stringify(robots)};
 const GOOGLE_VERIFICATION=${JSON.stringify(googleVerification)};
+const INDEX_NOW_KEY=${JSON.stringify(indexNowKey)};
 const headers={
   "content-type":"text/html; charset=utf-8",
   "cache-control":"public, max-age=300",
@@ -37,6 +39,7 @@ export default {
     if(url.pathname==="/sitemap.xml") return response(request.method==="HEAD"?null:SITEMAP,200,{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/robots.txt") return response(request.method==="HEAD"?null:ROBOTS,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/googleb6f1a59bf29a174e.html") return response(request.method==="HEAD"?null:GOOGLE_VERIFICATION,200,{"content-type":"text/html; charset=utf-8","cache-control":"public, max-age=3600"});
+    if(url.pathname==="/${indexNowKey}.txt") return response(request.method==="HEAD"?null:INDEX_NOW_KEY,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/favicon.ico") return new Response(null,{status:204,headers:{"cache-control":"public, max-age=86400"}});
     return response("Not Found",404,{"content-type":"text/plain; charset=utf-8"});
   }
