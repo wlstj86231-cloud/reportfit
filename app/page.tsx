@@ -1,511 +1,497 @@
 "use client";
-
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  AlertTriangle,
-  ArrowDownToLine,
+  ArrowRight,
   BarChart3,
-  CheckCircle2,
-  Filter,
-  KeyRound,
-  Loader2,
-  LogOut,
-  Search,
+  Calculator,
+  Check,
+  Download,
+  FileSpreadsheet,
+  Info,
+  PackageCheck,
+  ReceiptText,
+  RotateCcw,
   ShieldCheck,
-  SlidersHorizontal
+  Truck,
+  Wheat,
 } from "lucide-react";
-import type { ScoredProduct } from "@/types/product";
-
-type ApiSource = "sample" | "domeggook" | "error";
-
-interface SearchState {
-  keyword: string;
-  market: "dome" | "supply";
-  sort: string;
-  maxMoq: number;
-  minPrice: number;
-  maxPrice: number;
-  shipping: string;
-  fastOnly: boolean;
-  lowPriceOnly: boolean;
-  targetMarginRate: number;
-  platformFeeRate: number;
-  taxAndBufferRate: number;
-}
-
-interface ApiResponse {
-  source: ApiSource;
-  keyword: string;
-  market: "dome" | "supply";
-  count?: number;
-  message?: string;
-  items: ScoredProduct[];
-}
-
-const defaultSearch: SearchState = {
-  keyword: "생활",
-  market: "dome",
-  sort: "rd",
-  maxMoq: 3,
-  minPrice: 0,
-  maxPrice: 20000,
-  shipping: "",
-  fastOnly: false,
-  lowPriceOnly: false,
-  targetMarginRate: 28,
-  platformFeeRate: 12,
-  taxAndBufferRate: 6
+type Inputs = {
+  item: string;
+  quantity: number;
+  unit: string;
+  price: number;
+  production: number;
+  sorting: number;
+  packageCost: number;
+  shipping: number;
+  feeRate: number;
+  lossRate: number;
+  other: number;
 };
-
-const keywordPresets = ["무타공 선반", "차량용 수납", "주방 정리", "케이블 정리", "캠핑 조명"];
-
+const defaults: Inputs = {
+  item: "감자 10kg",
+  quantity: 50,
+  unit: "상자",
+  price: 28000,
+  production: 620000,
+  sorting: 80000,
+  packageCost: 110000,
+  shipping: 250000,
+  feeRate: 3.5,
+  lossRate: 5,
+  other: 40000,
+};
+const presets: { label: string; values: Partial<Inputs> }[] = [
+  {
+    label: "감자 10kg",
+    values: {
+      item: "감자 10kg",
+      quantity: 50,
+      unit: "상자",
+      price: 28000,
+      production: 620000,
+      sorting: 80000,
+      packageCost: 110000,
+      shipping: 250000,
+      lossRate: 5,
+    },
+  },
+  {
+    label: "쌀 20kg",
+    values: {
+      item: "햅쌀 20kg",
+      quantity: 80,
+      unit: "포대",
+      price: 62000,
+      production: 2800000,
+      sorting: 180000,
+      packageCost: 160000,
+      shipping: 480000,
+      lossRate: 2,
+    },
+  },
+  {
+    label: "복숭아 4kg",
+    values: {
+      item: "복숭아 4kg",
+      quantity: 60,
+      unit: "상자",
+      price: 36000,
+      production: 900000,
+      sorting: 140000,
+      packageCost: 240000,
+      shipping: 330000,
+      lossRate: 8,
+    },
+  },
+  {
+    label: "사과 5kg",
+    values: {
+      item: "사과 5kg",
+      quantity: 100,
+      unit: "상자",
+      price: 42000,
+      production: 1700000,
+      sorting: 240000,
+      packageCost: 380000,
+      shipping: 520000,
+      lossRate: 6,
+    },
+  },
+];
+const won = new Intl.NumberFormat("ko-KR", {
+  style: "currency",
+  currency: "KRW",
+  maximumFractionDigits: 0,
+});
 export default function Home() {
-  const [search, setSearch] = useState<SearchState>(defaultSearch);
-  const [items, setItems] = useState<ScoredProduct[]>([]);
-  const [source, setSource] = useState<ApiSource>("sample");
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedNo, setSelectedNo] = useState<string | null>(null);
-
-  const selected = useMemo(
-    () => items.find((item) => item.no === selectedNo) ?? items[0],
-    [items, selectedNo]
-  );
-
-  const metrics = useMemo(() => {
-    const count = items.length;
-    const top = items[0]?.totalScore ?? 0;
-    const avgMargin = count ? Math.round(items.reduce((sum, item) => sum + item.expectedMarginRate, 0) / count) : 0;
-    const priorityCount = items.filter((item) => item.grade === "A" || item.grade === "B").length;
-    const lowMoqCount = items.filter((item) => item.moq <= search.maxMoq).length;
-    return { count, top, avgMargin, priorityCount, lowMoqCount };
-  }, [items, search.maxMoq]);
-
-  useEffect(() => {
-    void runSearch(defaultSearch);
-  }, []);
-
-  async function runSearch(nextSearch = search) {
-    setIsLoading(true);
-    setMessage("");
-
-    const params = new URLSearchParams({
-      keyword: nextSearch.keyword,
-      market: nextSearch.market,
-      sort: nextSearch.sort,
-      mxq: String(nextSearch.maxMoq),
-      targetMarginRate: String(nextSearch.targetMarginRate),
-      platformFeeRate: String(nextSearch.platformFeeRate),
-      taxAndBufferRate: String(nextSearch.taxAndBufferRate),
-      maxPreferredMoq: String(nextSearch.maxMoq)
-    });
-
-    if (nextSearch.minPrice > 0) params.set("mnp", String(nextSearch.minPrice));
-    if (nextSearch.maxPrice > 0) params.set("mxp", String(nextSearch.maxPrice));
-    if (nextSearch.shipping) params.set("who", nextSearch.shipping);
-    if (nextSearch.fastOnly) params.set("fdl", "true");
-    if (nextSearch.lowPriceOnly) params.set("lwp", "true");
-
-    try {
-      const response = await fetch(`/api/domeggook/search?${params.toString()}`);
-      const data = (await response.json()) as ApiResponse;
-      setSource(data.source);
-      setItems(data.items ?? []);
-      setSelectedNo(data.items?.[0]?.no ?? null);
-      setMessage(data.message ?? "");
-    } catch {
-      setMessage("검색 중 오류가 발생했습니다. 잠시 후 다시 시도하세요.");
-    } finally {
-      setIsLoading(false);
-    }
+  const [input, setInput] = useState<Inputs>(defaults);
+  const calc = useMemo(() => {
+    const sold = Math.max(0, input.quantity * (1 - input.lossRate / 100));
+    const revenue = sold * input.price;
+    const fee = (revenue * input.feeRate) / 100;
+    const fixed =
+      input.production +
+      input.sorting +
+      input.packageCost +
+      input.shipping +
+      input.other;
+    const total = fixed + fee;
+    const profit = revenue - total;
+    const margin = revenue ? (profit / revenue) * 100 : 0;
+    const breakEven = sold ? fixed / (sold * (1 - input.feeRate / 100)) : 0;
+    const unitProfit = sold ? profit / sold : 0;
+    return {
+      sold,
+      revenue,
+      fee,
+      fixed,
+      total,
+      profit,
+      margin,
+      breakEven,
+      unitProfit,
+    };
+  }, [input]);
+  function set<K extends keyof Inputs>(key: K, value: Inputs[K]) {
+    setInput((current) => ({ ...current, [key]: value }));
   }
-
-  function updateField<Key extends keyof SearchState>(key: Key, value: SearchState[Key]) {
-    setSearch((current) => ({ ...current, [key]: value }));
+  function apply(values: Partial<Inputs>) {
+    setInput((current) => ({ ...current, ...values }));
   }
-
-  function applyPreset(keyword: string) {
-    const nextSearch = { ...search, keyword };
-    setSearch(nextSearch);
-    void runSearch(nextSearch);
-  }
-
-  function logout() {
-    void fetch("/api/auth/logout", { method: "POST" }).finally(() => {
-      window.location.href = "/login";
-    });
-  }
-
-  function exportCsv() {
-    const headers = [
-      "상품번호",
-      "상품명",
-      "원가",
-      "MOQ",
-      "배송비",
-      "입고기준원가",
-      "예상판매가",
-      "예상마진율",
-      "점수",
-      "등급",
-      "판단",
-      "다음행동",
-      "URL"
-    ];
-    const rows = items.map((item) => [
-      item.no,
-      item.title,
-      item.price,
-      item.moq,
-      item.deliveryFee,
-      item.landedCost,
-      item.expectedSellPrice,
-      item.expectedMarginRate,
-      item.totalScore,
-      item.grade,
-      item.verdict,
-      item.nextAction,
-      item.url ?? ""
-    ]);
-    const csv = [headers, ...rows]
-      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-      .join("\n");
-    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `reportools_${search.keyword || "products"}.csv`;
-    anchor.click();
+  function download() {
+    const rows = [
+        ["농가 판매 손익·정산 보고서"],
+        ["작성일", "2026-08-09"],
+        ["품목", input.item],
+        ["판매 예정 수량", input.quantity, input.unit],
+        ["감모율", `${input.lossRate}%`],
+        ["예상 판매 수량", calc.sold.toFixed(1), input.unit],
+        ["단위 판매가", input.price],
+        ["예상 매출", Math.round(calc.revenue)],
+        ["생산·매입비", input.production],
+        ["선별·작업비", input.sorting],
+        ["포장비", input.packageCost],
+        ["배송비", input.shipping],
+        ["플랫폼·결제 수수료", Math.round(calc.fee)],
+        ["기타비용", input.other],
+        ["총비용", Math.round(calc.total)],
+        ["예상 이익", Math.round(calc.profit)],
+        ["이익률", `${calc.margin.toFixed(1)}%`],
+        ["손익분기 단가", Math.round(calc.breakEven)],
+      ],
+      csv = rows
+        .map((row) =>
+          row
+            .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
+            .join(","),
+        )
+        .join("\n"),
+      blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }),
+      url = URL.createObjectURL(blob),
+      a = document.createElement("a");
+    a.href = url;
+    a.download = `reportools_${input.item.replace(/\s+/g, "_")}_2026-08-09.csv`;
+    a.click();
     URL.revokeObjectURL(url);
   }
-
   return (
-    <main className="app-shell">
-      <aside className="sidebar" aria-label="Reportools navigation">
-        <div className="brand">
-          <div className="brand-mark">R</div>
-          <div>
-            <strong>reportools</strong>
-            <span>도매꾹 미니 스카우트</span>
-          </div>
-        </div>
+    <>
+      <header className="site-header">
+        <a className="brand" href="/">
+          <span>
+            <ReceiptText size={19} />
+          </span>
+          <strong>reportools</strong>
+          <small>농가 판매 손익·정산 보고서</small>
+        </a>
         <nav>
-          <a className="active" href="#search">
-            <Search size={18} />
-            후보 검색
-          </a>
-          <a href="#score">
-            <BarChart3 size={18} />
-            선별표
-          </a>
-          <a href="#settings">
-            <SlidersHorizontal size={18} />
-            기준값
+          <a href="#calculator">손익 계산</a>
+          <a href="#principles">계산 원리</a>
+          <a href="https://boribay.com/?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_profit_report&utm_content=header">
+            보리장터
           </a>
         </nav>
-        <div className="source-box">
-          <KeyRound size={19} />
+      </header>
+      <main>
+        <section className="hero">
           <div>
-            <strong>{source === "domeggook" ? "도매꾹 API 연결됨" : "샘플 데이터 모드"}</strong>
-            <span>상품 후보 수집은 도매꾹 API 중심으로 처리</span>
-          </div>
-        </div>
-      </aside>
-
-      <section className="workspace">
-        <header className="topbar">
-          <div>
-            <span className="eyebrow">Domeggook focused sourcing</span>
-            <h1>도매꾹 상품을 가볍게 걸러 쿠팡 후보만 남깁니다</h1>
-            <p className="hero-copy">복잡한 통계보다 원가, MOQ, 배송 조건, 마진 리스크를 먼저 봅니다.</p>
-          </div>
-          <div className="topbar-actions">
-            <button className="secondary-button" type="button" onClick={exportCsv} disabled={!items.length}>
-              <ArrowDownToLine size={18} />
-              CSV 내보내기
-            </button>
-            <button className="icon-button" type="button" onClick={logout} aria-label="로그아웃" title="로그아웃">
-              <LogOut size={18} />
-            </button>
-          </div>
-        </header>
-
-        <section className="workflow-strip" aria-label="사용 흐름">
-          <span>1. 도매꾹 후보 수집</span>
-          <span>2. MOQ·배송·마진 점수화</span>
-          <span>3. 상위 후보만 쿠팡에서 최종 확인</span>
-        </section>
-
-        <section id="search" className="query-panel" aria-label="상품 검색 조건">
-          <div className="field keyword-field">
-            <label htmlFor="keyword">도매꾹 검색어</label>
-            <div className="input-with-icon">
-              <Search size={18} />
-              <input
-                id="keyword"
-                value={search.keyword}
-                onChange={(event) => updateField("keyword", event.target.value)}
-                placeholder="예: 무타공 선반, 차량용 수납, 캠핑 조명"
-              />
+            <p>판매가를 정하기 전에 비용부터 합쳐보세요</p>
+            <h1>
+              농산물 직거래
+              <br />
+              <em>손익·정산 보고서</em>
+            </h1>
+            <span>
+              생산·선별·포장·배송·수수료와 감모를 넣으면
+              <br />
+              예상 이익, 이익률, 손익분기 단가를 바로 계산합니다.
+            </span>
+            <div className="safe">
+              <ShieldCheck size={18} />
+              <strong>입력값은 이 브라우저에서만 계산</strong>
+              <span>회원가입·파일 업로드 없음</span>
             </div>
           </div>
-
-          <div className="field">
-            <label htmlFor="market">소싱처</label>
-            <select id="market" value={search.market} onChange={(event) => updateField("market", event.target.value as SearchState["market"])}>
-              <option value="dome">도매꾹</option>
-              <option value="supply">도매매</option>
-            </select>
-          </div>
-
-          <div className="field">
-            <label htmlFor="shipping">배송</label>
-            <select id="shipping" value={search.shipping} onChange={(event) => updateField("shipping", event.target.value)}>
-              <option value="">전체</option>
-              <option value="S">무료배송</option>
-              <option value="P">선결제</option>
-              <option value="B">착불</option>
-            </select>
-          </div>
-
-          <div className="field">
-            <label htmlFor="sort">정렬</label>
-            <select id="sort" value={search.sort} onChange={(event) => updateField("sort", event.target.value)}>
-              <option value="rd">랭킹순</option>
-              <option value="ha">인기상품순</option>
-              <option value="aa">낮은가격순</option>
-              <option value="qa">적은 MOQ순</option>
-              <option value="da">최근등록순</option>
-            </select>
-          </div>
-
-          <button className="primary-button" type="button" onClick={() => runSearch()} disabled={isLoading}>
-            {isLoading ? <Loader2 className="spin" size={18} /> : <Filter size={18} />}
-            후보 찾기
-          </button>
-        </section>
-
-        <div className="preset-row" aria-label="빠른 검색어">
-          {keywordPresets.map((keyword) => (
-            <button key={keyword} type="button" onClick={() => applyPreset(keyword)}>
-              {keyword}
-            </button>
-          ))}
-        </div>
-
-        <section id="settings" className="filters" aria-label="분석 기준">
-          <NumberField label="선호 MOQ" value={search.maxMoq} suffix="개" onChange={(value) => updateField("maxMoq", value)} />
-          <NumberField label="최저 원가" value={search.minPrice} suffix="원" onChange={(value) => updateField("minPrice", value)} />
-          <NumberField label="최고 원가" value={search.maxPrice} suffix="원" onChange={(value) => updateField("maxPrice", value)} />
-          <NumberField label="목표 마진" value={search.targetMarginRate} suffix="%" onChange={(value) => updateField("targetMarginRate", value)} />
-          <NumberField label="쿠팡 수수료" value={search.platformFeeRate} suffix="%" onChange={(value) => updateField("platformFeeRate", value)} />
-          <NumberField label="세금/운영" value={search.taxAndBufferRate} suffix="%" onChange={(value) => updateField("taxAndBufferRate", value)} />
-          <label className="check-field">
-            <input type="checkbox" checked={search.fastOnly} onChange={(event) => updateField("fastOnly", event.target.checked)} />
-            빠른배송만
-          </label>
-          <label className="check-field">
-            <input type="checkbox" checked={search.lowPriceOnly} onChange={(event) => updateField("lowPriceOnly", event.target.checked)} />
-            최저가확인
-          </label>
-        </section>
-
-        {message ? (
-          <div className="notice error">
-            <AlertTriangle size={18} />
-            {message}
-          </div>
-        ) : null}
-
-        <section className="metrics" aria-label="검색 요약">
-          <Metric label="분석 상품" value={`${metrics.count}`} />
-          <Metric label="검토 후보" value={`${metrics.priorityCount}`} />
-          <Metric label="최고 점수" value={`${metrics.top}`} />
-          <Metric label="평균 마진" value={`${metrics.avgMargin}%`} />
-          <Metric label="선호 MOQ 내" value={`${metrics.lowMoqCount}`} />
-        </section>
-
-        <section className="content-grid">
-          <div id="score" className="table-panel">
-            <div className="section-head">
-              <div>
-                <h2>도매꾹 후보 선별표</h2>
-                <p>처음에는 A/B 후보만 쿠팡에서 직접 확인하면 됩니다.</p>
-              </div>
-              <span className={`mode-pill ${source}`}>{source === "domeggook" ? "실 API" : "샘플"}</span>
-            </div>
-
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>상품</th>
-                    <th>원가</th>
-                    <th>MOQ</th>
-                    <th>예상가</th>
-                    <th>마진</th>
-                    <th>점수</th>
-                    <th>판단</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item) => (
-                    <tr key={item.no} className={selected?.no === item.no ? "selected-row" : ""} onClick={() => setSelectedNo(item.no)}>
-                      <td>
-                        <div className="product-cell">
-                          {item.thumb ? <img src={item.thumb} alt="" /> : <div className="thumb-fallback" />}
-                          <div>
-                            <strong>{item.title}</strong>
-                            <span>{item.sellerNick || item.sellerId || "판매자 확인 필요"}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td>{formatKRW(item.price)}</td>
-                      <td>{item.moq}</td>
-                      <td>{formatKRW(item.expectedSellPrice)}</td>
-                      <td className={item.expectedMarginRate >= 18 ? "positive" : "negative"}>{item.expectedMarginRate}%</td>
-                      <td>
-                        <span className={`score-badge grade-${item.grade}`}>{item.totalScore}</span>
-                      </td>
-                      <td>{item.verdict}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <aside className="detail-panel" aria-label="선택 상품 분석">
-            {selected ? (
-              <>
-                <div className="detail-head">
-                  <span className={`grade grade-${selected.grade}`}>{selected.grade}</span>
-                  <div>
-                    <h2>{selected.title}</h2>
-                    <p>상품번호 {selected.no}</p>
-                  </div>
-                </div>
-
-                <div className="next-action">
-                  <span>다음 행동</span>
-                  <strong>{selected.nextAction}</strong>
-                </div>
-
-                <div className="score-lines">
-                  <ScoreLine label="수요 추정" value={selected.demandScore} max={30} />
-                  <ScoreLine label="마진" value={selected.marginScore} max={25} />
-                  <ScoreLine label="경쟁 완화" value={selected.competitionScore} max={20} />
-                  <ScoreLine label="공급 안정" value={selected.supplyScore} max={17} />
-                  <ScoreLine label="리스크 낮음" value={selected.riskScore} max={10} />
-                </div>
-
-                <dl className="detail-list">
-                  <div>
-                    <dt>입고 기준 원가</dt>
-                    <dd>{formatKRW(selected.landedCost)}</dd>
-                  </div>
-                  <div>
-                    <dt>예상 이익</dt>
-                    <dd>{formatKRW(selected.expectedProfit)}</dd>
-                  </div>
-                  <div>
-                    <dt>배송 조건</dt>
-                    <dd>{deliveryLabel(selected.deliveryWho)} / {formatKRW(selected.deliveryFee)}</dd>
-                  </div>
-                </dl>
-
-                <div className="risk-block">
-                  <h3>도매꾹에서 먼저 확인할 점</h3>
-                  {selected.risks.length ? (
-                    <div className="risk-tags">
-                      {selected.risks.map((risk) => (
-                        <span key={risk}>{risk}</span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="clean-risk">
-                      <CheckCircle2 size={18} />
-                      기본 리스크가 낮습니다. 쿠팡 상위 가격만 최종 확인하세요.
-                    </p>
-                  )}
-                </div>
-
-                <a className="link-button" href={selected.url || "#"} target="_blank" rel="noreferrer">
-                  도매꾹 상품 보기
-                </a>
-              </>
-            ) : (
-              <div className="empty-state">
-                <ShieldCheck size={36} />
-                <p>검색 결과가 없습니다.</p>
-              </div>
-            )}
+          <aside>
+            <p>보고서 기준일</p>
+            <strong>2026-08-09</strong>
+            <span>세금·회계 신고가 아닌 판매 의사결정용 추정치입니다.</span>
           </aside>
         </section>
-      </section>
-    </main>
+        <section className="preset-row" aria-label="품목 예시">
+          {presets.map((p) => (
+            <button key={p.label} onClick={() => apply(p.values)}>
+              {p.label}
+            </button>
+          ))}
+        </section>
+        <section id="calculator" className="calculator">
+          <div className="input-panel">
+            <div className="panel-head">
+              <span>
+                <Calculator size={21} />
+              </span>
+              <div>
+                <p>1. 판매 조건 입력</p>
+                <h2>한 번의 출하·판매 묶음 기준</h2>
+              </div>
+              <button onClick={() => setInput(defaults)}>
+                <RotateCcw size={15} />
+                초기화
+              </button>
+            </div>
+            <div className="fields">
+              <Field label="품목·규격">
+                <input
+                  value={input.item}
+                  onChange={(e) => set("item", e.target.value)}
+                />
+              </Field>
+              <div className="field-pair">
+                <Field label="판매 예정 수량">
+                  <input
+                    type="number"
+                    min="0"
+                    value={input.quantity}
+                    onChange={(e) => set("quantity", Number(e.target.value))}
+                  />
+                </Field>
+                <Field label="단위">
+                  <input
+                    value={input.unit}
+                    onChange={(e) => set("unit", e.target.value)}
+                  />
+                </Field>
+              </div>
+              <Money
+                label={`단위 판매가 / ${input.unit}`}
+                value={input.price}
+                onChange={(v) => set("price", v)}
+              />
+              <div className="section-label">비용</div>
+              <Money
+                label="생산·매입비"
+                value={input.production}
+                onChange={(v) => set("production", v)}
+              />
+              <Money
+                label="선별·작업 인건비"
+                value={input.sorting}
+                onChange={(v) => set("sorting", v)}
+              />
+              <Money
+                label="포장재·박스 비용"
+                value={input.packageCost}
+                onChange={(v) => set("packageCost", v)}
+              />
+              <Money
+                label="배송·상하차 비용"
+                value={input.shipping}
+                onChange={(v) => set("shipping", v)}
+              />
+              <Money
+                label="기타 비용"
+                value={input.other}
+                onChange={(v) => set("other", v)}
+              />
+              <div className="field-pair">
+                <Field label="결제·플랫폼 수수료">
+                  <div className="suffix">
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={input.feeRate}
+                      onChange={(e) => set("feeRate", Number(e.target.value))}
+                    />
+                    <b>%</b>
+                  </div>
+                </Field>
+                <Field label="감모·파손 예상">
+                  <div className="suffix">
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={input.lossRate}
+                      onChange={(e) => set("lossRate", Number(e.target.value))}
+                    />
+                    <b>%</b>
+                  </div>
+                </Field>
+              </div>
+            </div>
+          </div>
+          <div className="report-panel">
+            <div className="panel-head">
+              <span>
+                <BarChart3 size={21} />
+              </span>
+              <div>
+                <p>2. 계산 결과</p>
+                <h2>{input.item} 예상 정산</h2>
+              </div>
+            </div>
+            <div className="summary">
+              <Metric
+                label="예상 매출"
+                value={won.format(calc.revenue)}
+                icon={<Wheat />}
+              />
+              <Metric
+                label="총비용"
+                value={won.format(calc.total)}
+                icon={<Truck />}
+              />
+              <Metric
+                label="예상 이익"
+                value={won.format(calc.profit)}
+                icon={<PackageCheck />}
+                tone={calc.profit >= 0 ? "positive" : "negative"}
+              />
+              <Metric
+                label="이익률"
+                value={`${calc.margin.toFixed(1)}%`}
+                icon={<BarChart3 />}
+                tone={calc.margin >= 10 ? "positive" : "negative"}
+              />
+            </div>
+            <div className="break-even">
+              <p>손익분기 단가</p>
+              <strong>
+                {won.format(calc.breakEven)} / {input.unit}
+              </strong>
+              <span>
+                현재 단가보다 {won.format(input.price - calc.breakEven)}{" "}
+                {input.price >= calc.breakEven ? "높습니다" : "낮습니다"}.
+              </span>
+            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <th>판매 가능 수량</th>
+                  <td>
+                    {calc.sold.toFixed(1)} {input.unit}
+                  </td>
+                </tr>
+                <tr>
+                  <th>생산·작업·포장·배송·기타</th>
+                  <td>{won.format(calc.fixed)}</td>
+                </tr>
+                <tr>
+                  <th>예상 수수료</th>
+                  <td>{won.format(calc.fee)}</td>
+                </tr>
+                <tr>
+                  <th>{input.unit}당 예상 이익</th>
+                  <td>{won.format(calc.unitProfit)}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="report-actions">
+              <button onClick={download}>
+                <Download size={17} />
+                CSV 정산표 저장
+              </button>
+              <a href="https://boribay.com/listings/new?type=FIXED&utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_profit_report&utm_content=calculation_result">
+                보리장터 판매 준비 <ArrowRight size={17} />
+              </a>
+            </div>
+            <p className="notice">
+              <Info size={16} />
+              실제 세금·수수료·보조금·자가노동비·고정비는 농가마다 다릅니다.
+              신고와 계약에는 회계·세무 전문가의 최신 기준을 확인하세요.
+            </p>
+          </div>
+        </section>
+        <section id="principles" className="principles">
+          <div>
+            <p>계산 원리</p>
+            <h2>판매가보다 빠뜨린 비용이 이익을 바꿉니다</h2>
+          </div>
+          <ol>
+            <li>
+              <span>1</span>
+              <strong>판매 가능 수량</strong>
+              <p>예정 수량에서 감모·파손률을 먼저 뺍니다.</p>
+            </li>
+            <li>
+              <span>2</span>
+              <strong>전체 비용</strong>
+              <p>생산·선별·포장·배송·수수료·기타 비용을 더합니다.</p>
+            </li>
+            <li>
+              <span>3</span>
+              <strong>손익분기 단가</strong>
+              <p>전체 비용을 실제 판매 가능 수량과 수수료율로 나눕니다.</p>
+            </li>
+          </ol>
+        </section>
+      </main>
+      <footer>
+        <strong>reportools</strong>
+        <span>농가 판매 의사결정을 돕는 무료 계산 도구</span>
+        <nav>
+          <a href="https://boribay.com/?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_profit_report&utm_content=footer">
+            보리장터
+          </a>
+        </nav>
+      </footer>
+    </>
   );
 }
-
-function NumberField({
+function Field({
   label,
-  value,
-  suffix,
-  onChange
+  children,
 }: {
   label: string;
-  value: number;
-  suffix: string;
-  onChange: (value: number) => void;
+  children: React.ReactNode;
 }) {
   return (
-    <label className="mini-field">
+    <label className="field">
       <span>{label}</span>
-      <div>
-        <input value={value} type="number" onChange={(event) => onChange(Number(event.target.value))} />
-        <b>{suffix}</b>
-      </div>
+      {children}
     </label>
   );
 }
-
-function Metric({ label, value }: { label: string; value: string }) {
+function Money({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
   return (
-    <div className="metric">
-      <span>{label}</span>
+    <Field label={label}>
+      <div className="suffix">
+        <input
+          type="number"
+          min="0"
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+        />
+        <b>원</b>
+      </div>
+    </Field>
+  );
+}
+function Metric({
+  label,
+  value,
+  icon,
+  tone = "",
+}: {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+  tone?: string;
+}) {
+  return (
+    <div className={`metric ${tone}`}>
+      <span>{icon}</span>
+      <p>{label}</p>
       <strong>{value}</strong>
     </div>
   );
-}
-
-function ScoreLine({ label, value, max }: { label: string; value: number; max: number }) {
-  return (
-    <div className="score-line">
-      <div>
-        <span>{label}</span>
-        <strong>
-          {value}/{max}
-        </strong>
-      </div>
-      <i style={{ width: `${Math.round((value / max) * 100)}%` }} />
-    </div>
-  );
-}
-
-function formatKRW(value: number): string {
-  return new Intl.NumberFormat("ko-KR", {
-    style: "currency",
-    currency: "KRW",
-    maximumFractionDigits: 0
-  }).format(value);
-}
-
-function deliveryLabel(value: ScoredProduct["deliveryWho"]): string {
-  const labels: Record<string, string> = {
-    S: "무료배송",
-    P: "선결제",
-    B: "착불",
-    C: "구매자선택"
-  };
-  return labels[value] ?? "확인 필요";
 }
