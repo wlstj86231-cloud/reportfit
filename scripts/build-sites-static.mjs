@@ -1,7 +1,7 @@
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { guidePages, guideUrls } from "../static-report/guides.mjs";
+import { guidePages, guideUrls, guideLastModified } from "../static-report/guides.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, "dist");
@@ -10,7 +10,7 @@ const pages = { "/": html, ...guidePages };
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://reportools.com/</loc><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
-${guideUrls.map((url) => `  <url><loc>https://reportools.com${url}</loc><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
+${guideUrls.map((url) => `  <url><loc>https://reportools.com${url}</loc><lastmod>${guideLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
 </urlset>`;
 const robots = `User-agent: *
 Allow: /
