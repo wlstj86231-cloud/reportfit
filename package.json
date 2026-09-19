@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:sites": "node scripts/build-sites-static.mjs",
+    "build:pages": "node scripts/export-pages-static.mjs",
     "preview:sites": "node scripts/preview-sites-static.mjs",
     "build:worker": "opennextjs-cloudflare build",
     "preview:worker": "opennextjs-cloudflare build && opennextjs-cloudflare preview",

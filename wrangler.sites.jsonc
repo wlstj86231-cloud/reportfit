@@ -1,0 +1,10 @@
+{
+  // Apex static worker for reportools.com. Do not use wrangler.jsonc (OpenNext) for this host.
+  "name": "reportools",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2026-07-18",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "reportools.com/*", "zone_name": "reportools.com" }
+  ]
+}
