@@ -106,6 +106,105 @@ const guides = [
     related: ["kg-price-margin", "auction-net-proceeds"],
     links: [["농산물 위탁판매 계약·정산 가이드", "agricultural-products-consignment-sales-guide"]],
   },
+  {
+    slug: "listing-price-fields",
+    title: "판매글 가격칸과 정산표를 같은 단위로",
+    description: "직거래 판매글의 가격칸과 정산표의 매출 열을 실중량 kg 같은 단위로 맞춘 뒤 손익을 계산하는 순서입니다.",
+    lead: "판매글 가격칸이 망 이름이면 정산표 kg 열과 같은 숫자가 아닙니다. 품종·실중량·수확일을 칸에 둔 뒤, 그 실중량으로 단가를 나눠 정산표에 옮기세요.",
+    campaign: "c2c_howto_202609",
+    nextLead: "단위를 맞췄다면 같은 칸으로 판매글을 올리세요.",
+    formula: [
+      "판매글 가격칸 = 실중량 kg 기준 단가",
+      "정산표 매출 = 같은 실중량 × 같은 단가",
+      "망·상자 이름은 가격칸에 넣지 않음",
+    ],
+    checks: ["가격칸이 실중량 kg인지", "정산표 매출 열이 같은 kg인지", "품종·수확일이 비어 있지 않은지"],
+    modified: "2026-09-20",
+    sections: [
+      {
+        title: "가격칸에 망 이름을 둘지 정하기",
+        paragraphs: ["10kg 망은 포장 이름입니다. 정산표의 kg 열과 나누려면 포장재를 뺀 실중량을 가격칸에 둡니다.", "여러 규격이면 글과 정산 행도 나눕니다. 한 평균 단가로 합치지 않습니다."],
+      },
+      {
+        title: "판매글 칸과 정산표 열을 한 줄로 맞추기",
+        paragraphs: ["품종·실중량·수확일이 같은 줄만 매출로 옮깁니다. 통칭만 있는 글의 가격은 정산표에 넣지 않습니다."],
+        table: { caption: "판매글 칸과 정산표 열", headers: ["칸", "판매글", "정산표"], rows: [["품종", "실제 품종명", "같은 품종 행"], ["중량", "실중량 kg", "kg 매출 열"], ["날짜", "수확일", "출고일 열"]] },
+      },
+      {
+        title: "시세 표를 가격칸으로 쓰지 않기",
+        paragraphs: ["지금 할 일이 팔기이면 표를 가격칸에 복사하지 않습니다. 이번 물량의 실중량과 단가만 적습니다."],
+      },
+    ],
+    faq: [["상자 가격만 있으면 정산표에 넣어도 되나요?", "상자 이름을 kg으로 나눈 뒤에만 넣습니다."], ["품종을 모르면 가격칸만 채워도 되나요?", "추측 품종으로 단가를 맞추지 않습니다. 미확인이면 그 행을 매출에서 뺍니다."]],
+    related: ["meetup-parcel-cost", "seasonal-price-window"],
+    links: [["품종·중량·수확일 칸을 채워 판매글 올리기", "produce-listing-three-fields"]],
+  },
+  {
+    slug: "meetup-parcel-cost",
+    title: "방문 0원과 택배비를 손익에 넣는 법",
+    description: "만나서 가져가기와 산지직송 택배비를 한 평균으로 나누지 않고, 이번 물량의 수령 방법만 손익 칸에 넣는 순서입니다.",
+    lead: "방문 수령을 0원으로 두면 이동 시간은 빠지고, 택배를 고르면 출하 전 계근과 택배비가 칸에 있어야 합니다. 한 글에 둘 다 가능하다고만 쓰면 어느 비용을 넣을지 모릅니다.",
+    campaign: "c2c_howto_202609",
+    nextLead: "수령 방법을 골랐다면 그 비용을 판매글 칸에 적으세요.",
+    formula: [
+      "방문 수령의 택배비 칸 = 비움. 0원으로 이익을 키우지 않음",
+      "판매자 부담 택배비 = 손익 비용",
+      "구매자 부담 택배비 = 결제액. 매출이 아님",
+    ],
+    checks: ["이번 물량이 방문인지 택배인지", "계근 장소가 현장인지 출고 전인지", "택배비가 매출에 섞이지 않았는지"],
+    modified: "2026-09-20",
+    sections: [
+      {
+        title: "방문과 택배를 한 평균 비용으로 둘지 정하기",
+        paragraphs: ["오늘 가져갈 수 있으면 방문 칸만 손익에 둡니다. 갈 수 없으면 방문 0원으로 이익을 계산하지 않습니다.", "택배면 출하일과 출고 전 무게가 칸에 있어야 비용을 넣습니다."],
+      },
+      {
+        title: "택배비를 매출 칸에 넣을지 정하기",
+        paragraphs: ["구매자가 내는 택배비는 결제액입니다. 판매자가 내는 택배비는 비용입니다. 받은 배송비를 이익으로 보지 않습니다."],
+        table: { caption: "수령 방법별 손익 칸", headers: ["질문", "방문", "택배"], rows: [["오늘 가져가나", "장소·시간이 있으면", "가져갈 수 없으면"], ["계근", "현장", "출고 전"], ["택배비", "칸을 비움", "부담 주체를 적음"]] },
+      },
+      {
+        title: "한 글에 둘 다 적으면 손익이 맞는지",
+        paragraphs: ["둘 다 가능하다고만 쓰면 날짜 칸과 비용 칸이 비게 됩니다. 이번 물량은 하나만 고릅니다."],
+      },
+    ],
+    faq: [["방문이면 택배비를 0원으로 넣나요?", "칸을 비웁니다. 0원으로 이익을 키우지 마세요."], ["출하일 없는 택배 글은요?", "택배 비용을 손익에 넣지 마세요."]],
+    related: ["listing-price-fields", "seasonal-price-window"],
+    links: [["만나기 또는 택배를 고른 뒤 글에 적기", "meetup-vs-direct-shipping-choice"]],
+  },
+  {
+    slug: "seasonal-price-window",
+    title: "김장·햅쌀 글의 가격 유효일",
+    description: "김장 배추와 햅쌀 판매글의 단가를 출하 가능일, 수확일, 도정일 중 어느 날짜까지 유효한지 나눠 정산표에 넣는 순서입니다.",
+    lead: "절임배추 도착일은 배송 일정이고 가격 유효일이 아닙니다. 출하 가능일 전까지의 단가만 정산표에 두고, 수확일과 도정일을 같은 칸에 넣지 마세요.",
+    campaign: "c2c_howto_202609",
+    nextLead: "날짜 칸을 나눴다면 시즌 판매글에 그 날짜를 적으세요.",
+    formula: [
+      "가격 유효일 = 그 단가로 넘길 수 있는 마지막 날",
+      "수확일 ≠ 가격 유효일",
+      "도정일 ≠ 생산연도",
+    ],
+    checks: ["단가가 어느 날짜까지인지", "수확일을 유효일로 쓰지 않았는지", "도정일과 생산연도를 한 칸에 넣지 않았는지"],
+    modified: "2026-09-20",
+    sections: [
+      {
+        title: "출하 가능일을 가격 유효일로 둘지 정하기",
+        paragraphs: ["아직 밭에 있는 날의 단가는 수확한 날의 단가가 아닙니다. 넘길 수 있는 날을 유효일로 둡니다.", "몰의 도착 예정일을 유효일로 복사하지 않습니다."],
+      },
+      {
+        title: "수확일·도정일을 같은 칸에 둘지 정하기",
+        paragraphs: ["생배추는 수확일, 햅쌀은 생산연도와 도정연월일을 나눕니다. 당일도정 문구로 도정일을 대신하지 않습니다."],
+        table: { caption: "시즌 글 날짜와 단가 칸", headers: ["칸", "고를 것", "고르지 말 것"], rows: [["가격 유효일", "넘길 수 있는 날", "몰 도착 예정일"], ["수확일", "실제로 딴 날", "사진 촬영일만"], ["도정일", "포장 표시 도정연월일", "당일도정 문구만"]] },
+      },
+      {
+        title: "유효일이 지난 단가를 정산표에 둘지",
+        paragraphs: ["유효일이 지난 단가는 이번 물량 매출에서 뺍니다. 어제 글의 가격을 오늘 출하분에 복사하지 않습니다."],
+      },
+    ],
+    faq: [["절임 도착일을 가격 유효일로 읽어도 되나요?", "도착일은 배송 일정입니다. 단가 유효일이 아닙니다."], ["도정일만 있으면 생산연도는 생략하나요?", "양곡 표시는 둘을 나눕니다. 정산 행도 나눕니다."]],
+    related: ["listing-price-fields", "meetup-parcel-cost"],
+    links: [["출하일·도정일을 칸에 적어 시즌 글 올리기", "kimjang-rice-listing-dates"]],
+  },
 ];
 
 const esc = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
@@ -127,7 +226,8 @@ for (const guide of guides) {
   const canonical = `${base}${path}`;
   const formulas = guide.formula.map((item) => `<li>${esc(item)}</li>`).join("");
   const checks = guide.checks.map((item) => `<li>${esc(item)}</li>`).join("");
-  const links = guide.links.map(([text, slug, content = guide.slug]) => `<a href="https://boribay.com/guides/${slug}?utm_source=reportools.com&amp;utm_medium=owned_referral&amp;utm_campaign=farm_settlement_guides&amp;utm_content=${content}">${esc(text)} <i data-lucide="arrow-right"></i></a>`).join("");
+  const campaign = guide.campaign ?? "farm_settlement_guides";
+  const links = guide.links.map(([text, slug, content = guide.slug]) => `<a href="https://boribay.com/guides/${slug}?utm_source=reportools.com&amp;utm_medium=owned_referral&amp;utm_campaign=${esc(campaign)}&amp;utm_content=${content}">${esc(text)} <i data-lucide="arrow-right"></i></a>`).join("");
   const sections = guide.sections.map((section) => {
     const table = section.table ? `<div class="table-scroll" role="region" aria-label="${esc(section.table.caption)}" tabindex="0"><table><caption>${esc(section.table.caption)}</caption><thead><tr>${section.table.headers.map((cell) => `<th scope="col">${esc(cell)}</th>`).join("")}</tr></thead><tbody>${section.table.rows.map((row) => `<tr>${row.map((cell, index) => index === 0 ? `<th scope="row">${esc(cell)}</th>` : `<td>${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : "";
     return `<section><h2>${esc(section.title)}</h2>${section.paragraphs.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${table}${section.note ? `<p class="example-note">${esc(section.note)}</p>` : ""}</section>`;
@@ -138,5 +238,5 @@ for (const guide of guides) {
   const tool = guide.tool ? `<a class="tool-cta" href="${guide.tool.href.replace(/&/g, "&amp;")}"><small>${esc(guide.tool.eyebrow)}</small><h2>${esc(guide.tool.title)}</h2><span>${esc(guide.tool.description)}</span><strong>무료 계산기 열기 <i data-lucide="arrow-right"></i></strong></a>` : "";
   const modified = guide.modified ?? date;
   const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "Article", headline: guide.title, description: guide.description, datePublished: date, dateModified: modified, inLanguage: "ko-KR", mainEntityOfPage: canonical, author: { "@type": "Organization", name: "reportools 편집팀" }, publisher: { "@type": "Organization", name: "reportools", url: base } }).replace(/</g, "\\u003c");
-  guidePages[path] = `${head(guide.title, guide.description, canonical)}<script type="application/ld+json">${schema}</script><main><nav class="crumb"><a href="/">손익 계산기</a><span>›</span><a href="/guides/">정산 가이드</a></nav><article class="article"><header><p>정산 원리 · ${guide.modified ? `업데이트 ${modified}` : date}</p><h1>${esc(guide.title)}</h1><span>${esc(guide.description)}</span></header><div class="layout"><div><aside class="lead"><strong>핵심</strong><p>${esc(guide.lead)}</p></aside><section><h2>계산식</h2><ol class="formula">${formulas}</ol>${tool}</section>${sections}<section><h2>빠뜨리기 쉬운 항목</h2><ul class="checks">${checks}</ul></section>${faq}${related}${sources}<section><h2>계산 뒤 기록할 것</h2><p>계산 기준일, 품목·규격, 수량·단가, 각 비용의 근거와 실제 입금액을 함께 저장하세요.</p></section></div><aside class="next"><h2>실제 거래 기준</h2><p>같은 계산 원리로 시세·직거래 가이드를 이어서 확인하세요.</p>${links}</aside></div></article></main>${foot}`;
+  guidePages[path] = `${head(guide.title, guide.description, canonical)}<script type="application/ld+json">${schema}</script><main><nav class="crumb"><a href="/">손익 계산기</a><span>›</span><a href="/guides/">정산 가이드</a></nav><article class="article"><header><p>정산 원리 · ${guide.modified ? `업데이트 ${modified}` : date}</p><h1>${esc(guide.title)}</h1><span>${esc(guide.description)}</span></header><div class="layout"><div><aside class="lead"><strong>핵심</strong><p>${esc(guide.lead)}</p></aside><section><h2>계산식</h2><ol class="formula">${formulas}</ol>${tool}</section>${sections}<section><h2>빠뜨리기 쉬운 항목</h2><ul class="checks">${checks}</ul></section>${faq}${related}${sources}<section><h2>계산 뒤 기록할 것</h2><p>계산 기준일, 품목·규격, 수량·단가, 각 비용의 근거와 실제 입금액을 함께 저장하세요.</p></section></div><aside class="next"><h2>실제 거래 기준</h2><p>${esc(guide.nextLead ?? "같은 계산 원리로 시세·직거래 가이드를 이어서 확인하세요.")}</p>${links}</aside></div></article></main>${foot}`;
 }
