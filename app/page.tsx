@@ -188,9 +188,7 @@ export default function Home() {
         <nav>
           <a href="#calculator">손익 계산</a>
           <a href="#principles">계산 원리</a>
-          <a href="https://boribay.com/?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_profit_report&utm_content=header">
-            보리장터
-          </a>
+          <a href="/guides/">정산 가이드</a>
         </nav>
       </header>
       <main>
@@ -393,7 +391,7 @@ export default function Home() {
                 CSV 정산표 저장
               </button>
               <a href="https://boribay.com/listings/new?type=FIXED&utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_profit_report&utm_content=calculation_result">
-                보리장터 판매 준비 <ArrowRight size={17} />
+                판매 글 등록 준비 <ArrowRight size={17} />
               </a>
             </div>
             <p className="notice">
@@ -431,9 +429,7 @@ export default function Home() {
         <strong>reportools</strong>
         <span>농가 판매 의사결정을 돕는 무료 계산 도구</span>
         <nav>
-          <a href="https://boribay.com/?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_profit_report&utm_content=footer">
-            보리장터
-          </a>
+          <a href="/guides/">정산 가이드</a>
         </nav>
       </footer>
     </>
