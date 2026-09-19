@@ -1,4 +1,4 @@
-const base = "https://reportools.com";
+const base = "https://www.reportools.com";
 const date = "2026-08-10";
 const guides = [
   {
@@ -44,11 +44,15 @@ const guides = [
     lead: "경매 낙찰금액은 곧바로 농가 실수령액이 아닙니다. 오늘 서울가락 kg당 가중평균은 비교 기준이고, 출하 전 비용과 정산서 공제를 한 표에 모아야 직거래와 같은 기준으로 비교할 수 있습니다.",
     formula: ["총낙찰액 = 등급별 낙찰단가 × 실제 정산 수량의 합", "정산 입금액 = 총낙찰액 - 정산서에 실제로 공제된 비용", "출하 후 순수취액 = 정산 입금액 - 별도로 지급한 출하비용"],
     checks: ["단가 단위가 kg·상자·망 중 무엇인지", "등급별 수량과 유찰·감모 물량이 분리됐는지", "운송·하역 비용이 별도 청구되는지"],
-    modified: "2026-09-19",
+    modified: "2026-09-20",
     sections: [
       {
         title: "가락시장 경락가를 정산액으로 옮기는 순서",
         paragraphs: ["오늘 서울가락 숫자는 거래량 가중 kg당과 최저~최고 범위로 먼저 적습니다. 최고가 한 건을 내 출하분 대표 단가로 쓰지 마세요. 10kg 상자 30,000원은 kg당 3,000원입니다. 서로 다른 등급이나 포장 단위를 섞은 평균가격을 내 물량 전체에 그대로 곱하지 마세요.", "공개 시세는 비교 기준입니다. 내 출하분의 실제 정산은 거래명세에 적힌 등급별 낙찰단가와 정산 수량으로 다시 계산합니다. 가령 110상자를 보냈더라도 100상자만 낙찰됐다면 아래 예시의 매출 수량은 100상자입니다. 나머지 물량의 유찰·반송·폐기 내역은 따로 확인합니다."],
+      },
+      {
+        title: "배추 10kg 망·대파 단·양파 15kg 망·무 20kg 상자를 kg으로 맞추기",
+        paragraphs: ["정산서 단가가 망·단·상자이면 내용 중량으로 나눈 뒤에 서울가락 품목 kg당과 비교합니다. 계산 설명용 예: 배추 실중량 10kg 망 18,000원은 kg당 1,800원, 양파 실중량 15kg 망 12,000원은 kg당 800원, 김장무 실중량 20kg 상자 16,000원은 kg당 800원입니다. 이 숫자는 오늘 시세가 아닙니다.", "대파 단은 단 무게를 확인하기 전에 쪽파 시세와 섞지 않습니다. 세 품목의 망 가격을 한 평균으로 곱해 출하 전체를 추정하지 마세요. 품목별 서울가락 표에서 같은 규격 행만 고릅니다."],
       },
       {
         title: "10kg 100상자: 300만원 낙찰과 248만원 수취의 차이",
@@ -64,7 +68,7 @@ const guides = [
     faq: [["평균 경락가 × 출하량이 입금액인가요?", "아닙니다. 내 출하분의 실제 낙찰단가와 정산 수량으로 매출을 구한 뒤 정산서 공제를 차감합니다. 공개 평균가격과 실제 낙찰가격은 같은 값이라고 가정하지 않습니다."], ["유찰·감모 물량은 비용으로 한 번 더 빼나요?", "미판매 물량을 매출 수량에서 이미 제외했다면 같은 판매대금을 다시 공제하지 않습니다. 별도로 발생한 반송·폐기 비용은 증빙 금액만 추가합니다."], ["정산 입금액과 순이익은 무엇이 다른가요?", "입금액은 정산서에서 공제한 뒤 받은 돈입니다. 별도 출하비용과 생산비 등을 모두 반영해야 판매 손익을 판단할 수 있습니다."]],
     related: ["kg-price-margin", "consignment-settlement"],
     sources: [["서울특별시농수산식품공사 주요 품목 가격: 조회일·등급·거래단위·평균가격 항목 확인", "https://www.data.go.kr/data/15004517/openapi.do"]],
-    links: [["오늘 서울가락 kg당 가중평균 표 열기", "garak-market-price-lookup", "auction-net-proceeds-market-price"], ["내 공제액으로 경매 수취금액 계산", "agricultural-auction-net-calculator", "auction-net-proceeds-calculator"]],
+    links: [["오늘 서울가락 kg당 가중평균 표 열기", "garak-market-price-lookup", "auction-net-proceeds-market-price"], ["배추 10kg 그물망을 kg당으로 맞추기", "garak-cabbage-price-lookup", "auction-net-proceeds-cabbage"], ["대파 단·망을 kg당으로 맞추기", "garak-daepa-price-lookup", "auction-net-proceeds-daepa"], ["양파 15kg 망을 kg당으로 맞추기", "garak-onion-price-lookup", "auction-net-proceeds-onion"], ["김장무 20kg 상자를 kg당으로 맞추기", "garak-radish-price-lookup", "auction-net-proceeds-radish"], ["내 공제액으로 경매 수취금액 계산", "agricultural-auction-net-calculator", "auction-net-proceeds-calculator"]],
   },
   {
     slug: "consignment-settlement",
