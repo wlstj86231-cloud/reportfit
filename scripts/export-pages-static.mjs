@@ -32,4 +32,12 @@ const redirects = [
     .map((url) => `${url.replace(/\/$/, "")} ${url} 308`),
 ].join("\n");
 await writeFile(join(out, "_redirects"), `${redirects}\n`, "utf8");
-console.log(`exported ${Object.keys(pages).length} pages to dist/pages`);
+
+const publicRoot = join(root, "public");
+for (const [pagePath, body] of Object.entries(guidePages)) {
+  const file = join(publicRoot, pagePath.replace(/\/$/, ""), "index.html");
+  await mkdir(dirname(file), { recursive: true });
+  await writeFile(file, body, "utf8");
+}
+await writeFile(join(publicRoot, "_redirects"), `${redirects}\n`, "utf8");
+console.log(`exported ${Object.keys(pages).length} pages to dist/pages and public/guides`);

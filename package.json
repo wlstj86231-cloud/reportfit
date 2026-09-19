@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/export-pages-static.mjs",
     "build": "next build",
     "build:sites": "node scripts/build-sites-static.mjs",
     "build:pages": "node scripts/export-pages-static.mjs",
