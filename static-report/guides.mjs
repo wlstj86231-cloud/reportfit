@@ -43,7 +43,7 @@ const guides = [
       description: "상자 가격·내용량·배송비를 입력하면 배송 전후 kg당 가격과 총 주문금액을 한 번에 확인할 수 있습니다.",
       href: "https://boribay.com/guides/produce-price-calculator?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_settlement_guides&utm_content=kg-price-margin-inline",
     },
-    links: [["무료 kg당 가격 계산기 열기", "produce-price-calculator"], ["샤인마스캇 4kg를 kg당으로 맞추기", "garak-grape-price-lookup", "kg-price-margin-grape"], ["신고배 7.5kg를 kg당으로 맞추기", "garak-pear-price-lookup", "kg-price-margin-pear"], ["홍로 10kg를 kg당으로 맞추기", "garak-apple-price-lookup", "kg-price-margin-apple"], ["네트계 멜론 8kg를 kg당으로 맞추기", "garak-melon-price-lookup", "kg-price-margin-melon"], ["토마토 5kg를 kg당으로 맞추기", "garak-tomato-price-lookup", "kg-price-margin-tomato"], ["하우스감귤 3kg를 kg당으로 맞추기", "garak-citrus-price-lookup", "kg-price-margin-citrus"], ["직거래 가격·포장 원리", "produce-direct-sale-pricing-packaging"]],
+    links: [["무료 kg당 가격 계산기 열기", "produce-price-calculator"], ["샤인마스캇 4kg를 kg당으로 맞추기", "garak-grape-price-lookup", "kg-price-margin-grape"], ["신고배 7.5kg를 kg당으로 맞추기", "garak-pear-price-lookup", "kg-price-margin-pear"], ["홍로 10kg를 kg당으로 맞추기", "garak-apple-price-lookup", "kg-price-margin-apple"], ["네트계 멜론 8kg를 kg당으로 맞추기", "garak-melon-price-lookup", "kg-price-margin-melon"], ["토마토 5kg를 kg당으로 맞추기", "garak-tomato-price-lookup", "kg-price-margin-tomato"], ["하우스감귤 3kg를 kg당으로 맞추기", "garak-citrus-price-lookup", "kg-price-margin-citrus"]],
   },
   {
     slug: "auction-net-proceeds",
@@ -76,7 +76,7 @@ const guides = [
     faq: [["평균 경락가 × 출하량이 입금액인가요?", "아닙니다. 내 출하분의 실제 낙찰단가와 정산 수량으로 매출을 구한 뒤 정산서 공제를 차감합니다. 공개 평균가격과 실제 낙찰가격은 같은 값이라고 가정하지 않습니다."], ["유찰·감모 물량은 비용으로 한 번 더 빼나요?", "미판매 물량을 매출 수량에서 이미 제외했다면 같은 판매대금을 다시 공제하지 않습니다. 별도로 발생한 반송·폐기 비용은 증빙 금액만 추가합니다."], ["정산 입금액과 순이익은 무엇이 다른가요?", "입금액은 정산서에서 공제한 뒤 받은 돈입니다. 별도 출하비용과 생산비 등을 모두 반영해야 판매 손익을 판단할 수 있습니다."]],
     related: ["kg-price-margin", "consignment-settlement"],
     sources: [["서울특별시농수산식품공사 주요 품목 가격: 조회일·등급·거래단위·평균가격 항목 확인", "https://www.data.go.kr/data/15004517/openapi.do"]],
-    links: [["오늘 서울가락 kg당 가중평균 표 열기", "garak-market-price-lookup", "auction-net-proceeds-market-price"], ["배추 10kg 그물망을 kg당으로 맞추기", "garak-cabbage-price-lookup", "auction-net-proceeds-cabbage"], ["대파 단·망을 kg당으로 맞추기", "garak-daepa-price-lookup", "auction-net-proceeds-daepa"], ["양파 15kg 망을 kg당으로 맞추기", "garak-onion-price-lookup", "auction-net-proceeds-onion"], ["김장무 20kg 상자를 kg당으로 맞추기", "garak-radish-price-lookup", "auction-net-proceeds-radish"], ["내 공제액으로 경매 수취금액 계산", "agricultural-auction-net-calculator", "auction-net-proceeds-calculator"]],
+    links: [["내 공제액으로 경매 수취금액 계산", "agricultural-auction-net-calculator", "auction-net-proceeds-calculator"], ["오늘 서울가락 kg당 가중평균 표 열기", "garak-market-price-lookup", "auction-net-proceeds-market-price"], ["배추 10kg 그물망을 kg당으로 맞추기", "garak-cabbage-price-lookup", "auction-net-proceeds-cabbage"], ["대파 단·망을 kg당으로 맞추기", "garak-daepa-price-lookup", "auction-net-proceeds-daepa"], ["양파 15kg 망을 kg당으로 맞추기", "garak-onion-price-lookup", "auction-net-proceeds-onion"], ["김장무 20kg 상자를 kg당으로 맞추기", "garak-radish-price-lookup", "auction-net-proceeds-radish"]],
   },
   {
     slug: "consignment-settlement",
