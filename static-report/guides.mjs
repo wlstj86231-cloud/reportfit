@@ -8,13 +8,21 @@ const guides = [
     lead: "상자 판매가만 보면 규격이 다른 상품을 비교하기 어렵습니다. 먼저 내용물 실중량 기준 kg당 가격을 만든 뒤 판매 가능한 수량과 모든 비용을 반영하세요.",
     formula: ["구매자 kg당 가격 = (상품금액 + 구매자 부담 배송비) ÷ 내용물 실중량", "판매자 매출 = 실제 판매 상품금액 + 받은 배송비 - 환불액", "판매자 이익 = 매출 - 생산·선별·포장·운송·수수료 등 비용"],
     checks: ["포장재를 뺀 내용물 실중량인지", "무료배송 비용이 판매가에 포함됐는지", "파손·반품·자가노동비가 빠지지 않았는지"],
-    modified: "2026-09-16",
+    modified: "2026-09-20",
     sections: [
       {
         title: "5kg 상자와 10kg 상자: 배송비를 더한 뒤 나누기",
         paragraphs: ["다음은 계산을 설명하기 위한 가상 견적입니다. 품종·등급·실중량이 같은 조건인지 확인한 뒤 비교하세요. 포장재 무게는 내용량에 넣지 않습니다."],
         table: { caption: "구매자가 부담하는 kg당 가격 비교", headers: ["항목", "5kg 상자", "10kg 상자"], rows: [["상품금액", "24,000원", "46,000원"], ["구매자 부담 배송비", "3,000원", "0원"], ["총 결제금액", "27,000원", "46,000원"], ["내용물 1kg당 가격", "5,400원", "4,600원"]] },
         note: "이 조건에서는 10kg 상자가 kg당 800원 저렴합니다. 하지만 판매자에게 어느 규격이 더 이익인지는 각 상자의 포장비·실제 택배비·감모 비용까지 따로 계산해야 알 수 있습니다.",
+      },
+      {
+        title: "샤인마스캇 4kg·신고 7.5kg·홍로 10kg 상자를 kg으로 맞추기",
+        paragraphs: ["정산서 단가가 상자이면 내용 중량으로 나눈 뒤에 서울가락 품목 kg당과 비교합니다. 계산 설명용 예: 샤인마스캇 실중량 4kg 상자 16,000원은 kg당 4,000원, 신고배 실중량 7.5kg 상자 22,500원은 kg당 3,000원, 홍로 실중량 10kg 상자 40,000원은 kg당 4,000원입니다. 이 숫자는 오늘 시세가 아닙니다.", "캠벨을 샤인마스캇 시세로, 화산을 신고 시세로, 햇사과 문구를 홍로 품종 행으로 쓰지 않습니다. 복숭아 4kg와 추희 5kg도 품종명이 같은 행만 고릅니다."],
+      },
+      {
+        title: "네트계 8kg·토마토 5kg·하우스감귤 3kg·수박 통을 kg으로 맞추기",
+        paragraphs: ["멜론 8kg 상자와 수박 한 통, 토마토 5kg와 대추방울 3kg는 품목·작형이 다릅니다. 계산 설명용 예: 네트계 실중량 8kg 상자 20,000원은 kg당 2,500원, 토마토 실중량 5kg 상자 30,000원은 kg당 6,000원, 하우스감귤 실중량 3kg 상자 18,000원은 kg당 6,000원입니다. 이 숫자는 오늘 시세가 아닙니다.", "참외를 멜론 시세로, 꼭지절단 수박을 일반 통 시세로, 완숙 토마토를 대추방울 시세로 쓰지 않습니다. 생대추 2kg와 송본 10kg, 쥬키니와 애호박, 빨강 파프리카와 피망도 같은 행이 아닙니다."],
       },
       {
         title: "무료배송 24,000원에 팔면 실제로 얼마가 남을까",
@@ -35,7 +43,7 @@ const guides = [
       description: "상자 가격·내용량·배송비를 입력하면 배송 전후 kg당 가격과 총 주문금액을 한 번에 확인할 수 있습니다.",
       href: "https://boribay.com/guides/produce-price-calculator?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_settlement_guides&utm_content=kg-price-margin-inline",
     },
-    links: [["무료 kg당 가격 계산기 열기", "produce-price-calculator"], ["직거래 가격·포장 원리", "produce-direct-sale-pricing-packaging"]],
+    links: [["무료 kg당 가격 계산기 열기", "produce-price-calculator"], ["샤인마스캇 4kg를 kg당으로 맞추기", "garak-grape-price-lookup", "kg-price-margin-grape"], ["신고배 7.5kg를 kg당으로 맞추기", "garak-pear-price-lookup", "kg-price-margin-pear"], ["홍로 10kg를 kg당으로 맞추기", "garak-apple-price-lookup", "kg-price-margin-apple"], ["네트계 멜론 8kg를 kg당으로 맞추기", "garak-melon-price-lookup", "kg-price-margin-melon"], ["토마토 5kg를 kg당으로 맞추기", "garak-tomato-price-lookup", "kg-price-margin-tomato"], ["하우스감귤 3kg를 kg당으로 맞추기", "garak-citrus-price-lookup", "kg-price-margin-citrus"], ["직거래 가격·포장 원리", "produce-direct-sale-pricing-packaging"]],
   },
   {
     slug: "auction-net-proceeds",
