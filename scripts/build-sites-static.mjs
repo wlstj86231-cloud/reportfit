@@ -2,15 +2,17 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { guidePages, guideUrls, guideLastModified } from "../static-report/guides.mjs";
+import { mnPages, mnUrls, mnLastModified } from "../static-report/mn.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, "dist");
 const html = await readFile(join(root, "static-report", "index.html"), "utf8");
-const pages = { "/": html, ...guidePages };
+const pages = { "/": html, ...guidePages, ...mnPages };
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.reportools.com/</loc><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
 ${guideUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${guideLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
+${mnUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${mnLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`).join("\n")}
 </urlset>`;
 const robots = `User-agent: *
 Allow: /

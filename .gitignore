@@ -3,6 +3,7 @@ node_modules
 out
 dist/pages
 public/guides
+public/mn
 public/_redirects
 .open-next
 .wrangler
