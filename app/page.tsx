@@ -119,7 +119,8 @@ export default function Home() {
     const total = fixed + fee;
     const profit = revenue - total;
     const margin = revenue ? (profit / revenue) * 100 : 0;
-    const breakEven = sold ? fixed / (sold * (1 - input.feeRate / 100)) : 0;
+    const denominator = sold * (1 - input.feeRate / 100);
+    const breakEven = denominator > 0 ? fixed / denominator : null;
     const unitProfit = sold ? profit / sold : 0;
     return {
       sold,
@@ -140,9 +141,11 @@ export default function Home() {
     setInput((current) => ({ ...current, ...values }));
   }
   function download() {
+    const now = new Date();
+    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     const rows = [
         ["농가 판매 손익·정산 보고서"],
-        ["작성일", "2026-08-09"],
+        ["작성일", date],
         ["품목", input.item],
         ["판매 예정 수량", input.quantity, input.unit],
         ["감모율", `${input.lossRate}%`],
@@ -158,7 +161,7 @@ export default function Home() {
         ["총비용", Math.round(calc.total)],
         ["예상 이익", Math.round(calc.profit)],
         ["이익률", `${calc.margin.toFixed(1)}%`],
-        ["손익분기 단가", Math.round(calc.breakEven)],
+        ["손익분기 단가", calc.breakEven === null ? "계산 불가" : Math.round(calc.breakEven)],
       ],
       csv = rows
         .map((row) =>
@@ -171,7 +174,7 @@ export default function Home() {
       url = URL.createObjectURL(blob),
       a = document.createElement("a");
     a.href = url;
-    a.download = `reportools_${input.item.replace(/\s+/g, "_")}_2026-08-09.csv`;
+    a.download = `reportools_${input.item.replace(/\s+/g, "_")}_${date}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -212,8 +215,8 @@ export default function Home() {
             </div>
           </div>
           <aside>
-            <p>보고서 기준일</p>
-            <strong>2026-08-09</strong>
+            <p>계산 기준</p>
+            <strong>현재 입력한 판매 조건</strong>
             <span>세금·회계 신고가 아닌 판매 의사결정용 추정치입니다.</span>
           </aside>
         </section>
@@ -356,11 +359,18 @@ export default function Home() {
             <div className="break-even">
               <p>손익분기 단가</p>
               <strong>
-                {won.format(calc.breakEven)} / {input.unit}
+                {calc.breakEven === null
+                  ? "계산 불가"
+                  : `${won.format(calc.breakEven)} / ${input.unit}`}
               </strong>
               <span>
-                현재 단가보다 {won.format(input.price - calc.breakEven)}{" "}
-                {input.price >= calc.breakEven ? "높습니다" : "낮습니다"}.
+                {calc.breakEven === null
+                  ? calc.sold <= 0
+                    ? "판매 가능 수량이 없어 단가를 계산할 수 없습니다."
+                    : "수수료율이 100% 이상이면 단가를 계산할 수 없습니다."
+                  : Math.round(Math.abs(calc.breakEven - input.price)) === 0
+                    ? "현재 단가와 같습니다."
+                    : `현재 단가보다 ${won.format(Math.abs(calc.breakEven - input.price))} ${calc.breakEven > input.price ? "높습니다" : "낮습니다"}.`}
               </span>
             </div>
             <table>

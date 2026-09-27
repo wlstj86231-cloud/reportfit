@@ -29,7 +29,7 @@
   <main>
     <section class="hero">
       <div><p class="eyebrow">판매가를 정하기 전에 비용부터 합쳐보세요</p><h1>농산물 직거래<br><em>손익·정산 보고서</em></h1><p class="hero-copy">생산·선별·포장·배송·수수료와 감모를 넣으면<br>예상 이익, 이익률, 손익분기 단가를 바로 계산합니다.</p><div class="safe"><i data-lucide="shield-check"></i><strong>입력값은 이 브라우저에서만 계산</strong><span>회원가입·파일 업로드 없음</span></div></div>
-      <aside><p>보고서 기준일</p><strong>2026-08-10</strong><span>현금·회계 신고가 아닌 판매 의사결정용 추정치입니다.</span></aside>
+      <aside><p>계산 기준</p><strong>현재 입력한 판매 조건</strong><span>현금·회계 신고가 아닌 판매 의사결정용 추정치입니다.</span></aside>
     </section>
     <section class="preset-row" aria-label="품목 예시"><button type="button" data-preset="potato">감자 10kg</button><button type="button" data-preset="rice">쌀 20kg</button><button type="button" data-preset="peach">복숭아 4kg</button><button type="button" data-preset="apple">사과 5kg</button></section>
     <section id="calculator" class="calculator">
@@ -51,7 +51,7 @@
       <div class="report-panel" aria-live="polite">
         <div class="panel-head"><span class="panel-icon"><i data-lucide="bar-chart-3"></i></span><div><p>2. 계산 결과</p><h2><span id="result-item">감자 10kg</span> 예상 정산</h2></div></div>
         <div class="summary"><div class="metric"><span class="metric-icon"><i data-lucide="wheat"></i></span><p>예상 매출</p><strong id="revenue">₩1,330,000</strong></div><div class="metric"><span class="metric-icon"><i data-lucide="truck"></i></span><p>총비용</p><strong id="total">₩1,146,550</strong></div><div class="metric positive" id="profit-card"><span class="metric-icon"><i data-lucide="package-check"></i></span><p>예상 이익</p><strong id="profit">₩183,450</strong></div><div class="metric positive" id="margin-card"><span class="metric-icon"><i data-lucide="bar-chart-3"></i></span><p>이익률</p><strong id="margin">13.8%</strong></div></div>
-        <div class="break-even"><p>손익분기 단가</p><strong><span id="break-even">₩24,009</span> / <span id="break-unit">상자</span></strong><span>현재 단가보다 <b id="difference">₩3,991</b> <span id="difference-word">높습니다</span>.</span></div>
+        <div class="break-even"><p>손익분기 단가</p><strong><span id="break-even">₩23,998</span><span id="break-unit"> / 상자</span></strong><span id="difference-note">현재 단가보다 ₩4,002 낮습니다.</span></div>
         <table><tbody><tr><th>판매 가능 수량</th><td><span id="sold">47.5</span> <span id="sold-unit">상자</span></td></tr><tr><th>생산·작업·포장·배송·기타</th><td id="fixed">₩1,100,000</td></tr><tr><th>예상 수수료</th><td id="fee">₩46,550</td></tr><tr><th><span id="unit-label">상자</span>당 예상 이익</th><td id="unit-profit">₩3,862</td></tr></tbody></table>
         <div class="report-actions"><button type="button" id="download"><i data-lucide="download"></i>CSV 정산표 저장</button><a href="https://boribay.com/listings/new?type=FIXED&amp;utm_source=reportools.com&amp;utm_medium=owned_referral&amp;utm_campaign=farm_profit_report&amp;utm_content=calculation_result">판매 글 등록 준비 <i data-lucide="arrow-right"></i></a></div>
         <p class="notice"><i data-lucide="info"></i>실제 세금·수수료·보조금·자가노동비·재고정비는 농가마다 다릅니다. 신고와 계약 전에는 회계·세무 전문가의 최신 기준을 확인하세요.</p>
@@ -68,8 +68,42 @@
     const won=new Intl.NumberFormat('ko-KR',{style:'currency',currency:'KRW',maximumFractionDigits:0});
     const el=id=>document.getElementById(id); const number=id=>Number(el(id).value)||0;
     function apply(values){for(const id of ids)if(values[id]!==undefined)el(id).value=values[id];calculate()}
-    function calculate(){const item=el('item').value||'농산물',unit=el('unit').value||'단위',quantity=number('quantity'),price=number('price'),feeRate=number('feeRate'),lossRate=number('lossRate');const sold=Math.max(0,quantity*(1-lossRate/100)),revenue=sold*price,fee=revenue*feeRate/100,fixed=number('production')+number('sorting')+number('packageCost')+number('shipping')+number('other'),total=fixed+fee,profit=revenue-total,margin=revenue?profit/revenue*100:0,breakEven=sold&&feeRate<100?fixed/(sold*(1-feeRate/100)):0,unitProfit=sold?profit/sold:0,diff=price-breakEven;el('price-label').textContent=`단위 판매가 / ${unit}`;el('result-item').textContent=item;el('revenue').textContent=won.format(revenue);el('total').textContent=won.format(total);el('profit').textContent=won.format(profit);el('margin').textContent=`${margin.toFixed(1)}%`;el('break-even').textContent=won.format(breakEven);el('break-unit').textContent=unit;el('difference').textContent=won.format(Math.abs(diff));el('difference-word').textContent=diff>=0?'높습니다':'낮습니다';el('sold').textContent=sold.toFixed(1);el('sold-unit').textContent=unit;el('fixed').textContent=won.format(fixed);el('fee').textContent=won.format(fee);el('unit-label').textContent=unit;el('unit-profit').textContent=won.format(unitProfit);el('profit-card').className=`metric ${profit>=0?'positive':'negative'}`;el('margin-card').className=`metric ${margin>=10?'positive':'negative'}`;return{item,unit,quantity,price,feeRate,lossRate,sold,revenue,fee,fixed,total,profit,margin,breakEven,unitProfit}}
-    function download(){const c=calculate(),rows=[['농가 판매 손익·정산 보고서'],['작성일','2026-08-10'],['품목',c.item],['판매 예정 수량',c.quantity,c.unit],['감모율',`${c.lossRate}%`],['예상 판매 수량',c.sold.toFixed(1),c.unit],['단위 판매가',c.price],['예상 매출',Math.round(c.revenue)],['고정 비용',Math.round(c.fixed)],['예상 수수료',Math.round(c.fee)],['총비용',Math.round(c.total)],['예상 이익',Math.round(c.profit)],['이익률',`${c.margin.toFixed(1)}%`],['손익분기 단가',Math.round(c.breakEven)]],csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n'),blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`reportools_${c.item.replace(/\s+/g,'_')}_2026-08-10.csv`;a.click();URL.revokeObjectURL(url)}
+    function calculate(){
+      const item=el('item').value||'농산물',unit=el('unit').value||'단위',quantity=number('quantity'),price=number('price'),feeRate=number('feeRate'),lossRate=number('lossRate');
+      const sold=Math.max(0,quantity*(1-lossRate/100)),revenue=sold*price,fee=revenue*feeRate/100;
+      const fixed=number('production')+number('sorting')+number('packageCost')+number('shipping')+number('other');
+      const total=fixed+fee,profit=revenue-total,margin=revenue?profit/revenue*100:0;
+      const denominator=sold*(1-feeRate/100),breakEven=denominator>0?fixed/denominator:null,unitProfit=sold?profit/sold:0;
+      el('price-label').textContent=`단위 판매가 / ${unit}`;
+      el('result-item').textContent=item;
+      el('revenue').textContent=won.format(revenue);
+      el('total').textContent=won.format(total);
+      el('profit').textContent=won.format(profit);
+      el('margin').textContent=`${margin.toFixed(1)}%`;
+      el('break-even').textContent=breakEven===null?'계산 불가':won.format(breakEven);
+      el('break-unit').textContent=breakEven===null?'':` / ${unit}`;
+      el('difference-note').textContent=breakEven===null
+        ?(sold<=0?'판매 가능 수량이 없어 단가를 계산할 수 없습니다.':'수수료율이 100% 이상이면 단가를 계산할 수 없습니다.')
+        :Math.round(Math.abs(breakEven-price))===0?'현재 단가와 같습니다.'
+        :`현재 단가보다 ${won.format(Math.abs(breakEven-price))} ${breakEven>price?'높습니다':'낮습니다'}.`;
+      el('sold').textContent=sold.toFixed(1);
+      el('sold-unit').textContent=unit;
+      el('fixed').textContent=won.format(fixed);
+      el('fee').textContent=won.format(fee);
+      el('unit-label').textContent=unit;
+      el('unit-profit').textContent=won.format(unitProfit);
+      el('profit-card').className=`metric ${profit>=0?'positive':'negative'}`;
+      el('margin-card').className=`metric ${margin>=10?'positive':'negative'}`;
+      return{item,unit,quantity,price,feeRate,lossRate,sold,revenue,fee,fixed,total,profit,margin,breakEven,unitProfit}
+    }
+    function download(){
+      const c=calculate(),now=new Date();
+      const date=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      const rows=[['농가 판매 손익·정산 보고서'],['작성일',date],['품목',c.item],['판매 예정 수량',c.quantity,c.unit],['감모율',`${c.lossRate}%`],['예상 판매 수량',c.sold.toFixed(1),c.unit],['단위 판매가',c.price],['예상 매출',Math.round(c.revenue)],['고정 비용',Math.round(c.fixed)],['예상 수수료',Math.round(c.fee)],['총비용',Math.round(c.total)],['예상 이익',Math.round(c.profit)],['이익률',`${c.margin.toFixed(1)}%`],['손익분기 단가',c.breakEven===null?'계산 불가':Math.round(c.breakEven)]];
+      const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');
+      const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=`reportools_${c.item.replace(/\s+/g,'_')}_${date}.csv`;a.click();URL.revokeObjectURL(url)
+    }
     document.getElementById('profit-form').addEventListener('input',calculate);document.getElementById('reset').addEventListener('click',()=>apply(defaults));document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>apply(presets[button.dataset.preset])));document.getElementById('download').addEventListener('click',download);calculate();window.addEventListener('load',()=>window.lucide&&window.lucide.createIcons());
   </script>
 </body>

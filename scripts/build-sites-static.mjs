@@ -11,7 +11,7 @@ const html = await readFile(join(root, "static-report", "index.html"), "utf8");
 const pages = { "/": html, ...guidePages, ...mnPages, ...tractorCostPages };
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.reportools.com/</loc><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.reportools.com/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
 ${guideUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${guideLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
 ${mnUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${mnLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`).join("\n")}
 ${tractorCostUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${tractorCostLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}

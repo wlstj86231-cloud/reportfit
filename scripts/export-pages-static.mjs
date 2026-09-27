@@ -19,7 +19,7 @@ for (const [pagePath, body] of Object.entries(pages)) {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.reportools.com/</loc><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.reportools.com/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
 ${guideUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${guideLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
 ${mnUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${mnLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`).join("\n")}
 ${tractorCostUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${tractorCostLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
@@ -27,6 +27,8 @@ ${tractorCostUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</lo
 `;
 await writeFile(join(out, "sitemap.xml"), sitemap, "utf8");
 await writeFile(join(out, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://www.reportools.com/sitemap.xml\n", "utf8");
+// A top-level 404 page keeps Cloudflare Pages from serving index.html with HTTP 200 for unknown routes.
+await writeFile(join(out, "404.html"), `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,follow"><title>페이지를 찾을 수 없습니다 | reportools</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f7faf6;color:#183128;font-family:Arial,'Noto Sans KR',sans-serif}main{max-width:38rem;padding:2rem}h1{font-size:2rem}p{line-height:1.65}a{color:#176144;font-weight:700}</style></head><body><main><h1>페이지를 찾을 수 없습니다</h1><p>주소를 다시 확인하거나 아래에서 필요한 계산기와 안내를 찾아보세요.</p><p><a href="/">손익 계산기</a> · <a href="/guides/">정산 가이드</a></p></main></body></html>`, "utf8");
 await writeFile(join(out, "googleb6f1a59bf29a174e.html"), "google-site-verification: googleb6f1a59bf29a174e.html\n", "utf8");
 await writeFile(join(out, "6d048fe0c10f47789f9b3a98ae4978ee.txt"), "6d048fe0c10f47789f9b3a98ae4978ee", "utf8");
 const redirects = [
