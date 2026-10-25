@@ -8,7 +8,8 @@ const guides = [
     lead: "상자 판매가만 보면 규격이 다른 상품을 비교하기 어렵습니다. 먼저 내용물 실중량 기준 kg당 가격을 만든 뒤 판매 가능한 수량과 모든 비용을 반영하세요.",
     formula: ["구매자 kg당 가격 = (상품금액 + 구매자 부담 배송비) ÷ 내용물 실중량", "판매자 매출 = 실제 판매 상품금액 + 받은 배송비 - 환불액", "판매자 이익 = 매출 - 생산·선별·포장·운송·수수료 등 비용"],
     checks: ["포장재를 뺀 내용물 실중량인지", "무료배송 비용이 판매가에 포함됐는지", "파손·반품·자가노동비가 빠지지 않았는지"],
-    modified: "2026-09-20",
+    modified: "2026-10-26",
+    sourcesChecked: "2026-09-20",
     sections: [
       {
         title: "5kg 상자와 10kg 상자: 배송비를 더한 뒤 나누기",
@@ -18,7 +19,7 @@ const guides = [
       },
       {
         title: "샤인마스캇 4kg·신고 7.5kg·홍로 10kg 상자를 kg으로 맞추기",
-        paragraphs: ["정산서 단가가 상자이면 내용 중량으로 나눈 뒤에 서울가락 품목 kg당과 비교합니다. 계산 설명용 예: 샤인마스캇 실중량 4kg 상자 16,000원은 kg당 4,000원, 신고배 실중량 7.5kg 상자 22,500원은 kg당 3,000원, 홍로 실중량 10kg 상자 40,000원은 kg당 4,000원입니다. 이 숫자는 오늘 시세가 아닙니다.", "캠벨을 샤인마스캇 시세로, 화산을 신고 시세로, 햇사과 문구를 홍로 품종 행으로 쓰지 않습니다. 복숭아 4kg와 추희 5kg도 품종명이 같은 행만 고릅니다."],
+        paragraphs: ["정산서 단가가 상자이면 내용 중량으로 나눈 뒤에 공식 가격정보의 같은 품목 kg당 가격과 비교합니다. 계산 설명용 예: 샤인마스캇 실중량 4kg 상자 16,000원은 kg당 4,000원, 신고배 실중량 7.5kg 상자 22,500원은 kg당 3,000원, 홍로 실중량 10kg 상자 40,000원은 kg당 4,000원입니다. 이 숫자는 오늘 시세가 아닙니다.", "캠벨을 샤인마스캇 시세로, 화산을 신고 시세로, 햇사과 문구를 홍로 품종 행으로 쓰지 않습니다. 복숭아 4kg와 추희 5kg도 품종명이 같은 행만 고릅니다."],
       },
       {
         title: "네트계 8kg·토마토 5kg·하우스감귤 3kg·수박 통을 kg으로 맞추기",
@@ -43,24 +44,25 @@ const guides = [
       description: "상자 가격·내용량·배송비를 입력하면 배송 전후 kg당 가격과 총 주문금액을 한 번에 확인할 수 있습니다.",
       href: "https://boribay.com/guides/produce-price-calculator?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_settlement_guides&utm_content=kg-price-margin-inline",
     },
-    links: [["무료 kg당 가격 계산기 열기", "produce-price-calculator"], ["샤인마스캇 4kg를 kg당으로 맞추기", "garak-grape-price-lookup", "kg-price-margin-grape"], ["신고배 7.5kg를 kg당으로 맞추기", "garak-pear-price-lookup", "kg-price-margin-pear"], ["홍로 10kg를 kg당으로 맞추기", "garak-apple-price-lookup", "kg-price-margin-apple"], ["네트계 멜론 8kg를 kg당으로 맞추기", "garak-melon-price-lookup", "kg-price-margin-melon"], ["토마토 5kg를 kg당으로 맞추기", "garak-tomato-price-lookup", "kg-price-margin-tomato"], ["하우스감귤 3kg를 kg당으로 맞추기", "garak-citrus-price-lookup", "kg-price-margin-citrus"]],
+    links: [["무료 kg당 가격 계산기 열기", "produce-price-calculator"], ["품목·등급·단위를 맞춰 공식 가격 조회하는 법", "agricultural-price-lookup", "kg-price-margin-grape"]],
   },
   {
     slug: "auction-net-proceeds",
     title: "농산물 경매 정산 실수령액 계산법",
     description: "가락시장 경락가의 단위를 맞추고 수수료·운송·하역 공제와 선지급한 선별·포장비를 구분해 농가 수취액을 계산합니다.",
-    lead: "경매 낙찰금액은 곧바로 농가 실수령액이 아닙니다. 오늘 서울가락 kg당 가중평균은 비교 기준이고, 출하 전 비용과 정산서 공제를 한 표에 모아야 직거래와 같은 기준으로 비교할 수 있습니다.",
+    lead: "경매 낙찰금액은 곧바로 농가 실수령액이 아닙니다. 도매시장 경락 결과의 kg당 가중평균은 비교 기준이고, 출하 전 비용과 정산서 공제를 한 표에 모아야 직거래와 같은 기준으로 비교할 수 있습니다.",
     formula: ["총낙찰액 = 등급별 낙찰단가 × 실제 정산 수량의 합", "정산 입금액 = 총낙찰액 - 정산서에 실제로 공제된 비용", "출하 후 순수취액 = 정산 입금액 - 별도로 지급한 출하비용"],
     checks: ["단가 단위가 kg·상자·망 중 무엇인지", "등급별 수량과 유찰·감모 물량이 분리됐는지", "운송·하역 비용이 별도 청구되는지"],
-    modified: "2026-09-20",
+    modified: "2026-10-26",
+    sourcesChecked: "2026-09-20",
     sections: [
       {
         title: "가락시장 경락가를 정산액으로 옮기는 순서",
-        paragraphs: ["오늘 서울가락 숫자는 거래량 가중 kg당과 최저~최고 범위로 먼저 적습니다. 최고가 한 건을 내 출하분 대표 단가로 쓰지 마세요. 10kg 상자 30,000원은 kg당 3,000원입니다. 서로 다른 등급이나 포장 단위를 섞은 평균가격을 내 물량 전체에 그대로 곱하지 마세요.", "공개 시세는 비교 기준입니다. 내 출하분의 실제 정산은 거래명세에 적힌 등급별 낙찰단가와 정산 수량으로 다시 계산합니다. 가령 110상자를 보냈더라도 100상자만 낙찰됐다면 아래 예시의 매출 수량은 100상자입니다. 나머지 물량의 유찰·반송·폐기 내역은 따로 확인합니다."],
+        paragraphs: ["도매시장 경락 결과는 거래량 가중 kg당과 최저~최고 범위로 먼저 적습니다. 최고가 한 건을 내 출하분 대표 단가로 쓰지 마세요. 10kg 상자 30,000원은 kg당 3,000원입니다. 서로 다른 등급이나 포장 단위를 섞은 평균가격을 내 물량 전체에 그대로 곱하지 마세요.", "공개 시세는 비교 기준입니다. 내 출하분의 실제 정산은 거래명세에 적힌 등급별 낙찰단가와 정산 수량으로 다시 계산합니다. 가령 110상자를 보냈더라도 100상자만 낙찰됐다면 아래 예시의 매출 수량은 100상자입니다. 나머지 물량의 유찰·반송·폐기 내역은 따로 확인합니다."],
       },
       {
         title: "배추 10kg 망·대파 단·양파 15kg 망·무 20kg 상자를 kg으로 맞추기",
-        paragraphs: ["정산서 단가가 망·단·상자이면 내용 중량으로 나눈 뒤에 서울가락 품목 kg당과 비교합니다. 계산 설명용 예: 배추 실중량 10kg 망 18,000원은 kg당 1,800원, 양파 실중량 15kg 망 12,000원은 kg당 800원, 김장무 실중량 20kg 상자 16,000원은 kg당 800원입니다. 이 숫자는 오늘 시세가 아닙니다.", "대파 단은 단 무게를 확인하기 전에 쪽파 시세와 섞지 않습니다. 세 품목의 망 가격을 한 평균으로 곱해 출하 전체를 추정하지 마세요. 품목별 서울가락 표에서 같은 규격 행만 고릅니다."],
+        paragraphs: ["정산서 단가가 망·단·상자이면 내용 중량으로 나눈 뒤에 공식 가격정보의 같은 품목 kg당 가격과 비교합니다. 계산 설명용 예: 배추 실중량 10kg 망 18,000원은 kg당 1,800원, 양파 실중량 15kg 망 12,000원은 kg당 800원, 김장무 실중량 20kg 상자 16,000원은 kg당 800원입니다. 이 숫자는 오늘 시세가 아닙니다.", "대파 단은 단 무게를 확인하기 전에 쪽파 시세와 섞지 않습니다. 세 품목의 망 가격을 한 평균으로 곱해 출하 전체를 추정하지 마세요. 품목별로 공식 가격정보에서 같은 규격의 가격만 고릅니다."],
       },
       {
         title: "10kg 100상자: 300만원 낙찰과 248만원 수취의 차이",
@@ -76,7 +78,7 @@ const guides = [
     faq: [["평균 경락가 × 출하량이 입금액인가요?", "아닙니다. 내 출하분의 실제 낙찰단가와 정산 수량으로 매출을 구한 뒤 정산서 공제를 차감합니다. 공개 평균가격과 실제 낙찰가격은 같은 값이라고 가정하지 않습니다."], ["유찰·감모 물량은 비용으로 한 번 더 빼나요?", "미판매 물량을 매출 수량에서 이미 제외했다면 같은 판매대금을 다시 공제하지 않습니다. 별도로 발생한 반송·폐기 비용은 증빙 금액만 추가합니다."], ["정산 입금액과 순이익은 무엇이 다른가요?", "입금액은 정산서에서 공제한 뒤 받은 돈입니다. 별도 출하비용과 생산비 등을 모두 반영해야 판매 손익을 판단할 수 있습니다."]],
     related: ["kg-price-margin", "consignment-settlement"],
     sources: [["서울특별시농수산식품공사 주요 품목 가격: 조회일·등급·거래단위·평균가격 항목 확인", "https://www.data.go.kr/data/15004517/openapi.do"]],
-    links: [["내 공제액으로 경매 수취금액 계산", "agricultural-auction-net-calculator", "auction-net-proceeds-calculator"], ["오늘 서울가락 kg당 가중평균 표 열기", "garak-market-price-lookup", "auction-net-proceeds-market-price"], ["배추 10kg 그물망을 kg당으로 맞추기", "garak-cabbage-price-lookup", "auction-net-proceeds-cabbage"], ["대파 단·망을 kg당으로 맞추기", "garak-daepa-price-lookup", "auction-net-proceeds-daepa"], ["양파 15kg 망을 kg당으로 맞추기", "garak-onion-price-lookup", "auction-net-proceeds-onion"], ["김장무 20kg 상자를 kg당으로 맞추기", "garak-radish-price-lookup", "auction-net-proceeds-radish"]],
+    links: [["내 공제액으로 경매 수취금액 계산", "agricultural-auction-net-calculator", "auction-net-proceeds-calculator"], ["도매시장 경락 결과 조회하는 법", "agricultural-wholesale-market-guide", "auction-net-proceeds-market-price"], ["품목·등급·단위를 맞춰 공식 가격 조회하는 법", "agricultural-price-lookup", "auction-net-proceeds-cabbage"]],
   },
   {
     slug: "consignment-settlement",
@@ -234,7 +236,7 @@ for (const guide of guides) {
   }).join("");
   const faq = `<section><h2>자주 묻는 질문</h2>${guide.faq.map(([question, answer]) => `<h3>${esc(question)}</h3><p>${esc(answer)}</p>`).join("")}</section>`;
   const related = `<section><h2>다음 계산으로 이어가기</h2><ul class="related">${guide.related.map((slug) => { const target = guides.find((item) => item.slug === slug); return `<li><a href="/guides/${slug}/">${esc(target.title)}</a></li>`; }).join("")}<li><a href="/">내 비용으로 농가 손익 계산하기</a></li></ul></section>`;
-  const sources = guide.sources ? `<section><h2>가격 단위를 확인한 공식 자료</h2><ul class="related">${guide.sources.map(([label, url]) => `<li><a href="${esc(url)}">${esc(label)}</a></li>`).join("")}</ul><p>확인일: ${guide.modified}. 계산 예시의 가격·비용·수수료율은 위 자료의 실제 거래값이 아닌 설명용 가정입니다.</p></section>` : "";
+  const sources = guide.sources ? `<section><h2>가격 단위를 확인한 공식 자료</h2><ul class="related">${guide.sources.map(([label, url]) => `<li><a href="${esc(url)}">${esc(label)}</a></li>`).join("")}</ul><p>확인일: ${guide.sourcesChecked ?? guide.modified}. 계산 예시의 가격·비용·수수료율은 위 자료의 실제 거래값이 아닌 설명용 가정입니다.</p></section>` : "";
   const tool = guide.tool ? `<a class="tool-cta" href="${guide.tool.href.replace(/&/g, "&amp;")}"><small>${esc(guide.tool.eyebrow)}</small><h2>${esc(guide.tool.title)}</h2><span>${esc(guide.tool.description)}</span><strong>무료 계산기 열기 <i data-lucide="arrow-right"></i></strong></a>` : "";
   const modified = guide.modified ?? date;
   const schema = JSON.stringify({ "@context": "https://schema.org", "@type": "Article", headline: guide.title, description: guide.description, datePublished: date, dateModified: modified, inLanguage: "ko-KR", mainEntityOfPage: canonical, author: { "@type": "Organization", name: "reportools 편집팀" }, publisher: { "@type": "Organization", name: "reportools", url: base } }).replace(/</g, "\\u003c");

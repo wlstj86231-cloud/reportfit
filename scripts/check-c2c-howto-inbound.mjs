@@ -25,10 +25,10 @@ for (const [slug, dest, h1] of expected) {
 
 const kg = guidePages["/guides/kg-price-margin/"];
 if (!kg.includes("utm_campaign=farm_settlement_guides")) errors.push("kg-price-margin campaign rewritten");
-if (!kg.includes("garak-grape-price-lookup")) errors.push("kg-price-margin grape dest missing");
+if (!kg.includes("agricultural-price-lookup") || /garak-[a-z-]+-price-lookup/.test(kg)) errors.push("kg-price-margin price lookup dest");
 
 const auction = guidePages["/guides/auction-net-proceeds/"];
-if (!auction.includes("garak-market-price-lookup")) errors.push("auction Garak hub dest missing");
+if (!auction.includes("agricultural-wholesale-market-guide") || /garak-[a-z-]+-price-lookup/.test(auction)) errors.push("auction wholesale guide dest");
 
 const home = await readFile(join(dirname(fileURLToPath(import.meta.url)), "../static-report/index.html"), "utf8");
 const homeHeader = home.slice(home.indexOf("<header"), home.indexOf("</header>") + 9);
