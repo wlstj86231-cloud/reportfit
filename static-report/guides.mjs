@@ -1,3 +1,5 @@
+import { faviconLink } from "./favicon.mjs";
+
 const base = "https://www.reportools.com";
 const date = "2026-08-10";
 const guides = [
@@ -18,12 +20,8 @@ const guides = [
         note: "이 조건에서는 10kg 상자가 kg당 800원 저렴합니다. 하지만 판매자에게 어느 규격이 더 이익인지는 각 상자의 포장비·실제 택배비·감모 비용까지 따로 계산해야 알 수 있습니다.",
       },
       {
-        title: "샤인마스캇 4kg·신고 7.5kg·홍로 10kg 상자를 kg으로 맞추기",
-        paragraphs: ["정산서 단가가 상자이면 내용 중량으로 나눈 뒤에 공식 가격정보의 같은 품목 kg당 가격과 비교합니다. 계산 설명용 예: 샤인마스캇 실중량 4kg 상자 16,000원은 kg당 4,000원, 신고배 실중량 7.5kg 상자 22,500원은 kg당 3,000원, 홍로 실중량 10kg 상자 40,000원은 kg당 4,000원입니다. 이 숫자는 오늘 시세가 아닙니다.", "캠벨을 샤인마스캇 시세로, 화산을 신고 시세로, 햇사과 문구를 홍로 품종 행으로 쓰지 않습니다. 복숭아 4kg와 추희 5kg도 품종명이 같은 행만 고릅니다."],
-      },
-      {
-        title: "네트계 8kg·토마토 5kg·하우스감귤 3kg·수박 통을 kg으로 맞추기",
-        paragraphs: ["멜론 8kg 상자와 수박 한 통, 토마토 5kg와 대추방울 3kg는 품목·작형이 다릅니다. 계산 설명용 예: 네트계 실중량 8kg 상자 20,000원은 kg당 2,500원, 토마토 실중량 5kg 상자 30,000원은 kg당 6,000원, 하우스감귤 실중량 3kg 상자 18,000원은 kg당 6,000원입니다. 이 숫자는 오늘 시세가 아닙니다.", "참외를 멜론 시세로, 꼭지절단 수박을 일반 통 시세로, 완숙 토마토를 대추방울 시세로 쓰지 않습니다. 생대추 2kg와 송본 10kg, 쥬키니와 애호박, 빨강 파프리카와 피망도 같은 행이 아닙니다."],
+        title: "규격이 다른 상자를 kg당 가격으로 맞추기",
+        paragraphs: ["정산서나 판매글의 단가가 상자·망 기준이면 내용물 실중량으로 나눠 kg당 가격을 만든 뒤 비교합니다. 계산 설명용 예: 실중량 4kg 상자 16,000원은 kg당 4,000원, 7.5kg 상자 22,500원은 kg당 3,000원, 10kg 상자 40,000원은 kg당 4,000원입니다. 이 숫자는 시세가 아닙니다.", "공식 가격정보와 견줄 때는 품목·품종·등급·규격이 내 상품과 같은 행만 고릅니다. 품종이 다른 행(예: 샤인머스캣 대신 캠벨얼리)이나 작형이 다른 행(예: 하우스감귤 대신 노지감귤)의 가격을 기준으로 쓰면 kg당 가격 비교가 틀어집니다."],
       },
       {
         title: "무료배송 24,000원에 팔면 실제로 얼마가 남을까",
@@ -36,15 +34,15 @@ const guides = [
         paragraphs: ["위 예시에서 수수료 외 비용은 18,500원입니다. 한 상자당 5,000원을 남기려면 (18,500원 + 5,000원) ÷ (1 - 0.03) = 약 24,227원이 필요합니다. 이는 무료배송·수수료 3% 가정이며 실제 수수료 부과 대상과 반올림 규칙에 맞춰 다시 계산합니다.", "감모율을 사용한다면 수확량에서 판매 가능 중량을 먼저 구하고 그 중량에 원가를 배분합니다. 이미 줄인 판매 수량에 같은 감모율을 다시 곱하면 손실을 두 번 반영하게 됩니다."],
       },
     ],
-    faq: [["무료배송이면 배송비를 0원으로 넣나요?", "구매자의 추가 배송비는 0원이지만 판매자 손익에는 실제 택배비가 들어갑니다. 받은 배송비는 매출, 지급한 택배비는 비용으로 각각 기록하세요."], ["kg당 가격이 높으면 마진도 높나요?", "그렇지 않습니다. 소포장에는 kg당 포장비와 배송비가 더 들 수 있습니다. 같은 품질·중량 기준의 소비자 가격과 한 주문당 판매자 이익을 함께 비교하세요."], ["경매 실수령액과 바로 비교해도 되나요?", "생산비·출하비를 포함하는 범위를 먼저 맞춰야 합니다. 경매 정산 입금액에는 생산 원가가 빠져 있지 않을 수 있으므로 아래 경매 정산 가이드의 비용 구분부터 확인하세요."]],
+    faq: [["무료배송이면 배송비를 0원으로 넣나요?", "구매자의 추가 배송비는 0원이지만 판매자 손익에는 실제 택배비가 들어갑니다. 받은 배송비는 매출, 지급한 택배비는 비용으로 각각 기록하세요."], ["kg당 가격이 높으면 마진도 높나요?", "그렇지 않습니다. 소포장에는 kg당 포장비와 배송비가 더 들 수 있습니다. 같은 품질·중량 기준의 소비자 가격과 한 주문당 판매자 이익을 함께 비교하세요."], ["경매 실수령액과 바로 비교해도 되나요?", "비용 범위를 먼저 맞춰야 합니다. 경매 정산 입금액은 생산비를 빼기 전 금액이고, 정산서 밖에서 따로 낸 포장·선별비도 빠져 있지 않습니다. 경매 정산 가이드의 비용 구분부터 확인하세요."]],
     related: ["auction-net-proceeds", "consignment-settlement"],
     tool: {
-      eyebrow: "숫자로 바로 비교",
-      title: "5kg·10kg 상자, 배송비 포함 kg당 가격 비교",
-      description: "상자 가격·내용량·배송비를 입력하면 배송 전후 kg당 가격과 총 주문금액을 한 번에 확인할 수 있습니다.",
-      href: "https://boribay.com/guides/produce-price-calculator?utm_source=reportools.com&utm_medium=owned_referral&utm_campaign=farm_settlement_guides&utm_content=kg-price-margin-inline",
+      eyebrow: "숫자로 바로 계산",
+      title: "kg당 손익분기 판매가와 마진 계산",
+      description: "상자당 실중량·판매가·포장·택배비·수수료·감모율을 넣으면 상자당·kg당 이익과 손익분기 판매가, 매출 대비 이익률을 직거래·도매시장·온라인별로 보여줍니다.",
+      href: "/#calculator",
     },
-    links: [["무료 kg당 가격 계산기 열기", "produce-price-calculator"], ["품목·등급·단위를 맞춰 공식 가격 조회하는 법", "agricultural-price-lookup", "kg-price-margin-grape"]],
+    links: [["보리장터 kg당 가격 계산기(배송비 포함)", "produce-price-calculator"], ["품목·등급·단위를 맞춰 공식 가격 조회하는 법", "agricultural-price-lookup", "kg-price-margin-grape"]],
   },
   {
     slug: "auction-net-proceeds",
@@ -60,8 +58,8 @@ const guides = [
         paragraphs: ["도매시장 경락 결과는 거래량 가중 kg당과 최저~최고 범위로 먼저 적습니다. 최고가 한 건을 내 출하분 대표 단가로 쓰지 마세요. 10kg 상자 30,000원은 kg당 3,000원입니다. 서로 다른 등급이나 포장 단위를 섞은 평균가격을 내 물량 전체에 그대로 곱하지 마세요.", "공개 시세는 비교 기준입니다. 내 출하분의 실제 정산은 거래명세에 적힌 등급별 낙찰단가와 정산 수량으로 다시 계산합니다. 가령 110상자를 보냈더라도 100상자만 낙찰됐다면 아래 예시의 매출 수량은 100상자입니다. 나머지 물량의 유찰·반송·폐기 내역은 따로 확인합니다."],
       },
       {
-        title: "배추 10kg 망·대파 단·양파 15kg 망·무 20kg 상자를 kg으로 맞추기",
-        paragraphs: ["정산서 단가가 망·단·상자이면 내용 중량으로 나눈 뒤에 공식 가격정보의 같은 품목 kg당 가격과 비교합니다. 계산 설명용 예: 배추 실중량 10kg 망 18,000원은 kg당 1,800원, 양파 실중량 15kg 망 12,000원은 kg당 800원, 김장무 실중량 20kg 상자 16,000원은 kg당 800원입니다. 이 숫자는 오늘 시세가 아닙니다.", "대파 단은 단 무게를 확인하기 전에 쪽파 시세와 섞지 않습니다. 세 품목의 망 가격을 한 평균으로 곱해 출하 전체를 추정하지 마세요. 품목별로 공식 가격정보에서 같은 규격의 가격만 고릅니다."],
+        title: "망·단·상자 단가를 kg으로 맞추기",
+        paragraphs: ["정산서 단가가 망·상자 기준이면 내용 중량으로 나눈 뒤 공식 가격정보의 같은 품목·규격 kg당 가격과 비교합니다. 계산 설명용 예: 배추 실중량 10kg 망 18,000원은 kg당 1,800원, 양파 15kg 망 12,000원은 kg당 800원입니다. 이 숫자는 오늘 시세가 아닙니다.", "대파처럼 단으로 거래하는 품목은 단 무게를 확인하기 전에는 kg으로 바꾸지 않습니다. 여러 품목이나 규격의 가격을 한 평균으로 묶어 출하 전체에 곱하지 마세요."],
       },
       {
         title: "10kg 100상자: 300만원 낙찰과 248만원 수취의 차이",
@@ -147,7 +145,7 @@ const guides = [
         paragraphs: ["구매자가 택배비를 따로 냈다면 판매가에 더하지 않습니다. 택배사에 그대로 내는 돈이라 매출도 비용도 아닙니다. 무료배송으로 팔았다면 판매가에 택배비가 들어 있으니 계산기의 택배비 칸에 실제로 낸 금액을 넣습니다."],
       },
     ],
-    faq: [["포장재를 포함한 무게로 나눠도 되나요?", "아니요. 포장재를 뺀 내용물 무게로 나눠야 kg당 단가가 공식 가격정보나 다른 판매글과 같은 기준이 됩니다."], ["실중량이 상자마다 다르면요?", "판매글에 보장하는 최소 중량을 적고 그 무게로 kg당 단가를 계산하세요. 단가를 과대평가하지 않고 구매자와의 다툼도 줄어듭니다."]],
+    faq: [["포장재를 포함한 무게로 나눠도 되나요?", "아니요. 포장재를 뺀 내용물 무게로 나눠야 kg당 단가가 공식 가격정보나 다른 판매글과 같은 기준이 됩니다."], ["실중량이 상자마다 다르면요?", "판매글에 보장하는 최소 중량을 적고 그 무게로 kg당 단가를 계산하세요. 무게를 부풀려 kg당 단가가 실제보다 싸 보이는 일을 막고, 구매자와의 다툼도 줄어듭니다."]],
     related: ["meetup-parcel-cost", "kg-price-margin"],
     links: [["품종·중량·수확일 칸을 채워 판매글 올리기", "produce-listing-three-fields"]],
   },
@@ -182,7 +180,7 @@ const guides = [
       },
       {
         title: "한 글에 둘 다 받을 때",
-        paragraphs: ["‘방문 28,000원 / 택배 포함 34,000원’처럼 수령 방법별 가격을 나눠 적고, 정산표에도 방법별로 행을 나눕니다. 한 가격으로 둘 다 받으면 택배 주문이 늘수록 남는 돈이 줄어듭니다."],
+        paragraphs: ["‘방문 28,000원 / 택배 포함 34,400원’처럼 수령 방법별 가격을 나눠 적고, 정산표에도 방법별로 행을 나눕니다. 한 가격으로 둘 다 받으면 택배 주문이 늘수록 남는 돈이 줄어듭니다."],
       },
     ],
     faq: [["방문 수령이면 택배비 칸에 0원을 넣으면 되나요?", "네. 판매자가 내는 택배비가 없으니 0원이 맞습니다. 직접 갖다준 경우의 연료비·통행료만 ‘기타 경로 비용’에 따로 넣으세요."], ["구매자가 낸 택배비는 매출인가요?", "택배사에 그대로 내는 돈이라면 매출에도 비용에도 넣지 않는 편이 정확합니다. 받은 금액과 낸 금액이 다르면 차액만 손익에 반영합니다."]],
@@ -242,7 +240,7 @@ const guides = [
     sections: [
       {
         title: "부류별 위탁수수료 최고한도",
-        paragraphs: ["농수산물유통안정법 시행규칙 제39조제4항이 정한 최고한도입니다. 도매시장 개설자는 이 한도에서 업무규정으로 위탁수수료를 정할 수 있고, 일정액으로 받는 위탁수수료도 이 한도를 넘을 수 없습니다(같은 조 제5항)."],
+        paragraphs: ["농수산물유통안정법 시행규칙 제39조제4항이 정한 최고한도입니다. 도매시장 개설자는 이 한도에서 업무규정으로 위탁수수료를 정할 수 있고, 일정액으로 받는 위탁수수료도 이 한도를 넘을 수 없습니다(같은 조 제5항).", "농협 등이 개설한 공판장에도 법 제45조에 따라 이 수수료 규정(법 제42조)과 표준하역비 규정(법 제40조)이 준용됩니다. 다만 규모·거래물량에 비추어 준용이 맞지 않는 공판장은 개설자가 업무규정으로 달리 정할 수 있으니, 공판장에 낼 때도 요율을 먼저 확인하세요."],
         table: { caption: "위탁수수료 최고한도 (거래금액 기준)", headers: ["부류", "법령 표기", "백분율"], rows: [["양곡부류", "1천분의 20", "2%"], ["청과부류", "1천분의 70", "7%"], ["수산부류", "1천분의 60", "6%"], ["축산부류", "1천분의 20", "2% (도매시장·공판장 안 도축장의 도살·해체수수료는 별도)"], ["화훼부류", "1천분의 70", "7%"], ["약용작물부류", "1천분의 50", "5%"]] },
         note: "이 표는 상한입니다. 실제 적용 요율은 시장·법인·품목에 따라 이보다 낮을 수 있습니다. 계산기에서 상한을 넣으면 수수료를 가장 보수적으로(크게) 잡은 결과가 됩니다.",
       },
@@ -260,7 +258,7 @@ const guides = [
       },
       {
         title: "대금 결제와 수수료 징수 제한",
-        paragraphs: ["도매시장법인 또는 시장도매인은 위탁받은 농수산물이 매매되면 그 대금 전부를 출하자에게 즉시 결제해야 합니다. 대금 지급방법에 관해 따로 특약을 맺었다면 그 특약을 따릅니다(법 제41조제1항).", "도매시장 개설자, 도매시장법인, 시장도매인, 중도매인, 대금정산조직은 법에서 정한 사용료·수수료 외에는 어떤 명목으로도 금전을 징수할 수 없습니다(법 제42조제1항). 2026년 9월 22일부터는 농림축산식품부장관이 도매시장법인·시장도매인에게 위탁수수료 조정을 권고할 수 있는 기준과 절차가 시행규칙 제39조의2로 시행됐습니다. 이 개정이 위의 최고한도 숫자를 바꾼 것은 아닙니다."],
+        paragraphs: ["도매시장법인 또는 시장도매인은 위탁받은 농수산물이 매매되면 그 대금 전부를 출하자에게 즉시 결제해야 합니다. 대금 지급방법에 관해 따로 특약을 맺었다면 그 특약을 따릅니다(법 제41조제1항).", "도매시장 개설자, 도매시장법인, 시장도매인, 중도매인, 대금정산조직은 법에서 정한 사용료·수수료 외에는 어떤 명목으로도 금전을 징수할 수 없습니다(법 제42조제1항). 2026년 2월 27일 신설된 법 제42조제3항에 따라 농림축산식품부장관 또는 해양수산부장관은 도매시장법인·시장도매인에게 위탁수수료 조정을 권고할 수 있고, 그 기준과 절차가 2026년 9월 22일 시행규칙 제39조의2로 시행됐습니다. 농림축산식품부는 더 구체적인 기준을 고시로 정할 계획이라고 밝혔습니다. 이 개정이 위의 최고한도 숫자를 바꾼 것은 아닙니다."],
       },
       {
         title: "예시: 청과 거래금액 250만 원의 수수료 (가상 숫자)",
@@ -278,7 +276,7 @@ const guides = [
       href: "/#calculator",
     },
     sourcesTitle: "법령 원문과 확인일",
-    sources: [["농수산물 유통 및 가격안정에 관한 법률 시행규칙 제38조·제39조·제39조의2 (시행 2026. 9. 22., 농림축산식품부령 제792호)", "https://www.law.go.kr/법령/농수산물유통및가격안정에관한법률시행규칙"], ["농수산물 유통 및 가격안정에 관한 법률 제40조·제41조·제42조 (시행 2026. 10. 2., 법률 제21490호)", "https://www.law.go.kr/법령/농수산물유통및가격안정에관한법률"], ["농림축산식품부 보도자료: 개정 농안법 시행규칙 시행 (2026. 9. 22.)", "https://mafra.go.kr/bbs/home/792/579257/artclView.do"]],
+    sources: [["농수산물 유통 및 가격안정에 관한 법률 시행규칙 제38조·제39조·제39조의2 (시행 2026. 9. 22., 농림축산식품부령 제792호)", "https://www.law.go.kr/법령/농수산물유통및가격안정에관한법률시행규칙"], ["농수산물 유통 및 가격안정에 관한 법률 제40조·제41조·제42조·제45조 (시행 2026. 10. 2., 법률 제21490호)", "https://www.law.go.kr/법령/농수산물유통및가격안정에관한법률"], ["농림축산식품부 보도자료: 개정 농안법 시행규칙 시행 (2026. 9. 22.)", "https://mafra.go.kr/bbs/home/792/579257/artclView.do"]],
     sourcesChecked: "2026-10-26",
     sourcesNote: "법령은 개정될 수 있으니 출하 전에 국가법령정보센터의 현행 조문을 다시 확인하세요. 예시의 금액과 4% 요율은 설명용 가정입니다. 이 글은 법률 자문이 아닙니다.",
     nextLead: "도매시장 경락 결과를 찾아보는 방법은 보리장터 안내에 정리되어 있습니다.",
@@ -337,9 +335,9 @@ const guides = [
 const esc = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 const href = (url) => esc(/[^\x00-\x7f]/.test(url) ? encodeURI(url) : url);
 const publisher = { "@type": "Organization", name: "제이 미디어", alternateName: "J MEDIA", url: "https://jnewmedia.com/" };
-const style = `:root{--g:#104b2d;--g2:#1d6b42;--y:#f7bd24;--ink:#171a18;--text:#464e49;--muted:#4d5751;--line:#d5ddd8;--pale:#f2f7f3;--max:1000px}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','Noto Sans CJK KR',sans-serif;color:var(--ink);font-size:17px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}a{text-decoration:none;color:inherit}:focus-visible{outline:3px solid var(--y);outline-offset:2px}.site-header{border-bottom:1px solid var(--line);display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px;padding:10px max(16px,calc((100% - var(--max))/2));background:#fff}.brand{display:flex;gap:10px;align-items:center;min-height:48px}.brand-mark{width:34px;height:34px;border-radius:50%;background:var(--y);display:grid;place-items:center;color:var(--g);font-weight:700}.brand strong{color:var(--g);font-size:21px}.site-header nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;max-width:100%}.site-header nav a{display:flex;align-items:center;min-height:44px;padding:0 10px;font-size:16px;font-weight:700;white-space:nowrap;border-radius:8px}.site-header nav a:hover,.site-header nav a:focus-visible{background:var(--pale);color:var(--g2)}main{max-width:var(--max);margin:auto;padding:0 16px}.crumb{padding-top:22px;display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:16px}.crumb a{text-decoration:underline;text-underline-offset:3px}.hero{padding:40px 0 30px}.hero>p,.cards article>p,.article>header>p{color:var(--g2);font-size:16px;font-weight:700;margin:0}.hero h1{font-size:42px;line-height:1.25;letter-spacing:-1.5px;margin:7px 0}.hero h1 em{font-style:normal;color:var(--g)}.hero>span,.cards article>span,.article>header>span{color:var(--text)}.group{padding-bottom:30px}.group>h2{font-size:22px;margin:0 0 12px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cards article{border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column}.cards h3{font-size:19px;line-height:1.45;margin:6px 0}.cards article>a{display:flex;align-items:center;gap:7px;margin-top:auto;padding-top:12px;min-height:44px;color:var(--g2);font-weight:700}.article>header{padding:30px 0;border-bottom:1px solid var(--line)}.article h1{font-size:37px;line-height:1.3;margin:7px 0}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:34px;padding:30px 0 60px}.lead{padding:18px;border-left:4px solid var(--y);background:#fff9e9}.lead p{margin-bottom:0;color:var(--text)}.layout section{padding:16px 0;border-bottom:1px solid var(--line)}.layout h2{font-size:22px;line-height:1.4}.formula{list-style:none;padding:0;counter-reset:formula}.formula li{counter-increment:formula;padding:13px;margin:8px 0;background:var(--pale)}.formula li:before{content:counter(formula);display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#fff;color:var(--g2);font-weight:700;margin-right:8px}.tool-cta{display:block;margin:18px 0 4px;padding:20px 22px;border-radius:12px;background:var(--g);color:#fff}.tool-cta small{display:block;color:#f8ce55;font-weight:700;font-size:16px}.tool-cta h2{margin:4px 0;font-size:22px}.tool-cta span{display:block;color:#e4eee8}.tool-cta strong{display:inline-flex;align-items:center;gap:7px;margin-top:14px;min-height:44px;padding:8px 14px;border-radius:8px;background:#fff;color:var(--g)}.checks li{color:var(--text);margin:8px 0}.next{align-self:start;position:sticky;top:20px;background:var(--pale);padding:20px;border-radius:10px}.next h2{font-size:20px;margin-top:0}.next p{color:var(--text)}.next a{display:flex;justify-content:space-between;gap:8px;min-height:48px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 12px;margin-top:8px;color:var(--g2);font-weight:700}.next small{display:block;margin-top:10px;color:var(--muted);font-size:16px}footer{border-top:1px solid var(--line);padding:22px max(16px,calc((100% - var(--max))/2));display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--text)}footer nav{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 14px}footer a{min-height:44px;display:inline-flex;align-items:center;color:var(--g2)}@media(max-width:760px){.site-header nav{margin-left:0;width:100%}.cards,.layout{grid-template-columns:1fr}.hero h1,.article h1{font-size:30px;letter-spacing:-.8px}.tool-cta{padding:18px}.tool-cta h2{font-size:20px}.next{position:static}}`;
+const style = `:root{--g:#104b2d;--g2:#1d6b42;--y:#f7bd24;--ink:#171a18;--text:#464e49;--muted:#4d5751;--line:#d5ddd8;--pale:#f2f7f3;--max:1000px}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','Noto Sans CJK KR',sans-serif;color:var(--ink);font-size:17px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}a{text-decoration:none;color:inherit}:focus-visible{outline:3px solid var(--y);outline-offset:2px}.site-header{border-bottom:1px solid var(--line);display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px;padding:10px max(16px,calc((100% - var(--max))/2));background:#fff}.brand{display:flex;gap:10px;align-items:center;min-height:48px}.brand-mark{width:34px;height:34px;border-radius:50%;background:var(--y);display:grid;place-items:center;color:var(--g);font-weight:700}.brand strong{color:var(--g);font-size:21px}.site-header nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;max-width:100%}.site-header nav a{display:flex;align-items:center;min-height:44px;padding:0 10px;font-size:16px;font-weight:700;white-space:nowrap;border-radius:8px}.site-header nav a:hover,.site-header nav a:focus-visible{background:var(--pale);color:var(--g2)}main{max-width:var(--max);margin:auto;padding:0 16px}.crumb{padding-top:22px;display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:16px}.crumb a{text-decoration:underline;text-underline-offset:3px;display:inline-flex;align-items:center;min-height:44px}.hero{padding:40px 0 30px}.hero>p,.cards article>p,.article>header>p{color:var(--g2);font-size:16px;font-weight:700;margin:0}.hero h1{font-size:42px;line-height:1.25;letter-spacing:-1.5px;margin:7px 0}.hero h1 em{font-style:normal;color:var(--g)}.hero>span,.cards article>span,.article>header>span{color:var(--text)}.group{padding-bottom:30px}.group>h2{font-size:22px;margin:0 0 12px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cards article{border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column}.cards h3{font-size:19px;line-height:1.45;margin:6px 0}.cards h3 a{display:flex;align-items:center;min-height:44px}.cards article>a{display:flex;align-items:center;gap:7px;margin-top:auto;padding-top:12px;min-height:44px;color:var(--g2);font-weight:700}.article>header{padding:30px 0;border-bottom:1px solid var(--line)}.article h1{font-size:37px;line-height:1.3;margin:7px 0}.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:34px;padding:30px 0 60px}.lead{padding:18px;border-left:4px solid var(--y);background:#fff9e9}.lead p{margin-bottom:0;color:var(--text)}.layout section{padding:16px 0;border-bottom:1px solid var(--line)}.layout h2{font-size:22px;line-height:1.4}.formula{list-style:none;padding:0;counter-reset:formula}.formula li{counter-increment:formula;padding:13px;margin:8px 0;background:var(--pale)}.formula li:before{content:counter(formula);display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#fff;color:var(--g2);font-weight:700;margin-right:8px}.tool-cta{display:block;margin:18px 0 4px;padding:20px 22px;border-radius:12px;background:var(--g);color:#fff}.tool-cta small{display:block;color:#f8ce55;font-weight:700;font-size:16px}.tool-cta h2{margin:4px 0;font-size:22px}.tool-cta span{display:block;color:#e4eee8}.tool-cta strong{display:inline-flex;align-items:center;gap:7px;margin-top:14px;min-height:44px;padding:8px 14px;border-radius:8px;background:#fff;color:var(--g)}.checks li{color:var(--text);margin:8px 0}.next{align-self:start;position:sticky;top:20px;background:var(--pale);padding:20px;border-radius:10px}.next h2{font-size:20px;margin-top:0}.next p{color:var(--text)}.next a{display:flex;justify-content:space-between;gap:8px;min-height:48px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 12px;margin-top:8px;color:var(--g2);font-weight:700}.next small{display:block;margin-top:10px;color:var(--muted);font-size:16px}footer{border-top:1px solid var(--line);padding:22px max(16px,calc((100% - var(--max))/2));display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--text)}footer nav{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 14px}footer a{min-height:44px;display:inline-flex;align-items:center;color:var(--g2)}@media(max-width:760px){.site-header nav{margin-left:0;width:100%}.cards,.layout{grid-template-columns:1fr}.hero h1,.article h1{font-size:30px;letter-spacing:-.8px}.tool-cta{padding:18px}.tool-cta h2{font-size:20px}.next{position:static}}`;
 const contentStyle = `.layout>div{min-width:0}.table-scroll{overflow:auto;margin:18px 0}.table-scroll:focus{outline:2px solid var(--g2);outline-offset:3px}table{width:100%;min-width:450px;border-collapse:collapse;font-size:16px}caption{text-align:left;font-weight:700;margin-bottom:10px}th,td{text-align:left;vertical-align:top;border:1px solid var(--line);padding:10px}thead{background:var(--pale)}tbody th{font-weight:700}.example-note{background:var(--pale);padding:14px}.article h3{font-size:18px;margin-bottom:4px}.related a,.layout section p a{color:var(--g2);text-decoration:underline;text-underline-offset:3px}.related li{margin:9px 0}`;
-const head = (title, description, canonical, type = "article") => `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | 농가 손익 계산기</title><meta name="description" content="${esc(description)}"><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="${canonical}"><meta property="og:title" content="${esc(title)} | 농가 손익 계산기"><meta property="og:description" content="${esc(description)}"><meta property="og:type" content="${type}"><meta property="og:url" content="${canonical}"><style>${style}${contentStyle}</style><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5877883031077615" crossorigin="anonymous"></script></head><body><header class="site-header"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">₩</span><strong>농가 손익 계산기</strong></a><nav aria-label="주요 메뉴"><a href="/">손익 계산기</a><a href="/guides/">정산 가이드</a><a href="/tools/used-tractor-total-cost/">트랙터 총비용</a><a href="/about/">소개</a></nav></header>`;
+const head = (title, description, canonical, type = "article") => `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | 농가 손익 계산기</title><meta name="description" content="${esc(description)}"><meta name="robots" content="index,follow,max-image-preview:large"><link rel="canonical" href="${canonical}"><meta property="og:title" content="${esc(title)} | 농가 손익 계산기"><meta property="og:description" content="${esc(description)}"><meta property="og:type" content="${type}"><meta property="og:url" content="${canonical}">${faviconLink}<style>${style}${contentStyle}</style><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5877883031077615" crossorigin="anonymous"></script></head><body><header class="site-header"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">₩</span><strong>농가 손익 계산기</strong></a><nav aria-label="주요 메뉴"><a href="/">손익 계산기</a><a href="/guides/">정산 가이드</a><a href="/tools/used-tractor-total-cost/">트랙터 총비용</a><a href="/about/">소개</a></nav></header>`;
 const foot = `<footer><strong>농가 손익 계산기</strong><span>운영: 제이 미디어(J MEDIA) · 보리장터와 같은 운영자</span><nav aria-label="하단 메뉴"><a href="/guides/">정산 가이드</a><a href="/tools/used-tractor-total-cost/">트랙터 총비용</a><a href="/about/">소개·정정 요청</a></nav></footer></body></html>`;
 
 export const guideUrls = ["/guides/", ...guides.map((guide) => `/guides/${guide.slug}/`)];
