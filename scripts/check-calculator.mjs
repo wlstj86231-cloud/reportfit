@@ -174,5 +174,5 @@ test("CSV 작성일과 파일명은 다운로드 시 현지 날짜를 사용", (
   assert.match(csv, /"작성일","2026-09-27"/);
   assert.match(csv, /"예상 이익","238000","36970","195800"/);
   assert.match(csv, /"손익분기 판매가\(단위당\)","23093","20189","26316"/);
-  assert.equal(filename, "reportools_감자_10kg_2026-09-27.csv");
+  assert.equal(filename, "농가손익_감자_10kg_2026-09-27.csv");
 });
