@@ -4,6 +4,7 @@ out
 dist/pages
 public/guides
 public/mn
+public/about
 public/_redirects
 .open-next
 .wrangler

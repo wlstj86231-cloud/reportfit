@@ -1,14 +1,10 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { guideLastModified, guidePages, guideUrls } from "../static-report/guides.mjs";
-import { mnLastModified, mnPages, mnUrls } from "../static-report/mn.mjs";
-import { tractorCostLastModified, tractorCostPages, tractorCostUrls } from "../static-report/tractor-cost.mjs";
+import { adsTxt, googleVerification, googleVerificationPath, indexNowKey, notFoundHtml, pages, redirects, robots, sitemap, subPages } from "./site-files.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const out = join(root, "dist", "pages");
-const html = await readFile(join(root, "static-report", "index.html"), "utf8");
-const pages = { "/": html, ...guidePages, ...mnPages, ...tractorCostPages };
 
 await mkdir(out, { recursive: true });
 for (const [pagePath, body] of Object.entries(pages)) {
@@ -17,34 +13,16 @@ for (const [pagePath, body] of Object.entries(pages)) {
   await writeFile(file, body, "utf8");
 }
 
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.reportools.com/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
-${guideUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${guideLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
-${mnUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${mnLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`).join("\n")}
-${tractorCostUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${tractorCostLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
-</urlset>
-`;
 await writeFile(join(out, "sitemap.xml"), sitemap, "utf8");
-await writeFile(join(out, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://www.reportools.com/sitemap.xml\n#DaumWebMasterTool:679af16e02c5553f59a120b34a05827cd82a939140179f13bcb93a519d9d0968:dSlZXvWuL7UAVoESNn1QCg==\n", "utf8");
-// A top-level 404 page keeps Cloudflare Pages from serving index.html with HTTP 200 for unknown routes.
-await writeFile(join(out, "404.html"), `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,follow"><title>페이지를 찾을 수 없습니다 | 농가 손익 계산기</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f7faf6;color:#183128;font-family:Arial,'Noto Sans KR',sans-serif}main{max-width:38rem;padding:2rem}h1{font-size:2rem}p{line-height:1.65}a{color:#176144;font-weight:700}</style></head><body><main><h1>페이지를 찾을 수 없습니다</h1><p>주소를 다시 확인하거나 아래에서 필요한 계산기와 안내를 찾아보세요.</p><p><a href="/">손익 계산기</a> · <a href="/guides/">정산 가이드</a></p></main></body></html>`, "utf8");
-await writeFile(join(out, "googleb6f1a59bf29a174e.html"), "google-site-verification: googleb6f1a59bf29a174e.html\n", "utf8");
-await writeFile(join(out, "6d048fe0c10f47789f9b3a98ae4978ee.txt"), "6d048fe0c10f47789f9b3a98ae4978ee", "utf8");
-await writeFile(join(out, "ads.txt"), "google.com, pub-5877883031077615, DIRECT, f08c47fec0942fa0\n", "utf8");
-const redirects = [
-  "/guides /guides/ 308",
-  "/mn /mn/ 308",
-  ...guideUrls
-    .filter((url) => url !== "/guides/")
-    .map((url) => `${url.replace(/\/$/, "")} ${url} 308`),
-  ...mnUrls.filter((url) => url !== "/mn/").map((url) => `${url.replace(/\/$/, "")} ${url} 308`),
-  ...tractorCostUrls.map((url) => `${url.replace(/\/$/, "")} ${url} 308`),
-].join("\n");
+await writeFile(join(out, "robots.txt"), robots, "utf8");
+await writeFile(join(out, "404.html"), notFoundHtml, "utf8");
+await writeFile(join(out, googleVerificationPath.slice(1)), googleVerification, "utf8");
+await writeFile(join(out, `${indexNowKey}.txt`), indexNowKey, "utf8");
+await writeFile(join(out, "ads.txt"), adsTxt, "utf8");
 await writeFile(join(out, "_redirects"), `${redirects}\n`, "utf8");
 
 const publicRoot = join(root, "public");
-for (const [pagePath, body] of Object.entries({ ...guidePages, ...mnPages, ...tractorCostPages })) {
+for (const [pagePath, body] of Object.entries(subPages)) {
   const file = join(publicRoot, pagePath.replace(/\/$/, ""), "index.html");
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, body, "utf8");

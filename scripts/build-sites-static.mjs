@@ -1,35 +1,19 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { guidePages, guideUrls, guideLastModified } from "../static-report/guides.mjs";
-import { mnPages, mnUrls, mnLastModified } from "../static-report/mn.mjs";
-import { tractorCostPages, tractorCostUrls, tractorCostLastModified } from "../static-report/tractor-cost.mjs";
+import { adsTxt, googleVerification, googleVerificationPath, indexNowKey, notFoundHtml, pages, robots, sitemap } from "./site-files.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, "dist");
-const html = await readFile(join(root, "static-report", "index.html"), "utf8");
-const pages = { "/": html, ...guidePages, ...mnPages, ...tractorCostPages };
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.reportools.com/</loc><lastmod>2026-09-27</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
-${guideUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${guideLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
-${mnUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${mnLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`).join("\n")}
-${tractorCostUrls.map((url) => `  <url><loc>https://www.reportools.com${url}</loc><lastmod>${tractorCostLastModified[url]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`).join("\n")}
-</urlset>`;
-const robots = `User-agent: *
-Allow: /
-Sitemap: https://www.reportools.com/sitemap.xml
-`;
-const googleVerification = "google-site-verification: googleb6f1a59bf29a174e.html\n";
-const indexNowKey = "6d048fe0c10f47789f9b3a98ae4978ee";
-const adsTxt = "google.com, pub-5877883031077615, DIRECT, f08c47fec0942fa0\n";
 
+// The apex Worker serves exactly the same pages and root files as the www Pages build.
 const worker = `const PAGES=${JSON.stringify(pages)};
 const SITEMAP=${JSON.stringify(sitemap)};
 const ROBOTS=${JSON.stringify(robots)};
 const GOOGLE_VERIFICATION=${JSON.stringify(googleVerification)};
 const INDEX_NOW_KEY=${JSON.stringify(indexNowKey)};
 const ADS_TXT=${JSON.stringify(adsTxt)};
+const NOT_FOUND=${JSON.stringify(notFoundHtml)};
 const headers={
   "content-type":"text/html; charset=utf-8",
   "cache-control":"public, max-age=300",
@@ -43,17 +27,18 @@ function response(body,status=200,extra={}){
 export default {
   async fetch(request){
     const url=new URL(request.url);
-    if(request.method!=="GET"&&request.method!=="HEAD") return response("Method Not Allowed",405,{allow:"GET, HEAD"});
+    if(request.method!=="GET"&&request.method!=="HEAD") return response("Method Not Allowed",405,{allow:"GET, HEAD","content-type":"text/plain; charset=utf-8"});
+    const head=request.method==="HEAD";
     const pagePath=url.pathname==="/index.html"?"/":url.pathname;
-    if(PAGES[pagePath]) return response(request.method==="HEAD"?null:PAGES[pagePath]);
+    if(PAGES[pagePath]) return response(head?null:PAGES[pagePath]);
     if(!pagePath.endsWith("/")&&PAGES[pagePath+"/"]) return Response.redirect(url.origin+pagePath+"/",308);
-    if(url.pathname==="/sitemap.xml") return response(request.method==="HEAD"?null:SITEMAP,200,{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=3600"});
-    if(url.pathname==="/robots.txt") return response(request.method==="HEAD"?null:ROBOTS,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
-    if(url.pathname==="/ads.txt") return response(request.method==="HEAD"?null:ADS_TXT,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
-    if(url.pathname==="/googleb6f1a59bf29a174e.html") return response(request.method==="HEAD"?null:GOOGLE_VERIFICATION,200,{"content-type":"text/html; charset=utf-8","cache-control":"public, max-age=3600"});
-    if(url.pathname==="/${indexNowKey}.txt") return response(request.method==="HEAD"?null:INDEX_NOW_KEY,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
+    if(url.pathname==="/sitemap.xml") return response(head?null:SITEMAP,200,{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=3600"});
+    if(url.pathname==="/robots.txt") return response(head?null:ROBOTS,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
+    if(url.pathname==="/ads.txt") return response(head?null:ADS_TXT,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
+    if(url.pathname===${JSON.stringify(googleVerificationPath)}) return response(head?null:GOOGLE_VERIFICATION,200,{"content-type":"text/html; charset=utf-8","cache-control":"public, max-age=3600"});
+    if(url.pathname==="/${indexNowKey}.txt") return response(head?null:INDEX_NOW_KEY,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/favicon.ico") return new Response(null,{status:204,headers:{"cache-control":"public, max-age=86400"}});
-    return response("Not Found",404,{"content-type":"text/plain; charset=utf-8"});
+    return response(head?null:NOT_FOUND,404);
   }
 };
 `;
@@ -61,4 +46,4 @@ export default {
 await rm(dist, { recursive: true, force: true });
 await mkdir(join(dist, "server"), { recursive: true });
 await writeFile(join(dist, "server", "index.js"), worker, "utf8");
-console.log("Built dist/server/index.js");
+console.log(`Built dist/server/index.js with ${Object.keys(pages).length} pages`);
