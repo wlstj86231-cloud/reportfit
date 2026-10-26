@@ -3,109 +3,354 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>농가 손익 계산기 | 농가 판매 손익·정산 보고서</title>
-  <meta name="description" content="농산물 직거래 판매가, 생산·선별·포장·배송비, 수수료와 감모를 입력해 예상 이익과 손익분기 가격을 계산합니다.">
+  <title>농가 손익 계산기 | 직거래·도매시장·온라인 판매 손익과 손익분기 판매가</title>
+  <meta name="description" content="출하 수량과 생산·선별·포장·운송비, 수수료, 감모율을 넣으면 직거래·도매시장·온라인 판매의 예상 이익과 상자당·kg당 손익분기 판매가를 같은 기준으로 비교합니다.">
   <meta name="robots" content="index,follow">
   <meta name="google-site-verification" content="tSlD6MvlQAUKN3XASMGLU-vJTeaoUxCSFg-tn3JMmvk">
   <link rel="canonical" href="https://www.reportools.com/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ko_KR">
-  <meta property="og:title" content="농가 손익 계산기 | 농가 판매 손익·정산 보고서">
-  <meta property="og:description" content="농산물 직거래 손익과 정산 내역을 무료로 계산하세요.">
+  <meta property="og:title" content="농가 손익 계산기 | 직거래·도매시장·온라인 판매 손익 비교">
+  <meta property="og:description" content="판매 경로별 예상 이익과 상자당·kg당 손익분기 판매가를 계산식과 함께 보여주는 무료 계산기입니다.">
   <meta property="og:url" content="https://www.reportools.com/">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root{--g:#104b2d;--g2:#1d6b42;--y:#f7bd24;--ink:#171a18;--text:#535b56;--line:#dfe4e0;--pale:#f2f7f3;--red:#b73a31;--max:1120px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:'Noto Sans KR',sans-serif;color:var(--ink);line-height:1.65;background:#fff}a{text-decoration:none;color:inherit}button,input{font:inherit;color:inherit}.site-header{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 max(20px,calc((100% - var(--max))/2));position:sticky;top:0;background:#fff;z-index:10}.brand{display:flex;align-items:center;gap:10px}.brand-mark{width:32px;height:32px;border-radius:50%;background:var(--y);display:grid;place-items:center;color:var(--g)}.brand strong{font-size:20px;color:var(--g)}.brand small{margin-left:7px;color:#737a76}.site-header nav{margin-left:auto;display:flex;gap:22px;font-size:13px;font-weight:700}main{max-width:var(--max);margin:auto;padding:0 20px}.hero{padding:58px 0 42px;display:flex;justify-content:space-between;gap:40px}.eyebrow{color:var(--g2);font-weight:800;font-size:14px;margin:0}.hero h1{font-size:49px;line-height:1.23;letter-spacing:-2.6px;margin:7px 0}.hero h1 em{font-style:normal;color:var(--g)}.hero-copy{color:var(--text)}.safe{display:flex;align-items:center;gap:7px;margin-top:24px;color:var(--g)}.safe span{color:#757d78;font-size:12px}.hero aside{width:230px;background:#f7f8f7;border-radius:10px;padding:18px;align-self:flex-start}.hero aside p{font-size:12px;color:var(--text);margin:0}.hero aside strong{display:block;margin:5px 0}.hero aside span{font-size:11px;color:#777}.preset-row{display:flex;gap:8px;margin-bottom:18px}.preset-row button{border:1px solid var(--line);background:#fff;border-radius:18px;padding:7px 14px;cursor:pointer}.preset-row button:hover,.preset-row button:focus-visible{border-color:var(--g2);color:var(--g2)}.calculator{display:grid;grid-template-columns:390px 1fr;gap:20px;align-items:start}.input-panel,.report-panel{border:1px solid var(--line);border-radius:14px;padding:24px}.panel-head{display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line);padding-bottom:17px;margin-bottom:19px}.panel-icon{width:36px;height:36px;background:var(--pale);border-radius:50%;display:grid;place-items:center;color:var(--g2)}.panel-head p{margin:0;color:var(--g2);font-size:12px;font-weight:800}.panel-head h2{margin:2px 0;font-size:20px}.reset{margin-left:auto;border:0;background:#f6f7f6;border-radius:6px;padding:7px;display:flex;gap:5px;font-size:11px;cursor:pointer}.fields{display:grid;gap:12px}.field{display:grid;gap:5px}.field>span{font-size:12px;font-weight:700;color:#555d58}.field input{width:100%;height:44px;border:1px solid var(--line);border-radius:7px;padding:0 10px}.field-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.suffix{position:relative}.suffix b{position:absolute;right:10px;top:11px;font-size:12px;color:#767e79}.suffix input{padding-right:36px}.section-label{font-size:12px;color:var(--g2);font-weight:900;border-top:1px solid var(--line);padding-top:12px;margin-top:3px}.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{border:1px solid var(--line);border-radius:9px;padding:14px;display:grid;grid-template-columns:auto 1fr;column-gap:9px}.metric-icon{grid-row:1/3;color:var(--g2)}.metric-icon svg{width:20px}.metric p{margin:0;color:#707873;font-size:12px}.metric strong{font-size:18px}.metric.positive{background:#f2f8f4}.metric.negative{background:#fff4f2}.metric.negative strong{color:var(--red)}.break-even{margin:15px 0;background:#fff9e9;border:1px solid #f0d37f;border-radius:9px;padding:17px}.break-even p{margin:0;color:#756026;font-size:12px;font-weight:800}.break-even strong{display:block;font-size:26px}.break-even span{font-size:12px;color:#6a665d}.report-panel table{width:100%;border-collapse:collapse}.report-panel th,.report-panel td{padding:12px;border-bottom:1px solid var(--line);font-size:13px}.report-panel th{text-align:left;color:#646c67}.report-panel td{text-align:right;font-weight:800}.report-actions{display:flex;gap:8px;margin-top:18px}.report-actions button,.report-actions a{height:47px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:800;flex:1}.report-actions button{border:1px solid var(--line);background:#fff;cursor:pointer}.report-actions a{background:var(--g2);color:#fff}.notice{display:flex;gap:8px;color:#777f7a;font-size:11px;margin-top:14px}.notice svg{min-width:16px}.principles{padding:70px 0}.principles h2{font-size:29px;margin:0}.principles ol{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:25px}.principles li{background:var(--pale);padding:20px}.principles li span{color:var(--g2);font-weight:900}.principles li strong{display:block;font-size:18px;margin-top:7px}.principles li p{color:var(--text);font-size:13px}footer{border-top:1px solid var(--line);padding:25px max(20px,calc((100% - var(--max))/2));display:flex;gap:18px;color:#6b736e}footer nav{margin-left:auto;font-size:12px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:780px){.site-header nav,.brand small{display:none}.hero{display:block;padding-top:42px}.hero h1{font-size:38px}.hero aside{width:100%;margin-top:20px}.calculator{grid-template-columns:1fr}.principles ol{grid-template-columns:1fr}.preset-row{overflow-x:auto}.preset-row button{white-space:nowrap}.report-actions{flex-direction:column}}
+    :root{--g:#104b2d;--g2:#1d6b42;--y:#f7bd24;--ink:#171a18;--text:#464e49;--muted:#4d5751;--line:#d5ddd8;--pale:#f2f7f3;--red:#a8322a;--warm:#fff8e6;--max:1120px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','Noto Sans CJK KR',sans-serif;color:var(--ink);font-size:17px;line-height:1.65;background:#fff;word-break:keep-all;overflow-wrap:anywhere}
+    a{color:var(--g2)}button,input,select{font:inherit;color:inherit}
+    .site-header{border-bottom:1px solid var(--line);display:flex;align-items:center;flex-wrap:wrap;gap:4px 18px;padding:10px max(16px,calc((100% - var(--max))/2));background:#fff}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;min-height:48px}.brand-mark{width:34px;height:34px;border-radius:50%;background:var(--y);display:grid;place-items:center;color:var(--g);font-weight:700}.brand strong{font-size:21px;color:var(--g)}
+    .site-header nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;max-width:100%}.site-header nav a{display:flex;align-items:center;min-height:44px;padding:0 10px;font-size:16px;font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap;border-radius:8px}.site-header nav a:hover,.site-header nav a:focus-visible{background:var(--pale);color:var(--g2)}
+    main{max-width:var(--max);margin:auto;padding:0 16px}
+    .hero{padding:40px 0 24px}.eyebrow{color:var(--g2);font-weight:700;margin:0}.hero h1{font-size:44px;line-height:1.25;letter-spacing:-1.5px;margin:8px 0 12px}.hero h1 em{font-style:normal;color:var(--g)}.hero-copy{color:var(--text);max-width:760px;margin:0}
+    .hero-points{display:flex;flex-wrap:wrap;gap:8px 20px;padding:0;margin:16px 0 0;list-style:none;color:var(--g)}.hero-points li:before{content:"✓ ";font-weight:700}
+    h2{font-size:26px;line-height:1.35;margin:0 0 8px}h3{font-size:20px;line-height:1.4;margin:0}
+    .examples{padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:var(--pale);margin-bottom:20px}.examples h2{font-size:19px;margin:0}.examples p{margin:2px 0 12px;color:var(--text)}
+    .preset-row{display:flex;flex-wrap:wrap;gap:8px}.preset-row button,.btn{min-height:48px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 16px;cursor:pointer;font-weight:700}.preset-row button:hover,.preset-row button:focus-visible,.btn:hover,.btn:focus-visible{border-color:var(--g2);color:var(--g2)}
+    :focus-visible{outline:3px solid var(--y);outline-offset:2px}
+    .panel{border:1px solid var(--line);border-radius:14px;padding:20px;margin:0 0 20px;min-width:0}
+    legend{padding:0 6px;font-size:22px;font-weight:700}legend small{font-size:16px;font-weight:400;color:var(--muted);margin-left:6px}
+    .step{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--g2);color:#fff;font-size:16px;margin-right:6px;vertical-align:2px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 16px}
+    .field{display:grid;gap:4px;align-content:start}.field>span:first-child{font-weight:700}.field small,.hint{color:var(--muted);font-size:16px;line-height:1.5}
+    .field input,.field select{width:100%;min-height:50px;border:1px solid #9fb0a6;border-radius:9px;padding:0 12px;background:#fff;font-size:17px}
+    .field input[aria-invalid=true]{border:2px solid var(--red);background:#fff6f5}
+    .suffix{position:relative;display:block}.suffix b{position:absolute;right:12px;top:13px;color:var(--muted);font-weight:700;pointer-events:none}.suffix input{padding-right:52px}
+    .hint{margin:0 0 14px}.to-result{margin:16px 0 0}.to-result .btn{display:inline-flex;align-items:center;text-decoration:none;color:var(--g2)}
+    .channel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .channel{border:1px solid var(--line);border-top:6px solid var(--g2);border-radius:12px;padding:16px;display:grid;gap:12px;align-content:start;min-width:0}
+    .channel[data-ch=wholesale]{border-top-color:#a8761a}.channel[data-ch=online]{border-top-color:#2f5f9e}
+    .channel>p{margin:-8px 0 0;color:var(--muted)}
+    .cap{background:var(--warm);border-radius:9px;padding:10px 12px}.cap .field>span:first-child{font-weight:700}
+    .result{scroll-margin-top:12px}.result h2{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+    .notes{margin:8px 0}.notes p{margin:6px 0;padding:10px 12px;border-radius:9px;background:var(--warm);border-left:4px solid #c98a12}.notes p.error{background:#fff4f2;border-left-color:var(--red)}
+    .verdict{font-size:19px;font-weight:700;margin:10px 0 16px;padding:14px 16px;border-radius:10px;background:var(--pale)}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .card{border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}.card.best{border:2px solid var(--g2)}.card.loss{background:#fff8f7}
+    .card h3{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.badge{font-size:15px;background:var(--g2);color:#fff;border-radius:999px;padding:1px 10px}
+    .big{margin:8px 0 6px}.big strong{display:block;font-size:28px;line-height:1.3}.card.loss .big strong{color:var(--red)}
+    .card dl{margin:0;display:grid;gap:6px}.card dl div{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:6px}.card dt{color:var(--text)}.card dd{margin:0;font-weight:700;text-align:right}
+    .card .be{background:var(--warm);border:0;border-radius:8px;padding:8px 10px;margin-top:4px}
+    .card .skip{color:var(--muted);margin:8px 0 0}
+    .headroom{margin:10px 0 0;font-weight:700}.headroom.neg{color:var(--red)}
+    details{margin-top:16px;border:1px solid var(--line);border-radius:10px;padding:0 14px}details>summary{min-height:50px;display:flex;align-items:center;font-weight:700;cursor:pointer}details[open]>summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+    .table-scroll{overflow-x:auto;margin-bottom:14px}table{border-collapse:collapse;width:100%;min-width:560px;font-size:16px}th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:right;white-space:nowrap}thead th{background:var(--pale)}thead th:first-child{text-align:left}tbody th{text-align:left;font-weight:700;white-space:normal}tr.key td,tr.key th{background:#fbfdf9;font-weight:700}
+    .steps h3{margin-top:12px}.steps ol{padding-left:22px;margin:6px 0 14px}.steps li{margin:4px 0}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.actions .btn{flex:1 1 200px}.btn.primary{background:var(--g2);border-color:var(--g2);color:#fff}.btn.primary:hover,.btn.primary:focus-visible{background:var(--g);color:#fff}
+    .next-step{margin-top:18px;padding:14px 16px;border-radius:10px;border:1px dashed var(--g2)}.next-step p{margin:4px 0}
+    .notice{color:var(--muted);font-size:16px;margin-top:14px}
+    .section{padding:28px 0;border-top:1px solid var(--line)}.section>p{max-width:820px}
+    .formula{padding-left:22px}.formula li{margin:6px 0}.formula code{font-family:inherit;font-weight:700;background:var(--pale);padding:1px 6px;border-radius:5px}
+    .example-table{min-width:520px}.example-table td:first-child{text-align:left;white-space:normal}
+    .link-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;padding:0;list-style:none}.link-list a{display:block;min-height:48px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;font-weight:700}.link-list a:hover,.link-list a:focus-visible{border-color:var(--g2)}.link-list span{display:block;font-weight:400;color:var(--text)}
+    footer{border-top:1px solid var(--line);margin-top:20px;padding:22px max(16px,calc((100% - var(--max))/2));display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--text)}footer nav{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 14px}footer a{min-height:44px;display:inline-flex;align-items:center}
+    .print-only{display:none}
+    @media(max-width:980px){.channel-grid,.cards{grid-template-columns:1fr}}
+    @media(max-width:640px){body{font-size:17px}.hero{padding-top:26px}.hero h1{font-size:31px;letter-spacing:-.8px}h2{font-size:23px}legend{font-size:20px}.panel{padding:16px 14px}.site-header nav{margin-left:0;width:100%}.actions{flex-direction:column}.actions .btn{flex:none;width:100%}}
+    @media print{.to-result,.site-header nav,.hero,.examples,.actions,.next-step,footer nav,#example,.section.links,ins.adsbygoogle,.cap{display:none!important}.print-only{display:block}.panel,.card{break-inside:avoid}body{font-size:12pt}.channel-grid,.cards{grid-template-columns:repeat(3,1fr)}details{border:0;padding:0}details>summary{display:none}.field small,.hint{display:none}input,select{border:0!important;min-height:0!important;padding:0!important}}
   </style>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"농가 손익 계산기","url":"https://www.reportools.com/","applicationCategory":"BusinessApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"농가 손익 계산기","url":"https://www.reportools.com/","description":"직거래·도매시장 위탁·온라인 몰 판매의 예상 이익, 상자당·kg당 이익과 손익분기 판매가를 계산식과 함께 비교하는 무료 계산기","applicationCategory":"BusinessApplication","operatingSystem":"Any","inLanguage":"ko-KR","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"제이 미디어","alternateName":"J MEDIA","url":"https://jnewmedia.com/"}}</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5877883031077615" crossorigin="anonymous"></script>
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="농가 손익 계산기 홈"><span class="brand-mark"><i data-lucide="receipt-text"></i></span><strong>농가 손익 계산기</strong><small>농가 판매 손익·정산 보고서</small></a>
-    <nav aria-label="주요 메뉴"><a href="#calculator">손익 계산</a><a href="#principles">계산 원리</a><a href="/guides/">정산 가이드</a><a href="/tools/used-tractor-total-cost/">트랙터 총비용</a><a href="/mn/" lang="mn">Монгол</a></nav>
+    <a class="brand" href="/" aria-label="농가 손익 계산기 홈"><span class="brand-mark" aria-hidden="true">₩</span><strong>농가 손익 계산기</strong></a>
+    <nav aria-label="주요 메뉴"><a href="#calculator">손익 계산</a><a href="/guides/">정산 가이드</a><a href="/tools/used-tractor-total-cost/">트랙터 총비용</a><a href="/about/">소개</a><a href="/mn/" lang="mn">Монгол</a></nav>
   </header>
   <main>
     <section class="hero">
-      <div><p class="eyebrow">판매가를 정하기 전에 비용부터 합쳐보세요</p><h1>농산물 직거래<br><em>손익·정산 보고서</em></h1><p class="hero-copy">생산·선별·포장·배송·수수료와 감모를 넣으면<br>예상 이익, 이익률, 손익분기 단가를 바로 계산합니다.</p><div class="safe"><i data-lucide="shield-check"></i><strong>입력값은 이 브라우저에서만 계산</strong><span>회원가입·파일 업로드 없음</span></div></div>
-      <aside><p>계산 기준</p><strong>현재 입력한 판매 조건</strong><span>현금·회계 신고가 아닌 판매 의사결정용 추정치입니다.</span></aside>
+      <p class="eyebrow">판매가를 정하기 전에 비용부터 합쳐 보세요</p>
+      <h1>어디로 팔면 얼마 남을까<br><em>직거래·도매시장·온라인</em> 손익 비교</h1>
+      <p class="hero-copy">출하 수량과 공통 비용을 한 번 넣고, 판매 경로마다 판매가·수수료·감모·포장·운송비를 넣으면 예상 이익과 상자당·kg당 손익분기 판매가를 같은 기준으로 계산합니다.</p>
+      <ul class="hero-points"><li>입력값은 이 브라우저에서만 계산(저장·전송 없음)</li><li>계산식과 대입한 숫자 공개</li><li>CSV 저장·인쇄</li></ul>
     </section>
-    <section class="preset-row" aria-label="품목 예시"><button type="button" data-preset="potato">감자 10kg</button><button type="button" data-preset="rice">쌀 20kg</button><button type="button" data-preset="peach">복숭아 4kg</button><button type="button" data-preset="apple">사과 5kg</button></section>
-    <section id="calculator" class="calculator">
-      <div class="input-panel">
-        <div class="panel-head"><span class="panel-icon"><i data-lucide="calculator"></i></span><div><p>1. 판매 조건 입력</p><h2>한 번의 출하·판매 묶음 기준</h2></div><button class="reset" id="reset" type="button"><i data-lucide="rotate-ccw"></i>초기화</button></div>
-        <form class="fields" id="profit-form">
-          <label class="field"><span>품목·규격</span><input id="item" name="item" value="감자 10kg"></label>
-          <div class="field-pair"><label class="field"><span>판매 예정 수량</span><input id="quantity" name="quantity" type="number" min="0" value="50"></label><label class="field"><span>단위</span><input id="unit" name="unit" value="상자"></label></div>
-          <label class="field"><span id="price-label">단위 판매가 / 상자</span><span class="suffix"><input id="price" name="price" type="number" min="0" value="28000"><b>원</b></span></label>
-          <div class="section-label">비용</div>
-          <label class="field"><span>생산·매입비</span><span class="suffix"><input id="production" type="number" min="0" value="620000"><b>원</b></span></label>
-          <label class="field"><span>선별·작업 인건비</span><span class="suffix"><input id="sorting" type="number" min="0" value="80000"><b>원</b></span></label>
-          <label class="field"><span>포장재 비용</span><span class="suffix"><input id="packageCost" type="number" min="0" value="110000"><b>원</b></span></label>
-          <label class="field"><span>배송·상하차 비용</span><span class="suffix"><input id="shipping" type="number" min="0" value="250000"><b>원</b></span></label>
-          <label class="field"><span>기타 비용</span><span class="suffix"><input id="other" type="number" min="0" value="40000"><b>원</b></span></label>
-          <div class="field-pair"><label class="field"><span>결제·플랫폼 수수료</span><span class="suffix"><input id="feeRate" type="number" min="0" step="0.1" value="3.5"><b>%</b></span></label><label class="field"><span>감모·파손 예상</span><span class="suffix"><input id="lossRate" type="number" min="0" step="0.1" value="5"><b>%</b></span></label></div>
-        </form>
-      </div>
-      <div class="report-panel" aria-live="polite">
-        <div class="panel-head"><span class="panel-icon"><i data-lucide="bar-chart-3"></i></span><div><p>2. 계산 결과</p><h2><span id="result-item">감자 10kg</span> 예상 정산</h2></div></div>
-        <div class="summary"><div class="metric"><span class="metric-icon"><i data-lucide="wheat"></i></span><p>예상 매출</p><strong id="revenue">₩1,330,000</strong></div><div class="metric"><span class="metric-icon"><i data-lucide="truck"></i></span><p>총비용</p><strong id="total">₩1,146,550</strong></div><div class="metric positive" id="profit-card"><span class="metric-icon"><i data-lucide="package-check"></i></span><p>예상 이익</p><strong id="profit">₩183,450</strong></div><div class="metric positive" id="margin-card"><span class="metric-icon"><i data-lucide="bar-chart-3"></i></span><p>이익률</p><strong id="margin">13.8%</strong></div></div>
-        <div class="break-even"><p>손익분기 단가</p><strong><span id="break-even">₩23,998</span><span id="break-unit"> / 상자</span></strong><span id="difference-note">현재 단가보다 ₩4,002 낮습니다.</span></div>
-        <table><tbody><tr><th>판매 가능 수량</th><td><span id="sold">47.5</span> <span id="sold-unit">상자</span></td></tr><tr><th>생산·작업·포장·배송·기타</th><td id="fixed">₩1,100,000</td></tr><tr><th>예상 수수료</th><td id="fee">₩46,550</td></tr><tr><th><span id="unit-label">상자</span>당 예상 이익</th><td id="unit-profit">₩3,862</td></tr></tbody></table>
-        <div class="report-actions"><button type="button" id="download"><i data-lucide="download"></i>CSV 정산표 저장</button><a href="https://boribay.com/listings/new?type=FIXED&amp;utm_source=reportools.com&amp;utm_medium=owned_referral&amp;utm_campaign=farm_profit_report&amp;utm_content=calculation_result">판매 글 등록 준비 <i data-lucide="arrow-right"></i></a></div>
-        <p class="notice"><i data-lucide="info"></i>실제 세금·수수료·보조금·자가노동비·재고정비는 농가마다 다릅니다. 신고와 계약 전에는 회계·세무 전문가의 최신 기준을 확인하세요.</p>
-      </div>
+
+    <section class="examples" aria-labelledby="examples-title">
+      <h2 id="examples-title">가상 예시로 시작하기</h2>
+      <p>예시 숫자는 계산 방법을 보여주려고 만든 가정입니다. 실제 시세나 수수료가 아니니 내 숫자로 바꿔 넣으세요.</p>
+      <div class="preset-row"><button type="button" data-preset="potato">감자 10kg</button><button type="button" data-preset="rice">햅쌀 20kg</button><button type="button" data-preset="peach">복숭아 4kg</button><button type="button" data-preset="apple">사과 5kg</button><button type="button" id="clear">빈 양식으로</button></div>
     </section>
-    <section id="principles" class="principles"><div><p class="eyebrow">계산 원리</p><h2>판매가보다 빠뜨린 비용이 이익을 바꿉니다</h2></div><ol><li><span>1</span><strong>판매 가능 수량</strong><p>예정 수량에서 감모·파손률을 먼저 뺍니다.</p></li><li><span>2</span><strong>전체 비용</strong><p>생산·선별·포장·배송·수수료와 기타 비용을 더합니다.</p></li><li><span>3</span><strong>손익분기 단가</strong><p>전체 비용을 실제 판매 가능 수량과 수수료율로 나눕니다.</p></li></ol><p><a href="/guides/" style="display:inline-flex;margin-top:18px;color:var(--g2);font-weight:800">kg당 판매가·경매·위탁정산 계산 원리 읽기 →</a></p></section>
+
+    <form id="calculator" class="calculator" novalidate>
+      <fieldset class="panel" id="common">
+        <legend><span class="step">1</span>공통 조건 <small>어디로 팔든 같은 것</small></legend>
+        <div class="grid">
+          <label class="field"><span>품목·규격</span><input id="item" value="감자 10kg" maxlength="40" placeholder="예: 감자 10kg"></label>
+          <label class="field"><span>단위 이름</span><input id="unit" value="상자" maxlength="10" placeholder="예: 상자, 포대, 망"><small>판매가·포장비를 매기는 단위</small></label>
+          <label class="field"><span>단위당 실중량</span><span class="suffix"><input id="unitKg" type="number" inputmode="decimal" min="0" step="any" value="10"><b>kg</b></span><small>포장재를 뺀 내용물 무게. 비우면 kg당 결과는 빠집니다.</small></label>
+          <label class="field"><span>출하 수량</span><span class="suffix"><input id="quantity" type="number" inputmode="decimal" min="0" step="any" value="50"><b class="unit-name">상자</b></span><small>포장해서 내보낼 전체 수량</small></label>
+          <label class="field"><span>생산·매입비 (총액)</span><span class="suffix"><input id="production" type="number" inputmode="numeric" min="0" step="any" value="620000"><b>원</b></span><small>이번 물량에 나눠 넣은 종자·비료·농약·임차료 등, 또는 사들인 값</small></label>
+          <label class="field"><span>선별·작업 인건비 (총액)</span><span class="suffix"><input id="sorting" type="number" inputmode="numeric" min="0" step="any" value="80000"><b>원</b></span><small>고용 인건비. 내 노동을 비용으로 볼지는 직접 정하세요.</small></label>
+          <label class="field"><span>기타 공통 비용 (총액)</span><span class="suffix"><input id="other" type="number" inputmode="numeric" min="0" step="any" value="40000"><b>원</b></span><small>저장·전기·이자 등 경로와 무관한 비용</small></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="panel" id="channels">
+        <legend><span class="step">2</span>판매 경로별 조건</legend>
+        <p class="hint">판매가를 비운 경로는 비교에서 빠집니다. ‘단위당’ 금액은 <b class="unit-name">상자</b> 하나 기준이고, 포장재·운송비는 감모·반품분까지 포함한 출하 수량 전체에 곱합니다.</p>
+        <div class="channel-grid">
+          <section class="channel" data-ch="direct" aria-labelledby="direct-title">
+            <h3 id="direct-title">직거래</h3><p>방문 수령·직접 배달·판매자 택배</p>
+            <label class="field"><span>판매가 (단위당)</span><span class="suffix"><input id="direct-price" type="number" inputmode="numeric" min="0" step="any" value="28000"><b>원</b></span><small>구매자가 따로 내는 택배비는 빼고 적기</small></label>
+            <label class="field"><span>결제 수수료</span><span class="suffix"><input id="direct-fee" type="number" inputmode="decimal" min="0" max="100" step="any" value="0"><b>%</b></span><small>계좌이체는 0%. 카드·간편결제는 가맹점 수수료율</small></label>
+            <label class="field"><span>감모·파손·반품</span><span class="suffix"><input id="direct-loss" type="number" inputmode="decimal" min="0" max="100" step="any" value="3"><b>%</b></span></label>
+            <label class="field"><span>포장재 (단위당)</span><span class="suffix"><input id="direct-pack" type="number" inputmode="numeric" min="0" step="any" value="2200"><b>원</b></span></label>
+            <label class="field"><span>택배·배달비 (단위당)</span><span class="suffix"><input id="direct-ship" type="number" inputmode="numeric" min="0" step="any" value="5000"><b>원</b></span><small>판매자가 내는 금액만. 방문 수령이면 0</small></label>
+            <label class="field"><span>기타 경로 비용 (총액)</span><span class="suffix"><input id="direct-extra" type="number" inputmode="numeric" min="0" step="any" value="20000"><b>원</b></span><small>직접 배달한 연료비·통행료 등</small></label>
+          </section>
+          <section class="channel" data-ch="wholesale" aria-labelledby="wholesale-title">
+            <h3 id="wholesale-title">도매시장 위탁</h3><p>공영도매시장·공판장 경매, 정가·수의매매</p>
+            <label class="field"><span>예상 낙찰가 (단위당)</span><span class="suffix"><input id="wholesale-price" type="number" inputmode="numeric" min="0" step="any" value="21000"><b>원</b></span><small>같은 품목·등급·규격의 최근 경락가를 참고한 내 예상치</small></label>
+            <label class="field"><span>위탁수수료</span><span class="suffix"><input id="wholesale-fee" type="number" inputmode="decimal" min="0" max="100" step="any" value="7"><b>%</b></span><small>출하할 도매시장법인의 실제 요율을 넣으세요</small></label>
+            <div class="cap"><label class="field"><span>법정 상한으로 넣기</span><select id="wholesale-cap"><option value="">부류 고르기</option><option value="7">청과부류 7%</option><option value="2">양곡부류 2%</option><option value="7">화훼부류 7%</option><option value="5">약용작물부류 5%</option><option value="2">축산부류 2%</option><option value="6">수산부류 6%</option></select><small>시행규칙 제39조④의 최고한도입니다. 실제 요율은 그 안에서 시장 업무규정으로 정하니, 상한을 넣으면 수수료를 가장 크게 잡는 계산이 됩니다. <a href="/guides/wholesale-commission-cap/">근거와 정산서 공제 항목 보기</a> (확인일 2026-10-26)</small></label></div>
+            <label class="field"><span>감모·유찰·등급 하락</span><span class="suffix"><input id="wholesale-loss" type="number" inputmode="decimal" min="0" max="100" step="any" value="2"><b>%</b></span></label>
+            <label class="field"><span>포장재 (단위당)</span><span class="suffix"><input id="wholesale-pack" type="number" inputmode="numeric" min="0" step="any" value="1600"><b>원</b></span></label>
+            <label class="field"><span>운송·하역비 (단위당)</span><span class="suffix"><input id="wholesale-ship" type="number" inputmode="numeric" min="0" step="any" value="2000"><b>원</b></span><small>트럭 운임처럼 총액만 알면 ÷ 출하 수량</small></label>
+            <label class="field"><span>기타 경로 비용 (총액)</span><span class="suffix"><input id="wholesale-extra" type="number" inputmode="numeric" min="0" step="any" value="0"><b>원</b></span></label>
+          </section>
+          <section class="channel" data-ch="online" aria-labelledby="online-title">
+            <h3 id="online-title">온라인 몰</h3><p>오픈마켓·스마트스토어·자사몰 등</p>
+            <label class="field"><span>판매가 (단위당)</span><span class="suffix"><input id="online-price" type="number" inputmode="numeric" min="0" step="any" value="31000"><b>원</b></span><small>무료배송이면 배송비가 포함된 판매가</small></label>
+            <label class="field"><span>판매·결제 수수료 합계</span><span class="suffix"><input id="online-fee" type="number" inputmode="decimal" min="0" max="100" step="any" value="12"><b>%</b></span><small>입점한 몰 판매자센터의 요금표로 확인</small></label>
+            <label class="field"><span>파손·반품</span><span class="suffix"><input id="online-loss" type="number" inputmode="decimal" min="0" max="100" step="any" value="5"><b>%</b></span></label>
+            <label class="field"><span>포장재 (단위당)</span><span class="suffix"><input id="online-pack" type="number" inputmode="numeric" min="0" step="any" value="2600"><b>원</b></span></label>
+            <label class="field"><span>택배비 (단위당)</span><span class="suffix"><input id="online-ship" type="number" inputmode="numeric" min="0" step="any" value="4000"><b>원</b></span><small>판매자가 내는 계약 택배비</small></label>
+            <label class="field"><span>기타 경로 비용 (총액)</span><span class="suffix"><input id="online-extra" type="number" inputmode="numeric" min="0" step="any" value="30000"><b>원</b></span><small>광고비·상세페이지 사진 등</small></label>
+          </section>
+        </div>
+        <p class="to-result"><a class="btn" href="#result">결과 보기 ↓</a></p>
+      </fieldset>
+    </form>
+
+    <section id="result" class="panel result" aria-labelledby="result-title">
+      <h2 id="result-title"><span class="step">3</span>계산 결과 · <span id="result-item">감자 10kg</span></h2>
+      <p class="print-only" id="print-meta"></p>
+      <div id="notes" class="notes" role="status"></div>
+      <p id="verdict" class="verdict" aria-live="polite">자바스크립트를 켜면 계산 결과가 여기에 나옵니다.</p>
+      <div id="cards" class="cards"></div>
+      <details open><summary>항목별 비교표</summary><div class="table-scroll" role="region" aria-label="판매 경로별 비교표" tabindex="0"><table id="compare"></table></div></details>
+      <details><summary>계산 과정 보기 (대입한 숫자)</summary><div id="steps" class="steps"></div></details>
+      <div class="actions"><button type="button" class="btn primary" id="download">CSV 정산표 저장</button><button type="button" class="btn" id="print">인쇄·PDF로 저장</button></div>
+      <div class="next-step"><p><strong>다음 할 일</strong></p><p>직거래로 팔기로 했다면 같은 지역 구매자를 찾을 수 있는 <a href="https://boribay.com/?category=PRODUCE&amp;utm_source=reportools.com&amp;utm_medium=referral&amp;utm_campaign=support">보리장터 농산물 매물</a>에서 비슷한 품목의 판매글을 살펴보세요. 도매시장에 낸다면 <a href="/guides/auction-net-proceeds/">경매 정산서 실수령액 계산법</a>으로 실제 정산서와 대조하세요. <small>(보리장터는 이 계산기와 같은 운영자 제이 미디어가 운영합니다.)</small></p></div>
+      <p class="notice">판매 의사결정을 돕는 추정치입니다. 세금·보조금·자가노동비·재고 평가는 반영하지 않습니다. 실제 수수료와 운임은 거래처의 요금표와 정산서로 확인하세요.</p>
+    </section>
+
+    <section class="section" id="formula" aria-labelledby="formula-title">
+      <h2 id="formula-title">계산식</h2>
+      <p>세 경로 모두 같은 식을 씁니다. 결과의 ‘계산 과정 보기’를 열면 내 숫자를 대입한 식이 그대로 나옵니다.</p>
+      <ol class="formula">
+        <li><code>판매 가능 수량</code> = 출하 수량 × (1 − 감모율)</li>
+        <li><code>매출</code> = 판매 가능 수량 × 단위 판매가</li>
+        <li><code>수수료</code> = 매출 × 수수료율</li>
+        <li><code>포장·운송비</code> = 출하 수량 × (단위당 포장재 + 단위당 운송·택배비)</li>
+        <li><code>총비용</code> = 공통 비용(생산·선별·기타) + 포장·운송비 + 기타 경로 비용 + 수수료</li>
+        <li><code>예상 이익</code> = 매출 − 총비용, <code>이익률</code> = 예상 이익 ÷ 매출</li>
+        <li><code>손익분기 판매가</code> = (공통 비용 + 포장·운송비 + 기타 경로 비용) ÷ (판매 가능 수량 × (1 − 수수료율))</li>
+        <li><code>kg당 값</code> = 단위당 값 ÷ 단위당 실중량</li>
+      </ol>
+      <p>감모·반품·유찰된 수량은 매출이 없지만 포장재와 운송비는 이미 들었다고 봅니다. 출하 전에 골라낸 물량이라면 출하 수량에서 빼고 넣으세요. 감모율을 이미 뺀 수량에 다시 곱하면 손실을 두 번 넣게 됩니다.</p>
+    </section>
+
+    <section class="section" id="example" aria-labelledby="example-title">
+      <h2 id="example-title">가상 예시 읽기: 감자 10kg 50상자</h2>
+      <p>‘감자 10kg’ 예시 버튼의 숫자입니다(실제 시세·요금 아님). 공통 비용은 생산 620,000원 + 선별 80,000원 + 기타 40,000원 = 740,000원입니다.</p>
+      <div class="table-scroll" role="region" aria-label="감자 예시 결과" tabindex="0"><table class="example-table"><thead><tr><th scope="col">경로</th><th scope="col">판매 가능</th><th scope="col">매출</th><th scope="col">예상 이익</th><th scope="col">손익분기 판매가</th></tr></thead><tbody><tr><td>직거래 (28,000원, 수수료 0%)</td><td>48.5상자</td><td>₩1,358,000</td><td>₩238,000</td><td>₩23,093 (kg당 ₩2,309)</td></tr><tr><td>도매시장 (21,000원, 수수료 7%)</td><td>49상자</td><td>₩1,029,000</td><td>₩36,970</td><td>₩20,189 (kg당 ₩2,019)</td></tr><tr><td>온라인 (31,000원, 수수료 12%)</td><td>47.5상자</td><td>₩1,472,500</td><td>₩195,800</td><td>₩26,316 (kg당 ₩2,632)</td></tr></tbody></table></div>
+      <p>이 가정에서는 직거래가 가장 많이 남지만, 50상자를 모두 직거래로 팔 수 있을 때의 이야기입니다. 도매시장은 예상 낙찰가 21,000원이 손익분기 20,189원보다 811원 높을 뿐이라 낙찰가가 조금만 내려가도 손실입니다. 온라인은 판매가가 가장 높아도 수수료와 택배비 때문에 손익분기가 26,316원까지 올라갑니다.</p>
+      <p><a href="/guides/sales-channel-comparison/">세 경로를 한 줄씩 풀어 쓴 예시 전체 보기 →</a></p>
+    </section>
+
+    <section class="section links" aria-labelledby="links-title">
+      <h2 id="links-title">숫자를 더 정확하게 넣으려면</h2>
+      <ul class="link-list">
+        <li><a href="/guides/wholesale-commission-cap/">도매시장 위탁수수료 상한과 공제 항목<span>부류별 법정 상한, 표준정산서·표준하역비</span></a></li>
+        <li><a href="/guides/auction-net-proceeds/">경매 정산 실수령액 계산법<span>낙찰금액에서 입금액까지</span></a></li>
+        <li><a href="/guides/consignment-settlement/">위탁판매 정산서 읽는 법<span>판매·반품·폐기 수량 맞추기</span></a></li>
+        <li><a href="/guides/kg-price-margin/">kg당 판매가와 마진 계산법<span>상자 가격을 kg으로</span></a></li>
+        <li><a href="/guides/meetup-parcel-cost/">방문 수령과 택배비를 손익에 넣는 법<span>상자당 비용 비교</span></a></li>
+        <li><a href="/tools/used-tractor-total-cost/">중고 트랙터 보유 총비용 계산기<span>구입비·운영비·처분가로 연간·시간당 비용</span></a></li>
+      </ul>
+    </section>
   </main>
-  <footer><strong>농가 손익 계산기</strong><span>농가 판매 의사결정을 돕는 무료 계산 도구</span><nav><a href="/guides/">정산 가이드</a><a href="/mn/" lang="mn">Монгол</a></nav></footer>
-  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <footer><strong>농가 손익 계산기</strong><span>운영: 제이 미디어(J MEDIA) · 보리장터와 같은 운영자</span><nav aria-label="하단 메뉴"><a href="/guides/">정산 가이드</a><a href="/tools/used-tractor-total-cost/">트랙터 총비용</a><a href="/about/">소개·정정 요청</a><a href="/mn/" lang="mn">Монгол</a></nav></footer>
   <script>
-    const defaults={item:'감자 10kg',quantity:50,unit:'상자',price:28000,production:620000,sorting:80000,packageCost:110000,shipping:250000,feeRate:3.5,lossRate:5,other:40000};
-    const presets={potato:defaults,rice:{item:'햅쌀 20kg',quantity:80,unit:'포대',price:62000,production:2800000,sorting:180000,packageCost:160000,shipping:480000,feeRate:3.5,lossRate:2,other:40000},peach:{item:'복숭아 4kg',quantity:60,unit:'상자',price:36000,production:900000,sorting:140000,packageCost:240000,shipping:330000,feeRate:3.5,lossRate:8,other:40000},apple:{item:'사과 5kg',quantity:100,unit:'상자',price:42000,production:1700000,sorting:240000,packageCost:380000,shipping:520000,feeRate:3.5,lossRate:6,other:40000}};
-    const ids=['item','quantity','unit','price','production','sorting','packageCost','shipping','feeRate','lossRate','other'];
-    const won=new Intl.NumberFormat('ko-KR',{style:'currency',currency:'KRW',maximumFractionDigits:0});
-    const el=id=>document.getElementById(id); const number=id=>Number(el(id).value)||0;
-    function apply(values){for(const id of ids)if(values[id]!==undefined)el(id).value=values[id];calculate()}
-    function calculate(){
-      const item=el('item').value||'농산물',unit=el('unit').value||'단위',quantity=number('quantity'),price=number('price'),feeRate=number('feeRate'),lossRate=number('lossRate');
-      const sold=Math.max(0,quantity*(1-lossRate/100)),revenue=sold*price,fee=revenue*feeRate/100;
-      const fixed=number('production')+number('sorting')+number('packageCost')+number('shipping')+number('other');
-      const total=fixed+fee,profit=revenue-total,margin=revenue?profit/revenue*100:0;
-      const denominator=sold*(1-feeRate/100),breakEven=denominator>0?fixed/denominator:null,unitProfit=sold?profit/sold:0;
-      el('price-label').textContent=`단위 판매가 / ${unit}`;
-      el('result-item').textContent=item;
-      el('revenue').textContent=won.format(revenue);
-      el('total').textContent=won.format(total);
-      el('profit').textContent=won.format(profit);
-      el('margin').textContent=`${margin.toFixed(1)}%`;
-      el('break-even').textContent=breakEven===null?'계산 불가':won.format(breakEven);
-      el('break-unit').textContent=breakEven===null?'':` / ${unit}`;
-      el('difference-note').textContent=breakEven===null
-        ?(sold<=0?'판매 가능 수량이 없어 단가를 계산할 수 없습니다.':'수수료율이 100% 이상이면 단가를 계산할 수 없습니다.')
-        :Math.round(Math.abs(breakEven-price))===0?'현재 단가와 같습니다.'
-        :`현재 단가보다 ${won.format(Math.abs(breakEven-price))} ${breakEven>price?'높습니다':'낮습니다'}.`;
-      el('sold').textContent=sold.toFixed(1);
-      el('sold-unit').textContent=unit;
-      el('fixed').textContent=won.format(fixed);
-      el('fee').textContent=won.format(fee);
-      el('unit-label').textContent=unit;
-      el('unit-profit').textContent=won.format(unitProfit);
-      el('profit-card').className=`metric ${profit>=0?'positive':'negative'}`;
-      el('margin-card').className=`metric ${margin>=10?'positive':'negative'}`;
-      return{item,unit,quantity,price,feeRate,lossRate,sold,revenue,fee,fixed,total,profit,margin,breakEven,unitProfit}
+    const CH=[['direct','직거래'],['wholesale','도매시장 위탁'],['online','온라인 몰']];
+    const CH_FIELDS=[['price','판매가'],['fee','수수료율'],['loss','감모·반품률'],['pack','포장재'],['ship','운송·택배비'],['extra','기타 경로 비용']];
+    const COMMON_COST=[['production','생산·매입비'],['sorting','선별·작업 인건비'],['other','기타 공통 비용']];
+    const COMMON_NUM=[['unitKg','단위당 실중량'],['quantity','출하 수량'],...COMMON_COST];
+    const presets={
+      potato:{item:'감자 10kg',unit:'상자',unitKg:10,quantity:50,production:620000,sorting:80000,other:40000,direct:{price:28000,fee:0,loss:3,pack:2200,ship:5000,extra:20000},wholesale:{price:21000,fee:7,loss:2,pack:1600,ship:2000,extra:0},online:{price:31000,fee:12,loss:5,pack:2600,ship:4000,extra:30000}},
+      rice:{item:'햅쌀 20kg',unit:'포대',unitKg:20,quantity:80,production:2800000,sorting:180000,other:40000,direct:{price:58000,fee:0,loss:1,pack:2000,ship:6000,extra:30000},wholesale:{price:52000,fee:2,loss:1,pack:1500,ship:2500,extra:0},online:{price:66000,fee:12,loss:2,pack:2200,ship:5500,extra:40000}},
+      peach:{item:'복숭아 4kg',unit:'상자',unitKg:4,quantity:60,production:900000,sorting:140000,other:40000,direct:{price:33000,fee:0,loss:8,pack:4000,ship:5500,extra:20000},wholesale:{price:30000,fee:7,loss:3,pack:2500,ship:2500,extra:0},online:{price:36000,fee:12,loss:10,pack:4300,ship:4500,extra:30000}},
+      apple:{item:'사과 5kg',unit:'상자',unitKg:5,quantity:100,production:1700000,sorting:240000,other:40000,direct:{price:42000,fee:0,loss:3,pack:3800,ship:5200,extra:30000},wholesale:{price:33000,fee:7,loss:3,pack:2400,ship:2200,extra:0},online:{price:45000,fee:12,loss:6,pack:4000,ship:4300,extra:40000}}
+    };
+    const defaults=presets.potato;
+    const wonFmt=new Intl.NumberFormat('ko-KR',{style:'currency',currency:'KRW',maximumFractionDigits:0});
+    const qtyFmt=new Intl.NumberFormat('ko-KR',{maximumFractionDigits:2});
+    const W=x=>{const v=Math.round(x);return wonFmt.format(v===0?0:v)};
+    const Q=x=>qtyFmt.format(x);
+    const el=id=>document.getElementById(id);
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+    function readNum(id){
+      const raw=String(el(id).value??'').trim().replace(/,/g,'');
+      if(raw==='')return{v:null};
+      const v=Number(raw);
+      if(!Number.isFinite(v))return{v:null,bad:'숫자로 입력하세요'};
+      if(v<0)return{v:null,bad:'0 이상으로 입력하세요'};
+      if(v>1e12)return{v:null,bad:'너무 큰 값입니다'};
+      return{v};
+    }
+    function mark(id,bad){const e=el(id);if(bad)e.setAttribute('aria-invalid','true');else e.removeAttribute('aria-invalid')}
+    function readState(){
+      const s={item:String(el('item').value||'').trim()||'농산물',unit:String(el('unit').value||'').trim()||'단위',errors:[]};
+      for(const[id,label]of COMMON_NUM){const r=readNum(id);mark(id,r.bad);if(r.bad)s.errors.push(label+': '+r.bad);s[id]=r.v}
+      s.channels=CH.map(([key,name])=>{
+        const c={key,name,errors:[]};
+        for(const[f,label]of CH_FIELDS){const id=key+'-'+f;let r=readNum(id);if(!r.bad&&(f==='fee'||f==='loss')&&r.v>100)r={v:null,bad:'100% 이하로 입력하세요'};mark(id,r.bad);if(r.bad)c.errors.push(label+': '+r.bad);c[f]=r.v}
+        return c;
+      });
+      return s;
+    }
+    function compute(s){
+      const r={item:s.item,unit:s.unit,kg:s.unitKg>0?s.unitKg:null,quantity:s.quantity,messages:[],errors:[...s.errors],channels:[]};
+      const blank=[];
+      for(const[id,label]of COMMON_COST)if(s[id]===null&&!s.errors.some(e=>e.indexOf(label)===0))blank.push(label);
+      r.common=COMMON_COST.reduce((a,[id])=>a+(s[id]||0),0);
+      r.fatal=s.errors.length?'빨간 칸의 공통 조건을 고치면 결과가 나옵니다.':!(s.quantity>0)?(s.quantity===null?'출하 수량을 넣으면 결과가 나옵니다.':'출하 수량은 0보다 커야 합니다.'):'';
+      for(const c of s.channels){
+        const o={key:c.key,name:c.name,price:c.price,fee:c.fee||0,loss:c.loss||0,pack:c.pack||0,ship:c.ship||0,extra:c.extra||0,status:'ok'};
+        if(c.errors.length){o.status='error';o.reason=c.errors.join(', ');r.errors.push(c.name+' — '+o.reason)}
+        else if(c.price===null){o.status='skip';o.reason='판매가를 넣으면 이 경로도 계산합니다.'}
+        else if(r.fatal){o.status='skip';o.reason='공통 조건을 먼저 채우세요.'}
+        else{
+          for(const[f,label]of CH_FIELDS.slice(1))if(c[f]===null)blank.push(c.name+' '+label);
+          const n=s.quantity*(1-o.loss/100);
+          o.sold=n;o.revenue=n*o.price;o.feeAmt=o.revenue*o.fee/100;
+          o.route=s.quantity*(o.pack+o.ship);
+          o.fixed=r.common+o.route+o.extra;
+          o.total=o.fixed+o.feeAmt;o.profit=o.revenue-o.total;
+          o.margin=o.revenue>0?o.profit/o.revenue*100:null;
+          o.unitProfit=n>0?o.profit/n:null;
+          o.kgProfit=n>0&&r.kg?o.profit/(n*r.kg):null;
+          const d=n*(1-o.fee/100);
+          o.breakEven=d>0?o.fixed/d:null;
+          o.beReason=d>0?'':(n<=0?'판매 가능 수량이 없어 손익분기 판매가를 계산할 수 없습니다.':'수수료율이 100%라 손익분기 판매가를 계산할 수 없습니다.');
+          o.breakEvenKg=o.breakEven!==null&&r.kg?o.breakEven/r.kg:null;
+          o.headroom=o.breakEven!==null?o.price-o.breakEven:null;
+        }
+        r.channels.push(o);
+      }
+      if(blank.length)r.messages.push('빈칸은 0으로 계산했습니다: '+blank.join(', '));
+      r.ok=r.channels.filter(c=>c.status==='ok');
+      r.ranked=[...r.ok].sort((a,b)=>b.profit-a.profit);
+      r.best=r.ranked.length>1&&Math.round(r.ranked[0].profit)!==Math.round(r.ranked[1].profit)?r.ranked[0]:null;
+      return r;
+    }
+    function verdict(r){
+      if(r.fatal)return r.fatal;
+      const k=r.ranked;
+      if(!k.length)return r.errors.length?'빨간 칸의 입력값을 고치면 결과가 나옵니다.':'판매가를 한 경로 이상 넣으면 결과가 나옵니다.';
+      if(k.length===1)return k[0].name+'만 계산했습니다. 예상 '+(k[0].profit>=0?'이익 ':'손실 ')+W(Math.abs(k[0].profit))+'입니다.';
+      const top=k.filter(c=>Math.round(c.profit)===Math.round(k[0].profit));
+      if(top.length>1)return top.map(c=>c.name).join('·')+'의 예상 이익이 같습니다: '+W(k[0].profit)+'.';
+      if(k[0].profit<0)return'모든 경로에서 손실이 예상됩니다. 손실이 가장 작은 곳은 '+k[0].name+'('+W(k[0].profit)+')입니다. 판매가나 비용을 다시 확인하세요.';
+      return'입력한 조건에서는 '+k[0].name+'의 예상 이익이 가장 큽니다: '+W(k[0].profit)+'. '+k.slice(1).map(c=>c.name+'보다 '+W(k[0].profit-c.profit)).join(', ')+' 많습니다.';
+    }
+    function headroomText(o){
+      if(o.headroom===null)return o.beReason;
+      if(Math.round(o.headroom)===0)return'현재 판매가가 손익분기 판매가와 같습니다.';
+      return o.headroom>0?'현재 판매가가 손익분기보다 '+W(o.headroom)+' 높습니다.':'현재 판매가가 손익분기보다 '+W(-o.headroom)+' 낮습니다. 이 가격이면 손실입니다.';
+    }
+    function render(r){
+      const unit=esc(r.unit);
+      el('result-item').textContent=r.item;
+      document.querySelectorAll('.unit-name').forEach(e=>{e.textContent=r.unit});
+      el('notes').innerHTML=r.errors.map(m=>'<p class="error">'+esc(m)+'</p>').join('')+r.messages.map(m=>'<p>'+esc(m)+'</p>').join('');
+      el('verdict').textContent=verdict(r);
+      el('cards').innerHTML=r.channels.map(o=>{
+        if(o.status!=='ok')return'<article class="card"><h3>'+esc(o.name)+'</h3><p class="skip">'+esc(o.reason)+'</p></article>';
+        const best=r.best===o;
+        return'<article class="card'+(best?' best':'')+(o.profit<0?' loss':'')+'"><h3>'+esc(o.name)+(best?' <span class="badge">가장 많이 남음</span>':'')+'</h3>'+
+          '<p class="big">예상 '+(o.profit<0?'손실':'이익')+'<strong>'+W(o.profit)+'</strong></p><dl>'+
+          '<div><dt>이익률(매출 대비)</dt><dd>'+(o.margin===null?'—':o.margin.toFixed(1)+'%')+'</dd></div>'+
+          '<div><dt>'+unit+'당 이익</dt><dd>'+(o.unitProfit===null?'—':W(o.unitProfit))+'</dd></div>'+
+          '<div><dt>kg당 이익</dt><dd>'+(o.kgProfit===null?(r.kg?'—':'실중량 미입력'):W(o.kgProfit))+'</dd></div>'+
+          '<div class="be"><dt>손익분기 판매가</dt><dd>'+(o.breakEven===null?'계산 불가':W(o.breakEven)+' / '+unit+(o.breakEvenKg===null?'':'<br>'+W(o.breakEvenKg)+' / kg'))+'</dd></div></dl>'+
+          '<p class="headroom'+(o.headroom!==null&&o.headroom<0?' neg':'')+'">'+esc(headroomText(o))+'</p></article>';
+      }).join('');
+      const ok=r.channels;
+      const cell=(o,fn)=>o.status==='ok'?fn(o):'—';
+      const rows=[
+        ['판매가 ('+unit+'당)',o=>W(o.price)],['수수료율',o=>Q(o.fee)+'%'],['감모·반품률',o=>Q(o.loss)+'%'],
+        ['판매 가능 수량',o=>Q(o.sold)+' '+unit],['매출',o=>W(o.revenue)],['수수료',o=>W(o.feeAmt)],['포장·운송비',o=>W(o.route)],['기타 경로 비용',o=>W(o.extra)],['공통 비용',()=>W(r.common)],['총비용',o=>W(o.total)],
+        ['예상 이익',o=>W(o.profit),1],['이익률',o=>o.margin===null?'—':o.margin.toFixed(1)+'%'],[unit+'당 이익',o=>o.unitProfit===null?'—':W(o.unitProfit)],['kg당 이익',o=>o.kgProfit===null?'—':W(o.kgProfit)],
+        ['손익분기 판매가 ('+unit+'당)',o=>o.breakEven===null?'계산 불가':W(o.breakEven),1],['손익분기 판매가 (kg당)',o=>o.breakEvenKg===null?'—':W(o.breakEvenKg)]
+      ];
+      el('compare').innerHTML='<caption class="print-only">'+esc(r.item)+' 판매 경로별 비교</caption><thead><tr><th scope="col">항목</th>'+ok.map(o=>'<th scope="col">'+esc(o.name)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(([label,fn,key])=>'<tr'+(key?' class="key"':'')+'><th scope="row">'+label+'</th>'+ok.map(o=>'<td>'+cell(o,fn)+'</td>').join('')+'</tr>').join('')+'</tbody>';
+      el('steps').innerHTML=r.ok.length?r.ok.map(o=>'<h3>'+esc(o.name)+'</h3><ol>'+[
+        '판매 가능 수량 = 출하 '+Q(r.quantity)+unit+' × (1 − 감모 '+Q(o.loss)+'%) = '+Q(o.sold)+unit,
+        '매출 = '+Q(o.sold)+unit+' × '+W(o.price)+' = '+W(o.revenue),
+        '수수료 = '+W(o.revenue)+' × '+Q(o.fee)+'% = '+W(o.feeAmt),
+        '포장·운송비 = 출하 '+Q(r.quantity)+unit+' × (포장 '+W(o.pack)+' + 운송 '+W(o.ship)+') = '+W(o.route),
+        '총비용 = 공통 '+W(r.common)+' + 포장·운송 '+W(o.route)+' + 기타 경로 '+W(o.extra)+' + 수수료 '+W(o.feeAmt)+' = '+W(o.total),
+        '예상 이익 = '+W(o.revenue)+' − '+W(o.total)+' = '+W(o.profit),
+        o.breakEven===null?esc(o.beReason):'손익분기 판매가 = ('+W(r.common)+' + '+W(o.route)+' + '+W(o.extra)+') ÷ ('+Q(o.sold)+unit+' × (1 − '+Q(o.fee)+'%)) = '+W(o.breakEven)+' / '+unit,
+        o.breakEvenKg===null?'kg당 값은 단위당 실중량을 넣으면 계산합니다.':'kg당 손익분기 = '+W(o.breakEven)+' ÷ '+Q(r.kg)+'kg = '+W(o.breakEvenKg)
+      ].map(t=>'<li>'+t+'</li>').join('')+'</ol>').join(''):'<p>계산할 경로가 없습니다.</p>';
+    }
+    function update(){const r=compute(readState());render(r);return r}
+    function apply(p){
+      for(const id of['item','unit','unitKg','quantity','production','sorting','other'])el(id).value=p[id]??'';
+      for(const[key]of CH)for(const[f]of CH_FIELDS)el(key+'-'+f).value=p[key]&&p[key][f]!==undefined?p[key][f]:'';
+      el('wholesale-cap').value='';
+      return update();
+    }
+    function clearAll(){apply({unit:'상자',direct:{},wholesale:{},online:{}})}
+    function today(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')}
+    function csvRows(r,date){
+      const ok=r.channels,v=(o,fn)=>o.status==='ok'?fn(o):o.reason,num=x=>x===null?'계산 불가':Math.round(x);
+      return[['농가 판매 손익·정산 보고서 (농가 손익 계산기 www.reportools.com)'],['작성일',date],['품목',r.item],['단위',r.unit],['단위당 실중량(kg)',r.kg??'미입력'],['출하 수량',r.quantity??'미입력',r.unit],['공통 비용 합계',Math.round(r.common)],[],
+        ['항목',...ok.map(o=>o.name)],
+        ['단위 판매가',...ok.map(o=>o.price??'미입력')],['수수료율(%)',...ok.map(o=>v(o,c=>c.fee))],['감모·반품률(%)',...ok.map(o=>v(o,c=>c.loss))],['포장재(단위당)',...ok.map(o=>v(o,c=>c.pack))],['운송·택배비(단위당)',...ok.map(o=>v(o,c=>c.ship))],['기타 경로 비용',...ok.map(o=>v(o,c=>c.extra))],
+        ['판매 가능 수량',...ok.map(o=>v(o,c=>Math.round(c.sold*100)/100))],['매출',...ok.map(o=>v(o,c=>Math.round(c.revenue)))],['수수료',...ok.map(o=>v(o,c=>Math.round(c.feeAmt)))],['포장·운송비',...ok.map(o=>v(o,c=>Math.round(c.route)))],['총비용',...ok.map(o=>v(o,c=>Math.round(c.total)))],['예상 이익',...ok.map(o=>v(o,c=>Math.round(c.profit)))],['이익률(%)',...ok.map(o=>v(o,c=>c.margin===null?'':c.margin.toFixed(1)))],['단위당 이익',...ok.map(o=>v(o,c=>c.unitProfit===null?'':Math.round(c.unitProfit)))],['kg당 이익',...ok.map(o=>v(o,c=>c.kgProfit===null?'':Math.round(c.kgProfit)))],['손익분기 판매가(단위당)',...ok.map(o=>v(o,c=>num(c.breakEven)))],['손익분기 판매가(kg당)',...ok.map(o=>v(o,c=>c.breakEvenKg===null?'':Math.round(c.breakEvenKg)))],[],
+        ['계산식','판매 가능 수량 = 출하 수량 × (1 − 감모율); 매출 = 판매 가능 수량 × 판매가; 총비용 = 공통 비용 + 출하 수량 × (포장재 + 운송비) + 기타 경로 비용 + 매출 × 수수료율; 손익분기 판매가 = (총비용 − 수수료) ÷ (판매 가능 수량 × (1 − 수수료율))'],['안내','판매 의사결정용 추정치입니다. 세금·보조금·자가노동비는 반영하지 않았습니다.']];
     }
     function download(){
-      const c=calculate(),now=new Date();
-      const date=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-      const rows=[['농가 판매 손익·정산 보고서'],['작성일',date],['품목',c.item],['판매 예정 수량',c.quantity,c.unit],['감모율',`${c.lossRate}%`],['예상 판매 수량',c.sold.toFixed(1),c.unit],['단위 판매가',c.price],['예상 매출',Math.round(c.revenue)],['고정 비용',Math.round(c.fixed)],['예상 수수료',Math.round(c.fee)],['총비용',Math.round(c.total)],['예상 이익',Math.round(c.profit)],['이익률',`${c.margin.toFixed(1)}%`],['손익분기 단가',c.breakEven===null?'계산 불가':Math.round(c.breakEven)]];
-      const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');
-      const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-      a.href=url;a.download=`reportools_${c.item.replace(/\s+/g,'_')}_${date}.csv`;a.click();URL.revokeObjectURL(url)
+      const r=update(),date=today();
+      const csv=csvRows(r,date).map(row=>row.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');
+      const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='reportools_'+r.item.replace(/\s+/g,'_').replace(/[\\/:*?"<>|]/g,'')+'_'+date+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     }
-    document.getElementById('profit-form').addEventListener('input',calculate);document.getElementById('reset').addEventListener('click',()=>apply(defaults));document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>apply(presets[button.dataset.preset])));document.getElementById('download').addEventListener('click',download);calculate();window.addEventListener('load',()=>window.lucide&&window.lucide.createIcons());
+    function beforePrint(){update();el('print-meta').textContent='농가 손익 계산기(www.reportools.com) · 작성일 '+today()+' · 판매 의사결정용 추정치';document.querySelectorAll('#result details').forEach(d=>{d.open=true})}
+    el('calculator').addEventListener('input',update);
+    el('calculator').addEventListener('submit',e=>e.preventDefault());
+    el('wholesale-cap').addEventListener('change',()=>{const v=el('wholesale-cap').value;if(v){el('wholesale-fee').value=v;update()}});
+    document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>apply(presets[b.dataset.preset])));
+    el('clear').addEventListener('click',clearAll);
+    el('download').addEventListener('click',download);
+    el('print').addEventListener('click',()=>{beforePrint();window.print()});
+    window.addEventListener('beforeprint',beforePrint);
+    if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches)document.querySelectorAll('#result details').forEach(d=>{d.open=false});
+    update();
   </script>
 </body>
 </html>
