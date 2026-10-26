@@ -29,7 +29,8 @@ export default {
     const url=new URL(request.url);
     if(request.method!=="GET"&&request.method!=="HEAD") return response("Method Not Allowed",405,{allow:"GET, HEAD","content-type":"text/plain; charset=utf-8"});
     const head=request.method==="HEAD";
-    const pagePath=url.pathname==="/index.html"?"/":url.pathname;
+    if(url.pathname==="/index.html") return Response.redirect(url.origin+"/"+url.search,308);
+    const pagePath=url.pathname;
     if(PAGES[pagePath]) return response(head?null:PAGES[pagePath]);
     if(!pagePath.endsWith("/")&&PAGES[pagePath+"/"]) return Response.redirect(url.origin+pagePath+"/",308);
     if(url.pathname==="/sitemap.xml") return response(head?null:SITEMAP,200,{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=3600"});
