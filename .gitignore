@@ -13,3 +13,8 @@ public/_redirects
 *.tsbuildinfo
 *.tar.gz
 qa
+public/contact
+public/corrections
+public/editorial-policy
+public/privacy
+public/terms

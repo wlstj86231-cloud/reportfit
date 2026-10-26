@@ -64,13 +64,13 @@
     .formula{padding-left:22px}.formula li{margin:6px 0}.formula code{font-family:inherit;font-weight:700;background:var(--pale);padding:1px 6px;border-radius:5px}
     .example-table{min-width:520px}.example-table td:first-child{text-align:left;white-space:normal}
     .link-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;padding:0;list-style:none}.link-list a{display:block;min-height:48px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;font-weight:700}.link-list a:hover,.link-list a:focus-visible{border-color:var(--g2)}.link-list span{display:block;font-weight:400;color:var(--text)}
-    footer{border-top:1px solid var(--line);margin-top:20px;padding:22px max(16px,calc((100% - var(--max))/2));display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--text)}footer nav{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 14px}footer a{min-height:44px;display:inline-flex;align-items:center}
+    /*SHARED_CSS*/
     .print-only{display:none}
     @media(max-width:980px){.channel-grid,.cards{grid-template-columns:1fr}}
     @media(max-width:640px){body{font-size:17px}.hero{padding-top:26px}.hero h1{font-size:31px;letter-spacing:-.8px}h2{font-size:23px}legend{font-size:20px}.panel{padding:16px 14px}.site-header nav{margin-left:0;width:100%}.actions{flex-direction:column}.actions .btn{flex:none;width:100%}}
     @media print{.to-result,.site-header nav,.hero,.examples,.actions,.next-step,footer nav,#example,.section.links,ins.adsbygoogle,.cap{display:none!important}.print-only{display:block}.panel,.card{break-inside:avoid}body{font-size:12pt}.channel-grid,.cards{grid-template-columns:repeat(3,1fr)}details{border:0;padding:0}details>summary{display:none}.field small,.hint{display:none}input,select{border:0!important;min-height:0!important;padding:0!important}}
   </style>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"농가 손익 계산기","url":"https://www.reportools.com/","description":"직거래·도매시장 위탁·온라인 몰 판매의 예상 이익, 상자당·kg당 이익과 손익분기 판매가를 계산식과 함께 비교하는 무료 계산기","applicationCategory":"BusinessApplication","operatingSystem":"Any","inLanguage":"ko-KR","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"},"publisher":{"@type":"Organization","name":"제이 미디어","alternateName":"J MEDIA","url":"https://jnewmedia.com/"}}</script>
+  <!--SITE_JSONLD-->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5877883031077615" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -84,6 +84,7 @@
       <h1>어디로 팔면 얼마 남을까<br><em>직거래·도매시장·온라인</em> 손익 비교</h1>
       <p class="hero-copy">출하 수량과 공통 비용을 한 번 넣고, 판매 경로마다 판매가·수수료·감모·포장·운송비를 넣으면 예상 이익과 상자당·kg당 손익분기 판매가를 같은 기준으로 계산합니다.</p>
       <ul class="hero-points"><li>입력값은 이 브라우저에서만 계산(저장·전송 없음)</li><li>계산식과 대입한 숫자 공개</li><li>CSV 저장·인쇄</li></ul>
+      <!--PAGE_META-->
     </section>
 
     <section class="examples" aria-labelledby="examples-title">
@@ -153,7 +154,7 @@
       <details><summary>계산 과정 보기 (대입한 숫자)</summary><div id="steps" class="steps"></div></details>
       <div class="actions"><button type="button" class="btn primary" id="download">CSV 정산표 저장</button><button type="button" class="btn" id="print">인쇄·PDF로 저장</button></div>
       <div class="next-step"><p><strong>다음 할 일</strong></p><p>직거래로 팔기로 했다면 같은 지역 구매자를 찾을 수 있는 <a href="https://boribay.com/?category=PRODUCE&amp;utm_source=reportools.com&amp;utm_medium=referral&amp;utm_campaign=support">보리장터 농산물 매물</a>에서 비슷한 품목의 판매글을 살펴보세요. 도매시장에 낸다면 <a href="/guides/auction-net-proceeds/">경매 정산서 실수령액 계산법</a>으로 실제 정산서와 대조하세요. <small>(보리장터는 이 계산기와 같은 운영자 제이 미디어가 운영합니다.)</small></p></div>
-      <p class="notice">판매 의사결정을 돕는 추정치입니다. 세금·보조금·자가노동비·재고 평가는 반영하지 않습니다. 실제 수수료와 운임은 거래처의 요금표와 정산서로 확인하세요.</p>
+      <p class="notice">판매 의사결정을 돕는 추정치입니다. 세금·보조금·자가노동비·재고 평가는 반영하지 않습니다. 실제 수수료와 운임은 거래처의 요금표와 정산서로 확인하세요. <a href="#limits">범위와 한계 보기</a></p>
     </section>
 
     <section class="section" id="formula" aria-labelledby="formula-title">
@@ -182,6 +183,26 @@
       <p><a href="/guides/sales-channel-comparison/">세 경로를 한 줄씩 풀어 쓴 예시 전체 보기 →</a></p>
     </section>
 
+    <section class="section limits" id="limits" aria-labelledby="limits-title">
+      <h2 id="limits-title">범위와 한계</h2>
+      <ul>
+        <li>판매 경로를 고를 때 쓰는 추정치입니다. 부가가치세·소득세 같은 세금, 보조금, 자가노동비, 재고 평가, 대금이 들어오는 시점은 계산에 넣지 않습니다.</li>
+        <li>판매가·예상 낙찰가·수수료율·운임은 모두 이용자가 넣은 값입니다. 시세를 자동으로 가져오지 않으며, 결과는 위 계산식에 입력값을 대입한 산술 결과입니다. 그 물량이 그 값에 팔린다는 보장은 아닙니다.</li>
+        <li>도매시장 위탁수수료의 실제 요율은 출하할 도매시장법인에, 온라인 몰 수수료는 입점한 몰의 판매자센터 요금표에, 택배비는 계약한 택배사에 확인하세요. 법정 상한을 넣으면 수수료를 가장 크게 잡은 결과입니다.</li>
+        <li>이 계산기는 세무·법률·금융·투자 자문이 아닙니다. 세금 신고는 국세청이나 세무 전문가와 상의하세요. 확인할 곳은 <a href="/terms/">이용약관</a>의 표에 모아 두었습니다.</li>
+      </ul>
+    </section>
+
+    <section class="section" id="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">출처</h2>
+      <ol class="src-list">
+        <li><a href="https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EB%86%8D%EC%88%98%EC%82%B0%EB%AC%BC%EC%9C%A0%ED%86%B5%EB%B0%8F%EA%B0%80%EA%B2%A9%EC%95%88%EC%A0%95%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0%EC%8B%9C%ED%96%89%EA%B7%9C%EC%B9%99">농수산물 유통 및 가격안정에 관한 법률 시행규칙 제39조제4항(부류별 위탁수수료 최고한도) — 시행 2026. 9. 22.</a><small>국가법령정보센터 · 확인일 2026-10-26 · ‘법정 상한으로 넣기’의 6개 부류 비율</small></li>
+        <li><a href="https://www.kamis.or.kr/customer/main/main.do">농산물유통정보(KAMIS): 주요 농산물 일일 도매·소매가격</a><small>한국농수산식품유통공사(aT) · 확인일 2026-10-26 · 판매가·예상 낙찰가를 정할 때 참고할 공식 가격정보</small></li>
+        <li><a href="https://www.data.go.kr/data/15004517/openapi.do">서울특별시농수산식품공사 주요 품목 가격(가락시장 품목·등급·거래단위·평균가격)</a><small>공공데이터포털 · 확인일 2026-10-26 · 같은 품목·등급·규격의 경락가 확인</small></li>
+      </ol>
+      <p class="src-note">계산식은 이 사이트가 정한 것이며 위 계산식 목록에 모두 공개했습니다. 예시 버튼의 숫자는 위 자료의 실제 값이 아닌 설명용 가정입니다.</p>
+    </section>
+
     <section class="section links" aria-labelledby="links-title">
       <h2 id="links-title">숫자를 더 정확하게 넣으려면</h2>
       <ul class="link-list">
@@ -194,7 +215,7 @@
       </ul>
     </section>
   </main>
-  <footer><strong>농가 손익 계산기</strong><span>운영: 제이 미디어(J MEDIA) · 보리장터와 같은 운영자</span><nav aria-label="하단 메뉴"><a href="/guides/">정산 가이드</a><a href="/tools/used-tractor-total-cost/">트랙터 총비용</a><a href="/about/">소개·정정 요청</a><a href="/mn/" lang="mn">Монгол</a></nav></footer>
+  <!--SITE_FOOTER-->
   <script>
     const CH=[['direct','직거래'],['wholesale','도매시장 위탁'],['online','온라인 몰']];
     const CH_FIELDS=[['price','판매가'],['fee','수수료율'],['loss','감모·반품률'],['pack','포장재'],['ship','운송·택배비'],['extra','기타 경로 비용']];

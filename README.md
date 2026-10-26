@@ -4,11 +4,12 @@
 
 ## 소스
 
-- `static-report/index.html` — 첫 화면 계산기
-- `static-report/guides.mjs` — `/guides/` 정산 가이드
+- `static-report/index.html` — 첫 화면 계산기 (`<!--SITE_JSONLD-->`, `/*SHARED_CSS*/`, `<!--PAGE_META-->`, `<!--SITE_FOOTER-->` 자리는 `scripts/site-files.mjs`가 채움)
+- `static-report/guides.mjs` — `/guides/` 정산 가이드 (가이드마다 `published`, `sources`, `limits` 필수)
 - `static-report/tractor-cost.mjs` — `/tools/used-tractor-total-cost/`
-- `static-report/about.mjs` — `/about/` 소개·운영자·정정 요청
-- `static-report/mn.mjs` — `/mn/` 몽골어 계산기
+- `static-report/info-pages.mjs` — `/about/`, `/contact/`, `/editorial-policy/`, `/corrections/`(수정 기록), `/privacy/`, `/terms/`
+- `static-report/site-shared.mjs` — 운영자 정보, 공통 푸터, 작성·관리 정보 블록, 출처·범위와 한계 섹션, JSON-LD(Organization·WebSite)
+- `static-report/mn.mjs` — `/mn/` 몽골어 계산기 (AdSense 미지원 언어라 noindex·광고 없음·sitemap 제외)
 - `scripts/site-files.mjs` — 두 호스트가 함께 쓰는 페이지·sitemap·robots·404 정의
 
 `app/`, `lib/`의 Next.js 코드는 예전 도매꾹 스카우트 앱이며 두 호스트 어디에도 배포되지 않습니다.
