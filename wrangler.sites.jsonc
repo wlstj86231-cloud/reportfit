@@ -3,7 +3,9 @@
   "name": "reportools",
   "main": "dist/server/index.js",
   "compatibility_date": "2026-07-18",
-  "workers_dev": true,
+  // Serve only on the apex route; a *.workers.dev copy would duplicate the site.
+  "workers_dev": false,
+  "preview_urls": false,
   "routes": [
     { "pattern": "reportools.com/*", "zone_name": "reportools.com" }
   ]
