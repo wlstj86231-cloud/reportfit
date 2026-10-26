@@ -185,7 +185,7 @@ export default function Home() {
           <span>
             <ReceiptText size={19} />
           </span>
-          <strong>reportools</strong>
+          <strong>농가 손익 계산기</strong>
           <small>농가 판매 손익·정산 보고서</small>
         </a>
         <nav>
@@ -436,7 +436,7 @@ export default function Home() {
         </section>
       </main>
       <footer>
-        <strong>reportools</strong>
+        <strong>농가 손익 계산기</strong>
         <span>농가 판매 의사결정을 돕는 무료 계산 도구</span>
         <nav>
           <a href="/guides/">정산 가이드</a>

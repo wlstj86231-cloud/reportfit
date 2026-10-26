@@ -36,12 +36,12 @@ export default function LoginPage() {
 
   return (
     <main className="login-shell">
-      <section className="login-panel" aria-label="reportools 로그인">
+      <section className="login-panel" aria-label="농가 손익 계산기 로그인">
         <div className="login-mark">
           <ShieldCheck size={28} />
         </div>
         <span className="eyebrow">private sourcing workspace</span>
-        <h1>reportools</h1>
+        <h1>농가 손익 계산기</h1>
         <p>비밀번호를 입력해야 도매꾹 상품 분석 화면이 열립니다.</p>
 
         <form onSubmit={submit}>
