@@ -1,13 +1,16 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { adsTxt, googleVerification, googleVerificationPath, indexNowKey, notFoundHtml, pages, robots, sitemap } from "./site-files.mjs";
+import { adsTxt, googleVerification, googleVerificationPath, indexNowKey, notFoundHtml, origin, pages, robots, sitemap } from "./site-files.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, "dist");
 
-// The apex Worker serves exactly the same pages and root files as the www Pages build.
-const worker = `const PAGES=${JSON.stringify(pages)};
+// Every page lives on the www host. The apex Worker forwards page requests there
+// (http and https alike) so each page has one address, and still answers the root
+// files that crawlers and verification services read on the apex itself.
+const worker = `const WWW=${JSON.stringify(origin)};
+const PAGE_PATHS=new Set(${JSON.stringify(Object.keys(pages))});
 const SITEMAP=${JSON.stringify(sitemap)};
 const ROBOTS=${JSON.stringify(robots)};
 const GOOGLE_VERIFICATION=${JSON.stringify(googleVerification)};
@@ -29,10 +32,10 @@ export default {
     const url=new URL(request.url);
     if(request.method!=="GET"&&request.method!=="HEAD") return response("Method Not Allowed",405,{allow:"GET, HEAD","content-type":"text/plain; charset=utf-8"});
     const head=request.method==="HEAD";
-    if(url.pathname==="/index.html") return Response.redirect(url.origin+"/"+url.search,308);
+    if(url.pathname==="/index.html") return Response.redirect(WWW+"/"+url.search,301);
     const pagePath=url.pathname;
-    if(PAGES[pagePath]) return response(head?null:PAGES[pagePath]);
-    if(!pagePath.endsWith("/")&&PAGES[pagePath+"/"]) return Response.redirect(url.origin+pagePath+"/",308);
+    if(PAGE_PATHS.has(pagePath)) return Response.redirect(WWW+pagePath+url.search,301);
+    if(!pagePath.endsWith("/")&&PAGE_PATHS.has(pagePath+"/")) return Response.redirect(WWW+pagePath+"/"+url.search,301);
     if(url.pathname==="/sitemap.xml") return response(head?null:SITEMAP,200,{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/robots.txt") return response(head?null:ROBOTS,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/ads.txt") return response(head?null:ADS_TXT,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});

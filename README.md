@@ -23,6 +23,8 @@ node scripts/export-pages-static.mjs  # dist/pages + public/ (www, Cloudflare Pa
 
 `build-sites-static.mjs`는 `dist/`를 지우므로 먼저 실행합니다. apex Worker는 `wrangler.sites.jsonc`로만 배포합니다(`wrangler.jsonc` 아님).
 
+페이지는 www 한 곳에만 있습니다. apex Worker는 페이지 요청(http·https 모두)을 같은 경로의 `https://www.reportools.com`으로 301 넘겨주고, `robots.txt`·`sitemap.xml`·`ads.txt`·구글 인증 파일·IndexNow 키만 직접 응답합니다. 모르는 경로는 404입니다.
+
 ## 검사
 
 ```sh

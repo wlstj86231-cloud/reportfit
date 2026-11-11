@@ -11,7 +11,7 @@ import { faviconLink } from "../static-report/favicon.mjs";
 import { checkedDate, jsonLd, metaBlock, orgRef, sharedCss, siteFooter } from "../static-report/site-shared.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
-const origin = "https://www.reportools.com";
+export const origin = "https://www.reportools.com";
 const homeLastModified = checkedDate;
 
 // The home calculator source keeps placeholders for the parts every page shares.
