@@ -67,7 +67,29 @@ export const indexNowKey = "6d048fe0c10f47789f9b3a98ae4978ee";
 // A real 404 page keeps unknown routes from returning the home page with HTTP 200.
 export const notFoundHtml = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,follow"><title>페이지를 찾을 수 없습니다 | 농가 손익 계산기</title>${faviconLink}<style>body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:#f7faf6;color:#183128;font-family:'Noto Sans KR','Malgun Gothic',sans-serif;font-size:17px}main{max-width:38rem;padding:2rem 1rem;margin:auto}h1{font-size:2rem}p{line-height:1.7}main a{color:#176144;font-weight:700;display:inline-block;min-height:44px;padding:8px 0}${sharedCss}</style></head><body><main><h1>페이지를 찾을 수 없습니다</h1><p>주소를 다시 확인하거나 아래에서 필요한 계산기와 안내를 찾아보세요.</p><p><a href="/">판매 손익 계산기</a> · <a href="/guides/">정산 가이드</a> · <a href="/tools/used-tractor-total-cost/">트랙터 총비용</a> · <a href="/about/">소개</a></p></main>${siteFooter}</body></html>`;
 
+// Addresses of the document and submission tools this domain hosted before it became the
+// farm calculator (through 2026-08). Search engines still request them. One has a page
+// with the same purpose today; the rest are gone for good, and answering 410 on the apex,
+// where they lived, lets crawlers drop them sooner than a plain 404 would.
+export const movedPaths = { "/editorial/": "/editorial-policy/" };
+export const retiredPaths = [
+  "/review-readiness/",
+  ...[
+    "citation-cleaner", "deadline-planner", "document-check", "document-outline", "file-check", "file-hash", "file-name",
+    "image-compress", "image-convert", "image-resize", "image-rotate", "image-watermark", "password-maker", "pdf-compress",
+    "pdf-edit", "pdf-number", "pdf-organize", "pdf-rotate", "pdf-slim", "pdf-split", "pdf-watermark", "privacy-mask",
+    "privacy-scan", "reading-time", "rubric-check", "submission-note", "submit-checklist", "submit-package", "table-convert",
+    "text-clean", "text-compare", "word-count", "zip-pack",
+  ].map((slug) => `/tools/${slug}/`),
+  ...[
+    "citation-url-cleaning-guide", "email-lms-submission-note-guide", "image-attachment-optimization-guide",
+    "lms-upload-deadline-guide", "metadata-privacy-before-sharing-guide", "pdf-size-filename-checklist",
+    "report-word-count-structure-guide", "scan-photo-pdf-cleanup-guide", "team-project-submission-package",
+  ].map((slug) => `/guides/${slug}/`),
+];
+
 export const redirects = [
+  ...Object.entries(movedPaths).flatMap(([from, to]) => [`${from.replace(/\/$/, "")} ${to} 301`, `${from} ${to} 301`]),
   "/guides /guides/ 308",
   "/mn /mn/ 308",
   ...guideUrls.filter((url) => url !== "/guides/").map((url) => `${url.replace(/\/$/, "")} ${url} 308`),

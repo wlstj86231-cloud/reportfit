@@ -1,7 +1,7 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { adsTxt, googleVerification, googleVerificationPath, indexNowKey, notFoundHtml, origin, pages, robots, sitemap } from "./site-files.mjs";
+import { adsTxt, googleVerification, googleVerificationPath, indexNowKey, movedPaths, notFoundHtml, origin, pages, retiredPaths, robots, sitemap } from "./site-files.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, "dist");
@@ -11,6 +11,8 @@ const dist = join(root, "dist");
 // files that crawlers and verification services read on the apex itself.
 const worker = `const WWW=${JSON.stringify(origin)};
 const PAGE_PATHS=new Set(${JSON.stringify(Object.keys(pages))});
+const MOVED=${JSON.stringify(movedPaths)};
+const RETIRED=new Set(${JSON.stringify(retiredPaths)});
 const SITEMAP=${JSON.stringify(sitemap)};
 const ROBOTS=${JSON.stringify(robots)};
 const GOOGLE_VERIFICATION=${JSON.stringify(googleVerification)};
@@ -36,6 +38,9 @@ export default {
     const pagePath=url.pathname;
     if(PAGE_PATHS.has(pagePath)) return Response.redirect(WWW+pagePath+url.search,301);
     if(!pagePath.endsWith("/")&&PAGE_PATHS.has(pagePath+"/")) return Response.redirect(WWW+pagePath+"/"+url.search,301);
+    const slashPath=pagePath.endsWith("/")?pagePath:pagePath+"/";
+    if(MOVED[slashPath]) return Response.redirect(WWW+MOVED[slashPath],301);
+    if(RETIRED.has(slashPath)) return response(head?null:NOT_FOUND,410);
     if(url.pathname==="/sitemap.xml") return response(head?null:SITEMAP,200,{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/robots.txt") return response(head?null:ROBOTS,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
     if(url.pathname==="/ads.txt") return response(head?null:ADS_TXT,200,{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"});
